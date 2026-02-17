@@ -575,6 +575,11 @@ fn main() -> Result<()> {
     for i in 0..num_gpus {
         let dev = Device::get_device(i)?;
         let mem = dev.total_memory()? as usize;
+        let name = dev.name()?;
+        let _ = mp.println(format!(
+            "GPU {}: {} ({:.1} GB VRAM)",
+            i, name, mem as f64 / (1u64 << 30) as f64
+        ));
         min_vram = min_vram.min(mem);
     }
 
