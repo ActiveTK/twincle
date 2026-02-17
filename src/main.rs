@@ -77,7 +77,11 @@ fn run_search(
             .progress_chars("#>-"),
     );
     let msg_prefix = if max_duration.is_some() { "testing" } else { "searching" };
-    pb.set_message(format!("starting {} (M={})...", msg_prefix, wheel_m));
+    let num_segments = (k_end_excl + segment_k - 1) / segment_k;
+    pb.set_message(format!(
+        "{} M={} | seg_k={} | {} segments",
+        msg_prefix, wheel_m, format_with_commas(segment_k), format_with_commas(num_segments)
+    ));
     pb.enable_steady_tick(Duration::from_millis(200));
 
     let pb = Arc::new(pb);
@@ -414,9 +418,7 @@ fn pick_segment_k(total_mem_bytes: usize, frac: f64, residues_len: usize) -> u64
         return 1 << 20;
     }
     
-    // Calculate k based on budget, but cap it to ensure smooth progress updates.
-    // 1 << 18 is about 262K, which provides more frequent updates for heavy kernels.
-    let k = (budget.saturating_mul(4) / r).clamp(1 << 14, 1 << 18);
+    let k = (budget.saturating_mul(4) / r).clamp(1 << 14, 1 << 22);
 
     k
 }
@@ -438,6 +440,7 @@ fn gpu_worker(
     let _ctx = CudaContext::new(device)?;
     let module = Module::from_ptx(PTX, &[])?;
 
+    let clear_kernel = module.get_function("clear_buffers")?;
     let sieve_kernel = module.get_function("sieve_wheel_primes")?;
     let twin_kernel = module.get_function("twin_sum_wheel")?;
 
@@ -445,6 +448,7 @@ fn gpu_worker(
 
     let res_len = residues.len();
     let prime_count = primes.len();
+    let sieve_shared = (res_len * size_of::<u32>()) as u32;
 
     let d_residues = DeviceBuffer::from_slice(&residues)?;
     let d_primes = DeviceBuffer::from_slice(&primes)?;
@@ -459,9 +463,12 @@ fn gpu_worker(
     let d_sum = DeviceBuffer::<f64>::zeroed(1)?;
     let d_cnt = DeviceBuffer::<u64>::zeroed(1)?;
 
-    // kernel launch config
+    // kernel launch config — grid sized to the actual workload
     let block = 256u32;
-    let grid = 65535u32;
+    let sieve_pairs = prime_count as u64 * res_len as u64;
+    let sieve_grid = ((sieve_pairs + block as u64 - 1) / block as u64).min(262144) as u32;
+    let twin_grid = ((words as u64 + block as u64 - 1) / block as u64).min(262144) as u32;
+    let clear_grid = ((words as u64 + block as u64 - 1) / block as u64).min(65535) as u32;
 
     loop {
         let k_low = next_k_low.fetch_add(segment_k, Ordering::Relaxed);
@@ -474,18 +481,22 @@ fn gpu_worker(
             break;
         }
 
-        // memset bitsets + sum/cnt
+        // Stream-ordered clear (avoids default-stream serialisation)
         unsafe {
-            // N is usize in cust_raw
-            let _ = cust::sys::cuMemsetD32_v2(d_comp_p.as_device_ptr().as_raw(), 0, words);
-            let _ = cust::sys::cuMemsetD32_v2(d_comp_p2.as_device_ptr().as_raw(), 0, words);
-            let _ = cust::sys::cuMemsetD8_v2(d_sum.as_device_ptr().as_raw(), 0, size_of::<f64>());
-            let _ = cust::sys::cuMemsetD8_v2(d_cnt.as_device_ptr().as_raw(), 0, size_of::<u64>());
+            cust::launch!(
+                clear_kernel<<<clear_grid, block, 0, stream>>>(
+                    d_comp_p.as_device_ptr(),
+                    d_comp_p2.as_device_ptr(),
+                    d_sum.as_device_ptr(),
+                    d_cnt.as_device_ptr(),
+                    words as u32
+                )
+            )?;
         }
 
         unsafe {
             cust::launch!(
-                sieve_kernel<<<grid, block, 0, stream>>>(
+                sieve_kernel<<<sieve_grid, block, sieve_shared, stream>>>(
                     k_low as u64,
                     k_count as u64,
                     wheel_m as u32,
@@ -502,7 +513,7 @@ fn gpu_worker(
 
         unsafe {
             cust::launch!(
-                twin_kernel<<<grid, block, 0, stream>>>(
+                twin_kernel<<<twin_grid, block, 0, stream>>>(
                     k_low as u64,
                     k_count as u64,
                     wheel_m as u32,
@@ -569,7 +580,7 @@ fn main() -> Result<()> {
 
     let base_limit = ceil_sqrt(limit);
 
-    let mut wheels_to_test = if args.test_wheels {
+    let wheels_to_test = if args.test_wheels {
         let primes = [2, 3, 5, 7, 11, 13, 17];
         let mut v = vec![2]; // M=2 (parity only)
         let mut m = 2;

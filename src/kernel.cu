@@ -38,88 +38,117 @@ static __device__ __forceinline__ unsigned int mul_mod_u32(unsigned int a, unsig
     return (unsigned long long)a * (unsigned long long)b % (unsigned long long)mod;
 }
 
-/* Prime-parallel wheel sieve kernel.
-   Each thread owns a prime q and marks candidate indices where:
-     p     = M*k + r ≡ 0 (mod q)  => comp_p
-     p + 2 = M*k + r + 2 ≡ 0 (mod q) => comp_p2
-   Start is bumped to >= q*q to avoid marking the prime itself. */
+/* Stream-ordered buffer clear.
+   Replaces cuMemsetD32_v2 (default-stream, blocks host) so that the clear
+   is enqueued on the same non-blocking stream as the sieve/twin kernels. */
+extern "C" __global__ void clear_buffers(
+    unsigned int *comp_p,
+    unsigned int *comp_p2,
+    double       *d_sum,
+    unsigned long long *d_count,
+    unsigned int  word_count)
+{
+    unsigned int tid    = blockIdx.x * blockDim.x + threadIdx.x;
+    unsigned int stride = blockDim.x * gridDim.x;
+    for (unsigned int i = tid; i < word_count; i += stride)
+    {
+        comp_p[i]  = 0U;
+        comp_p2[i] = 0U;
+    }
+    if (tid == 0)
+    {
+        *d_sum   = 0.0;
+        *d_count = 0ULL;
+    }
+}
+
+/* Pair-parallel wheel sieve kernel.
+   OLD: each thread owned one prime and looped over ALL R residues — the thread
+   handling the smallest prime (q=17) did millions of marks while others were
+   idle, causing catastrophic warp-level load imbalance.
+
+   NEW: the iteration space is (prime_index, residue_index) pairs.
+   Total pairs = prime_count * R.  Each thread picks pairs via a stride loop,
+   so the heavy marking work for small primes is spread across many threads. */
 extern "C" __global__ void sieve_wheel_primes(
     unsigned long long k_low,
     unsigned long long k_count,
     unsigned int M,
     const unsigned int *__restrict__ residues, // length R
     int R,
-    const unsigned int *__restrict__ primes,     // base primes excluding factors of M and excluding 2
-    const unsigned int *__restrict__ invM_mod_p, // invM_mod_p[i] = M^{-1} mod primes[i]
+    const unsigned int *__restrict__ primes,
+    const unsigned int *__restrict__ invM_mod_p,
     int prime_count,
     unsigned int *__restrict__ comp_p_words,
     unsigned int *__restrict__ comp_p2_words)
 {
-    unsigned int tid = blockIdx.x * blockDim.x + threadIdx.x;
-    unsigned int stride = blockDim.x * gridDim.x;
+    extern __shared__ unsigned int s_res[];
+    for (int i = threadIdx.x; i < R; i += (int)blockDim.x)
+        s_res[i] = residues[i];
+    __syncthreads();
 
-    for (unsigned int pi = tid; pi < (unsigned int)prime_count; pi += stride)
+    unsigned long long total_pairs = (unsigned long long)prime_count * (unsigned long long)R;
+    unsigned long long tid    = (unsigned long long)blockIdx.x * (unsigned long long)blockDim.x
+                              + (unsigned long long)threadIdx.x;
+    unsigned long long stride = (unsigned long long)blockDim.x * (unsigned long long)gridDim.x;
+
+    for (unsigned long long pair = tid; pair < total_pairs; pair += stride)
     {
-        unsigned int q = primes[pi];
+        unsigned int pi   = (unsigned int)(pair / (unsigned long long)R);
+        unsigned int ridx = (unsigned int)(pair % (unsigned long long)R);
+
+        unsigned int q    = primes[pi];
         unsigned int invM = invM_mod_p[pi];
+        unsigned int r    = s_res[ridx];
 
-        unsigned long long qq = (unsigned long long)q * (unsigned long long)q;
+        unsigned long long qq  = (unsigned long long)q * (unsigned long long)q;
+        unsigned long long mod = (unsigned long long)q;
+        unsigned long long k_end = k_low + k_count;
 
-        // For each residue class r, solve k ≡ (-r)*invM (mod q) for p divisible
-        // and k ≡ (-(r+2))*invM (mod q) for p+2 divisible.
-        for (int ridx = 0; ridx < R; ++ridx)
+        /* --- comp_p: mark k where M*k + r ≡ 0 (mod q) --- */
         {
-            unsigned int r = residues[ridx];
-
-            // k0 for p divisible by q
             unsigned int neg_r = (q - (r % q)) % q;
-            unsigned int k0 = mul_mod_u32(neg_r, invM, q);
+            unsigned int k0    = mul_mod_u32(neg_r, invM, q);
 
-            // k1 for (p+2) divisible by q
-            unsigned int rp2 = r + 2U;
-            unsigned int neg_rp2 = (q - (rp2 % q)) % q;
-            unsigned int k1 = mul_mod_u32(neg_rp2, invM, q);
+            unsigned long long k_mod = k_low % mod;
+            unsigned long long need  = (k0 >= k_mod) ? (k0 - k_mod) : (mod + k0 - k_mod);
+            unsigned long long first_k = k_low + need;
 
-            // Find first k >= k_low with k ≡ k0 (mod q)
-            unsigned long long k = k_low;
-            unsigned long long mod = (unsigned long long)q;
-            unsigned long long k_mod = k % mod;
-            unsigned long long need = (k0 >= k_mod) ? (k0 - k_mod) : (mod + k0 - k_mod);
-            unsigned long long first_k = k + need;
-
-            // bump until p >= q*q
-            // p = M*first_k + r
-            while (first_k < k_low + k_count)
+            while (first_k < k_end)
             {
                 unsigned long long p = (unsigned long long)M * first_k + (unsigned long long)r;
-                if (p >= qq)
-                    break;
+                if (p >= qq) break;
                 first_k += mod;
             }
 
-            for (unsigned long long kk2 = first_k; kk2 < k_low + k_count; kk2 += mod)
+            for (unsigned long long kk = first_k; kk < k_end; kk += mod)
             {
-                unsigned long long idx = (kk2 - k_low) * (unsigned long long)R + (unsigned long long)ridx;
+                unsigned long long idx = (kk - k_low) * (unsigned long long)R + (unsigned long long)ridx;
                 atomicOr(&comp_p_words[bit_word(idx)], bit_mask(idx));
             }
+        }
 
-            // Now for p+2 divisible:
-            k_mod = k % mod;
-            need = (k1 >= k_mod) ? (k1 - k_mod) : (mod + k1 - k_mod);
-            first_k = k + need;
+        /* --- comp_p2: mark k where M*k + r + 2 ≡ 0 (mod q) --- */
+        {
+            unsigned int rp2     = r + 2U;
+            unsigned int neg_rp2 = (q - (rp2 % q)) % q;
+            unsigned int k1      = mul_mod_u32(neg_rp2, invM, q);
 
-            while (first_k < k_low + k_count)
+            unsigned long long k_mod = k_low % mod;
+            unsigned long long need  = (k1 >= k_mod) ? (k1 - k_mod) : (mod + k1 - k_mod);
+            unsigned long long first_k = k_low + need;
+
+            while (first_k < k_end)
             {
-                unsigned long long p = (unsigned long long)M * first_k + (unsigned long long)r;
+                unsigned long long p  = (unsigned long long)M * first_k + (unsigned long long)r;
                 unsigned long long p2 = p + 2ULL;
-                if (p2 >= qq)
-                    break;
+                if (p2 >= qq) break;
                 first_k += mod;
             }
 
-            for (unsigned long long kk2 = first_k; kk2 < k_low + k_count; kk2 += mod)
+            for (unsigned long long kk = first_k; kk < k_end; kk += mod)
             {
-                unsigned long long idx = (kk2 - k_low) * (unsigned long long)R + (unsigned long long)ridx;
+                unsigned long long idx = (kk - k_low) * (unsigned long long)R + (unsigned long long)ridx;
                 atomicOr(&comp_p2_words[bit_word(idx)], bit_mask(idx));
             }
         }
