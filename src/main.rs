@@ -31,10 +31,21 @@ fn log_system_info(mp: &MultiProgress) {
     #[cfg(target_os = "linux")]
     {
         if let Ok(cpuinfo) = std::fs::read_to_string("/proc/cpuinfo") {
-            if let Some(line) = cpuinfo.lines().find(|l| l.starts_with("model name")) {
-                if let Some((_, v)) = line.split_once(':') {
-                    print_mp_and_log(mp, &format!("CPU model={}", v.trim()));
+            let mut models: Vec<(String, u32)> = Vec::new();
+            for line in cpuinfo.lines() {
+                if let Some((k, v)) = line.split_once(':') {
+                    if k.trim() == "model name" {
+                        let name = v.trim().to_string();
+                        if let Some(entry) = models.iter_mut().find(|(n, _)| n == &name) {
+                            entry.1 += 1;
+                        } else {
+                            models.push((name, 1));
+                        }
+                    }
                 }
+            }
+            for (name, count) in models {
+                print_mp_and_log(mp, &format!("CPU model={name} (x{count})"));
             }
         }
         if let Ok(meminfo) = std::fs::read_to_string("/proc/meminfo") {
@@ -57,6 +68,21 @@ fn log_system_info(mp: &MultiProgress) {
             if let Some(kb) = avail_kb {
                 let gb = kb as f64 / (1024.0 * 1024.0);
                 print_mp_and_log(mp, &format!("MEM available={:.2} GB", gb));
+            }
+        }
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        if let Ok(output) = std::process::Command::new("sysctl")
+            .args(["-n", "machdep.cpu.brand_string"])
+            .output()
+        {
+            if output.status.success() {
+                let name = String::from_utf8_lossy(&output.stdout).trim().to_string();
+                if !name.is_empty() {
+                    print_mp_and_log(mp, &format!("CPU model={name}"));
+                }
             }
         }
     }
@@ -230,7 +256,7 @@ fn run_search(
             );
             pb.set_message(msg.clone());
             last_msg = Instant::now();
-            if last_log.elapsed().as_secs() >= 60 {
+            if last_log.elapsed().as_secs() >= 10 {
                 log_line(&format!("PROGRESS {msg}"));
                 last_log = Instant::now();
             }
