@@ -114,11 +114,35 @@ extern "C" __global__ void sieve_wheel_primes(
                 first_k += mod;
             }
 
+            unsigned int cur_word = 0;
+            unsigned int cur_mask = 0;
+            bool has_word = false;
             for (unsigned long long kk = first_k; kk < k_end; kk += mod)
             {
                 unsigned long long idx = (unsigned long long)ridx * (unsigned long long)k_count
                                        + (kk - k_low);
-                atomicOr(&comp_p_words[bit_word(idx)], bit_mask(idx));
+                unsigned int w = bit_word(idx);
+                unsigned int m = bit_mask(idx);
+                if (!has_word)
+                {
+                    cur_word = w;
+                    cur_mask = m;
+                    has_word = true;
+                }
+                else if (w == cur_word)
+                {
+                    cur_mask |= m;
+                }
+                else
+                {
+                    atomicOr(&comp_p_words[cur_word], cur_mask);
+                    cur_word = w;
+                    cur_mask = m;
+                }
+            }
+            if (has_word)
+            {
+                atomicOr(&comp_p_words[cur_word], cur_mask);
             }
         }
 
@@ -140,11 +164,35 @@ extern "C" __global__ void sieve_wheel_primes(
                 first_k += mod;
             }
 
+            unsigned int cur_word = 0;
+            unsigned int cur_mask = 0;
+            bool has_word = false;
             for (unsigned long long kk = first_k; kk < k_end; kk += mod)
             {
                 unsigned long long idx = (unsigned long long)ridx * (unsigned long long)k_count
                                        + (kk - k_low);
-                atomicOr(&comp_p2_words[bit_word(idx)], bit_mask(idx));
+                unsigned int w = bit_word(idx);
+                unsigned int m = bit_mask(idx);
+                if (!has_word)
+                {
+                    cur_word = w;
+                    cur_mask = m;
+                    has_word = true;
+                }
+                else if (w == cur_word)
+                {
+                    cur_mask |= m;
+                }
+                else
+                {
+                    atomicOr(&comp_p2_words[cur_word], cur_mask);
+                    cur_word = w;
+                    cur_mask = m;
+                }
+            }
+            if (has_word)
+            {
+                atomicOr(&comp_p2_words[cur_word], cur_mask);
             }
         }
     }
