@@ -1,7 +1,8 @@
 use anyhow::Result;
 use clap::Parser;
 use cust::context::Context as CudaContext;
-use cust::memory::{CopyDestination, DeviceBuffer}; // <-- CopyDestination を追加
+use cust::event::{Event, EventFlags};
+use cust::memory::{AsyncCopyDestination, DeviceBuffer, LockedBuffer};
 use cust::module::Module;
 use cust::prelude::{CudaFlags, Device, Stream, StreamFlags};
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
@@ -466,7 +467,8 @@ fn gpu_worker(
     let sieve_kernel = module.get_function("sieve_wheel_primes")?;
     let twin_kernel = module.get_function("twin_sum_wheel")?;
 
-    let stream = Stream::new(StreamFlags::NON_BLOCKING, None)?;
+    let stream_a = Stream::new(StreamFlags::NON_BLOCKING, None)?;
+    let stream_b = Stream::new(StreamFlags::NON_BLOCKING, None)?;
 
     let res_len = residues.len();
     let prime_count = primes.len();
@@ -480,8 +482,14 @@ fn gpu_worker(
     let candidates_per_seg = segment_k.saturating_mul(res_len as u64);
     let words = ((candidates_per_seg + 31) / 32) as usize;
 
-    let d_comp_p = DeviceBuffer::<u32>::zeroed(words)?;
-    let d_comp_p2 = DeviceBuffer::<u32>::zeroed(words)?;
+    let d_comp_p = [
+        DeviceBuffer::<u32>::zeroed(words)?,
+        DeviceBuffer::<u32>::zeroed(words)?,
+    ];
+    let d_comp_p2 = [
+        DeviceBuffer::<u32>::zeroed(words)?,
+        DeviceBuffer::<u32>::zeroed(words)?,
+    ];
 
     // kernel launch config — grid sized to the actual workload
     let block = 256u32;
@@ -490,10 +498,28 @@ fn gpu_worker(
     let twin_grid = ((words as u64 + block as u64 - 1) / block as u64).min(262144) as u32;
     let clear_grid = ((words as u64 + block as u64 - 1) / block as u64).min(65535) as u32;
 
-    let d_block_sums = DeviceBuffer::<f64>::zeroed(twin_grid as usize)?;
-    let d_block_counts = DeviceBuffer::<u64>::zeroed(twin_grid as usize)?;
-    let mut h_block_sums = vec![0f64; twin_grid as usize];
-    let mut h_block_counts = vec![0u64; twin_grid as usize];
+    let d_block_sums = [
+        DeviceBuffer::<f64>::zeroed(twin_grid as usize)?,
+        DeviceBuffer::<f64>::zeroed(twin_grid as usize)?,
+    ];
+    let d_block_counts = [
+        DeviceBuffer::<u64>::zeroed(twin_grid as usize)?,
+        DeviceBuffer::<u64>::zeroed(twin_grid as usize)?,
+    ];
+    let mut h_block_sums = [
+        LockedBuffer::new(&0f64, twin_grid as usize)?,
+        LockedBuffer::new(&0f64, twin_grid as usize)?,
+    ];
+    let mut h_block_counts = [
+        LockedBuffer::new(&0u64, twin_grid as usize)?,
+        LockedBuffer::new(&0u64, twin_grid as usize)?,
+    ];
+    let done_events = [
+        Event::new(EventFlags::DISABLE_TIMING)?,
+        Event::new(EventFlags::DISABLE_TIMING)?,
+    ];
+    let mut pending = [false, false];
+    let mut seg_index: u64 = 0;
 
     loop {
         let k_low = next_k_low.fetch_add(segment_k, Ordering::Relaxed);
@@ -506,12 +532,35 @@ fn gpu_worker(
             break;
         }
 
+        let buf_idx = (seg_index & 1) as usize;
+        let stream = if buf_idx == 0 { &stream_a } else { &stream_b };
+
+        if pending[buf_idx] {
+            done_events[buf_idx].synchronize()?;
+            let mut seg_sum = Kahan::default();
+            let mut seg_count: u64 = 0;
+            for i in 0..(twin_grid as usize) {
+                seg_sum.add(h_block_sums[buf_idx][i]);
+                seg_count = seg_count.wrapping_add(h_block_counts[buf_idx][i]);
+            }
+            if tx
+                .send(SegResult {
+                    sum: seg_sum.value(),
+                    count: seg_count,
+                })
+                .is_err()
+            {
+                break;
+            }
+            pending[buf_idx] = false;
+        }
+
         // Stream-ordered clear (avoids default-stream serialisation)
         unsafe {
             cust::launch!(
                 clear_kernel<<<clear_grid, block, 0, stream>>>(
-                    d_comp_p.as_device_ptr(),
-                    d_comp_p2.as_device_ptr(),
+                    d_comp_p[buf_idx].as_device_ptr(),
+                    d_comp_p2[buf_idx].as_device_ptr(),
                     words as u32
                 )
             )?;
@@ -528,8 +577,8 @@ fn gpu_worker(
                     d_primes.as_device_ptr(),
                     d_inv.as_device_ptr(),
                     prime_count as i32,
-                    d_comp_p.as_device_ptr(),
-                    d_comp_p2.as_device_ptr()
+                    d_comp_p[buf_idx].as_device_ptr(),
+                    d_comp_p2[buf_idx].as_device_ptr()
                 )
             )?;
         }
@@ -543,37 +592,39 @@ fn gpu_worker(
                     d_residues.as_device_ptr(),
                     res_len as i32,
                     limit as u64,
-                    d_comp_p.as_device_ptr(),
-                    d_comp_p2.as_device_ptr(),
-                    d_block_sums.as_device_ptr(),
-                    d_block_counts.as_device_ptr()
+                    d_comp_p[buf_idx].as_device_ptr(),
+                    d_comp_p2[buf_idx].as_device_ptr(),
+                    d_block_sums[buf_idx].as_device_ptr(),
+                    d_block_counts[buf_idx].as_device_ptr()
                 )
             )?;
         }
 
-        stream.synchronize()?;
-
-        d_block_sums.copy_to(&mut h_block_sums)?; // CopyDestination in scope
-        d_block_counts.copy_to(&mut h_block_counts)?;
-
-        let mut seg_sum = Kahan::default();
-        let mut seg_count: u64 = 0;
-        for i in 0..(twin_grid as usize) {
-            seg_sum.add(h_block_sums[i]);
-            seg_count = seg_count.wrapping_add(h_block_counts[i]);
+        unsafe {
+            d_block_sums[buf_idx].async_copy_to(&mut h_block_sums[buf_idx], stream)?;
+            d_block_counts[buf_idx].async_copy_to(&mut h_block_counts[buf_idx], stream)?;
         }
-
-        if tx
-            .send(SegResult {
-                sum: seg_sum.value(),
-                count: seg_count,
-            })
-            .is_err()
-        {
-            break;
-        }
+        done_events[buf_idx].record(stream)?;
+        pending[buf_idx] = true;
+        seg_index += 1;
 
         pb.inc((k_count as u64) * (res_len as u64));
+    }
+
+    for buf_idx in 0..2 {
+        if pending[buf_idx] {
+            done_events[buf_idx].synchronize()?;
+            let mut seg_sum = Kahan::default();
+            let mut seg_count: u64 = 0;
+            for i in 0..(twin_grid as usize) {
+                seg_sum.add(h_block_sums[buf_idx][i]);
+                seg_count = seg_count.wrapping_add(h_block_counts[buf_idx][i]);
+            }
+            let _ = tx.send(SegResult {
+                sum: seg_sum.value(),
+                count: seg_count,
+            });
+        }
     }
 
     Ok(())
