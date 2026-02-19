@@ -810,7 +810,8 @@ fn main() -> Result<()> {
     let _ = LOG.set(Mutex::new(BufWriter::new(
         OpenOptions::new().create(true).append(true).open("run.log")?
     )));
-    log_line("***** Lunched *****");
+    let cmdline = std::env::args().collect::<Vec<_>>().join(" ");
+    log_line(&format!("** Started: {cmdline}"));
     log_system_info(&mp);
     
     cust::init(CudaFlags::empty())?;
