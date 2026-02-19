@@ -18,7 +18,7 @@ We maintain two composite bitsets:
 A twin pair is valid if both bits are 0 and p >= 3 and p+2 <= limit.
 
 Bitset indexing:
-  idx = (k - k_low) * R + ridx
+  idx = ridx * k_count + (k - k_low)
 where R = residues_len, k in [k_low, k_low + k_count).
 */
 
@@ -116,7 +116,8 @@ extern "C" __global__ void sieve_wheel_primes(
 
             for (unsigned long long kk = first_k; kk < k_end; kk += mod)
             {
-                unsigned long long idx = (kk - k_low) * (unsigned long long)R + (unsigned long long)ridx;
+                unsigned long long idx = (unsigned long long)ridx * (unsigned long long)k_count
+                                       + (kk - k_low);
                 atomicOr(&comp_p_words[bit_word(idx)], bit_mask(idx));
             }
         }
@@ -141,7 +142,8 @@ extern "C" __global__ void sieve_wheel_primes(
 
             for (unsigned long long kk = first_k; kk < k_end; kk += mod)
             {
-                unsigned long long idx = (kk - k_low) * (unsigned long long)R + (unsigned long long)ridx;
+                unsigned long long idx = (unsigned long long)ridx * (unsigned long long)k_count
+                                       + (kk - k_low);
                 atomicOr(&comp_p2_words[bit_word(idx)], bit_mask(idx));
             }
         }
@@ -149,7 +151,10 @@ extern "C" __global__ void sieve_wheel_primes(
 }
 
 /* Twin sum over wheel candidates.
-   A candidate idx corresponds to p = M*(k_low + idx/R) + residues[idx%R].
+   A candidate idx corresponds to:
+     ridx = idx / k_count
+     k    = k_low + (idx % k_count)
+     p    = M*k + residues[ridx]
    It's a twin pair iff comp_p[idx]==0 and comp_p2[idx]==0 and p>=3 and p+2<=limit. */
 
 static __device__ __forceinline__ double warp_reduce_sum_f64(double val)
@@ -228,8 +233,8 @@ extern "C" __global__ void twin_sum_wheel(
             ok &= ok - 1U;
 
             unsigned long long idx = base_idx + (unsigned int)bit;
-            unsigned long long kk = k_low + idx / (unsigned long long)R;
-            unsigned int ridx = (unsigned int)(idx % (unsigned long long)R);
+            unsigned long long kk = k_low + (idx % (unsigned long long)k_count);
+            unsigned int ridx = (unsigned int)(idx / (unsigned long long)k_count);
             unsigned long long p = (unsigned long long)M * kk + (unsigned long long)residues[ridx];
 
             if (p < 3ULL)
