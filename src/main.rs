@@ -6,6 +6,7 @@ use cust::module::Module;
 use cust::prelude::{CudaFlags, Device, Stream, StreamFlags};
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 use std::mem::size_of;
+use std::process::Command;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, mpsc};
 use std::thread;
@@ -629,6 +630,44 @@ fn main() -> Result<()> {
     }
 
     let mp = MultiProgress::new();
+
+    if let Ok(output) = Command::new("wmic")
+        .args(["cpu", "get", "Name,NumberOfCores,NumberOfLogicalProcessors", "/format:list"])
+        .output()
+    {
+        if output.status.success() {
+            let text = String::from_utf8_lossy(&output.stdout);
+            for line in text.lines() {
+                if line.trim().is_empty() {
+                    continue;
+                }
+                let _ = mp.println(format!("CPU {}", line));
+            }
+        }
+    }
+    if let Ok(output) = Command::new("wmic")
+        .args(["OS", "get", "TotalVisibleMemorySize,FreePhysicalMemory", "/format:list"])
+        .output()
+    {
+        if output.status.success() {
+            let text = String::from_utf8_lossy(&output.stdout);
+            for line in text.lines() {
+                if line.trim().is_empty() {
+                    continue;
+                }
+                if let Some((k, v)) = line.split_once('=') {
+                    if let Ok(kb) = v.trim().parse::<u64>() {
+                        let gb = kb as f64 / (1024.0 * 1024.0);
+                        let _ = mp.println(format!("MEM {}={:.2} GB", k.trim(), gb));
+                    } else {
+                        let _ = mp.println(format!("MEM {}", line.trim()));
+                    }
+                } else {
+                    let _ = mp.println(format!("MEM {}", line.trim()));
+                }
+            }
+        }
+    }
     
     cust::init(CudaFlags::empty())?;
     let num_gpus = Device::num_devices()? as u32;
