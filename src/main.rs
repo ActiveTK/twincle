@@ -230,7 +230,6 @@ fn run_search(
     let mut total_twins: u64 = 0;
     let mut segments_done: u64 = 0;
     let mut last_msg = Instant::now();
-    let mut last_log = Instant::now();
     let mut ema_speed: f64 = 0.0;
 
     for r in rx.iter() {
@@ -258,8 +257,7 @@ fn run_search(
             let eta_secs = if ema_speed > 0.0 { remaining as f64 / ema_speed } else { 0.0 };
 
             let msg = format!(
-                "M={} | seg {}/{} | twins={} | B2_partial≈{:.12} | {:.2e} cand/s | ETA {:.1} min",
-                wheel_m,
+                "seg {}/{} | twins={} | B2_partial≈{:.12} | {:.2e} cand/s | ETA {:.1} min",
                 format_with_commas(segments_done),
                 format_with_commas(num_segments),
                 format_with_commas(total_twins),
@@ -269,10 +267,7 @@ fn run_search(
             );
             pb.set_message(msg.clone());
             last_msg = Instant::now();
-            if last_log.elapsed().as_secs() >= 10 {
-                log_line(&format!("PROGRESS {msg}"));
-                last_log = Instant::now();
-            }
+            log_line(&format!("PROGRESS {msg}"));
         }
     }
 
