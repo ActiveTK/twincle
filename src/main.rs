@@ -86,6 +86,28 @@ fn log_system_info(mp: &MultiProgress) {
             }
         }
     }
+
+    #[cfg(target_os = "windows")]
+    {
+        if let Ok(output) = std::process::Command::new("powershell")
+            .args([
+                "-NoProfile",
+                "-Command",
+                "Get-CimInstance Win32_Processor | Select-Object -ExpandProperty Name",
+            ])
+            .output()
+        {
+            if output.status.success() {
+                let text = String::from_utf8_lossy(&output.stdout);
+                for line in text.lines() {
+                    let name = line.trim();
+                    if !name.is_empty() {
+                        print_mp_and_log(mp, &format!("CPU model={name}"));
+                    }
+                }
+            }
+        }
+    }
 }
 
 fn timestamp() -> String {
