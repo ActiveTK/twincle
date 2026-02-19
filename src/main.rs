@@ -187,7 +187,7 @@ fn run_search(
     ));
     pb.set_style(
         ProgressStyle::default_bar()
-            .template("[{elapsed_precise}] [{bar:40.cyan/dim}] {percent:>3}% {pos}/{len} (ETA {eta}) | {msg}")?
+            .template("[{elapsed_precise}] [{bar:40.cyan/dim}] {percent:>3}% {pos}/{len} | {msg}")?
             .progress_chars("#>-"),
     );
     let msg_prefix = if max_duration.is_some() { "testing" } else { "searching" };
@@ -228,12 +228,15 @@ fn run_search(
 
     let mut total = Kahan::default();
     let mut total_twins: u64 = 0;
+    let mut segments_done: u64 = 0;
     let mut last_msg = Instant::now();
     let mut last_log = Instant::now();
+    let mut ema_speed: f64 = 0.0;
 
     for r in rx.iter() {
         total.add(r.sum);
         total_twins += r.count;
+        segments_done += 1;
         
         if let Some(d) = max_duration {
             if run0.elapsed() >= d {
@@ -245,14 +248,24 @@ fn run_search(
         if last_msg.elapsed().as_millis() >= 150 {
             let secs = run0.elapsed().as_secs_f64();
             let done = pb.position();
-            let speed = if secs > 0.0 { done as f64 / secs } else { 0.0 };
+            let inst_speed = if secs > 0.0 { done as f64 / secs } else { 0.0 };
+            ema_speed = if ema_speed == 0.0 {
+                inst_speed
+            } else {
+                0.2 * inst_speed + 0.8 * ema_speed
+            };
+            let remaining = (total_candidates.min(u64::MAX as u128) as u64).saturating_sub(done);
+            let eta_secs = if ema_speed > 0.0 { remaining as f64 / ema_speed } else { 0.0 };
 
             let msg = format!(
-                "M={} | twins={} | B2_partial≈{:.12} | {:.2e} cand/s",
+                "M={} | seg {}/{} | twins={} | B2_partial≈{:.12} | {:.2e} cand/s | ETA {:.1} min",
                 wheel_m,
+                format_with_commas(segments_done),
+                format_with_commas(num_segments),
                 format_with_commas(total_twins),
                 total.value(),
-                speed
+                ema_speed,
+                eta_secs / 60.0
             );
             pb.set_message(msg.clone());
             last_msg = Instant::now();
