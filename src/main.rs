@@ -482,8 +482,6 @@ fn gpu_worker(
 
     let d_comp_p = DeviceBuffer::<u32>::zeroed(words)?;
     let d_comp_p2 = DeviceBuffer::<u32>::zeroed(words)?;
-    let d_sum = DeviceBuffer::<f64>::zeroed(1)?;
-    let d_cnt = DeviceBuffer::<u64>::zeroed(1)?;
 
     // kernel launch config — grid sized to the actual workload
     let block = 256u32;
@@ -491,6 +489,11 @@ fn gpu_worker(
     let sieve_grid = ((sieve_pairs + block as u64 - 1) / block as u64).min(262144) as u32;
     let twin_grid = ((words as u64 + block as u64 - 1) / block as u64).min(262144) as u32;
     let clear_grid = ((words as u64 + block as u64 - 1) / block as u64).min(65535) as u32;
+
+    let d_block_sums = DeviceBuffer::<f64>::zeroed(twin_grid as usize)?;
+    let d_block_counts = DeviceBuffer::<u64>::zeroed(twin_grid as usize)?;
+    let mut h_block_sums = vec![0f64; twin_grid as usize];
+    let mut h_block_counts = vec![0u64; twin_grid as usize];
 
     loop {
         let k_low = next_k_low.fetch_add(segment_k, Ordering::Relaxed);
@@ -509,8 +512,6 @@ fn gpu_worker(
                 clear_kernel<<<clear_grid, block, 0, stream>>>(
                     d_comp_p.as_device_ptr(),
                     d_comp_p2.as_device_ptr(),
-                    d_sum.as_device_ptr(),
-                    d_cnt.as_device_ptr(),
                     words as u32
                 )
             )?;
@@ -544,23 +545,28 @@ fn gpu_worker(
                     limit as u64,
                     d_comp_p.as_device_ptr(),
                     d_comp_p2.as_device_ptr(),
-                    d_sum.as_device_ptr(),
-                    d_cnt.as_device_ptr()
+                    d_block_sums.as_device_ptr(),
+                    d_block_counts.as_device_ptr()
                 )
             )?;
         }
 
         stream.synchronize()?;
 
-        let mut h_sum = [0f64; 1];
-        let mut h_cnt = [0u64; 1];
-        d_sum.copy_to(&mut h_sum)?; // CopyDestination in scope
-        d_cnt.copy_to(&mut h_cnt)?;
+        d_block_sums.copy_to(&mut h_block_sums)?; // CopyDestination in scope
+        d_block_counts.copy_to(&mut h_block_counts)?;
+
+        let mut seg_sum = Kahan::default();
+        let mut seg_count: u64 = 0;
+        for i in 0..(twin_grid as usize) {
+            seg_sum.add(h_block_sums[i]);
+            seg_count = seg_count.wrapping_add(h_block_counts[i]);
+        }
 
         if tx
             .send(SegResult {
-                sum: h_sum[0],
-                count: h_cnt[0],
+                sum: seg_sum.value(),
+                count: seg_count,
             })
             .is_err()
         {
@@ -654,6 +660,7 @@ fn main() -> Result<()> {
         let residues = Arc::new(residues);
         let primes = Arc::new(base_primes);
         let inv_m = Arc::new(inv);
+        let residues_len = residues.len();
 
         let duration = if args.test_wheels {
             Some(Duration::from_secs(30))
@@ -668,7 +675,7 @@ fn main() -> Result<()> {
             )?;
 
             let cand_per_sec = if elapsed > 0.0 { cand as f64 / elapsed } else { 0.0 };
-            let est = estimate_seconds_for_limit(args.benchmark_target, w, residues.len(), cand_per_sec);
+            let est = estimate_seconds_for_limit(args.benchmark_target, w, residues_len, cand_per_sec);
 
             let _ = mp.println(format!(
                 "Benchmark: M={} | {:.2e} cand/s | {:.2}s elapsed",

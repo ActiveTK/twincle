@@ -44,8 +44,6 @@ static __device__ __forceinline__ unsigned int mul_mod_u32(unsigned int a, unsig
 extern "C" __global__ void clear_buffers(
     unsigned int *comp_p,
     unsigned int *comp_p2,
-    double       *d_sum,
-    unsigned long long *d_count,
     unsigned int  word_count)
 {
     unsigned int tid    = blockIdx.x * blockDim.x + threadIdx.x;
@@ -54,11 +52,6 @@ extern "C" __global__ void clear_buffers(
     {
         comp_p[i]  = 0U;
         comp_p2[i] = 0U;
-    }
-    if (tid == 0)
-    {
-        *d_sum   = 0.0;
-        *d_count = 0ULL;
     }
 }
 
@@ -200,8 +193,8 @@ extern "C" __global__ void twin_sum_wheel(
     unsigned long long limit,
     const unsigned int *__restrict__ comp_p_words,
     const unsigned int *__restrict__ comp_p2_words,
-    double *__restrict__ d_sum,
-    unsigned long long *__restrict__ d_count)
+    double *__restrict__ block_sums,
+    unsigned long long *__restrict__ block_counts)
 {
     unsigned long long total_candidates = k_count * (unsigned long long)R;
     unsigned int total_words = (unsigned int)((total_candidates + 31ULL) / 32ULL);
@@ -276,8 +269,8 @@ extern "C" __global__ void twin_sum_wheel(
 
         if (lane == 0)
         {
-            atomicAdd(d_sum, local_sum);
-            atomicAdd(d_count, local_count);
+            block_sums[blockIdx.x] = local_sum;
+            block_counts[blockIdx.x] = local_count;
         }
     }
 }
