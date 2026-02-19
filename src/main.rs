@@ -677,18 +677,18 @@ fn main() -> Result<()> {
             let cand_per_sec = if elapsed > 0.0 { cand as f64 / elapsed } else { 0.0 };
             let est = estimate_seconds_for_limit(args.benchmark_target, w, residues_len, cand_per_sec);
 
-            let _ = mp.println(format!(
+            println!(
                 "Benchmark: M={} | {:.2e} cand/s | {:.2}s elapsed",
                 w, cand_per_sec, elapsed
-            ));
+            );
             if let Some(sec) = est {
                 let days = sec / 86400.0;
-                let _ = mp.println(format!(
+                println!(
                     "Estimate to reach limit {}: {:.2} days (≈{:.2e} s)",
                     format_with_commas(args.benchmark_target),
                     days,
                     sec
-                ));
+                );
             }
             return Ok(());
         }
