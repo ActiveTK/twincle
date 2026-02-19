@@ -43,6 +43,18 @@ struct Args {
     /// Fraction of total VRAM to allocate for the bitsets when auto-picking.
     #[arg(long, default_value_t = 0.25)]
     segment_mem_frac: f64,
+
+    /// Run a timed benchmark instead of a full search.
+    #[arg(long)]
+    benchmark: bool,
+
+    /// Benchmark duration in seconds.
+    #[arg(long, default_value_t = 10)]
+    benchmark_seconds: u64,
+
+    /// Target limit for time-to-solution estimate (used in benchmark report).
+    #[arg(long, default_value = "100000000000000000")]
+    benchmark_target: u64,
 }
 
 /// Runs the search for a given wheel configuration.
@@ -423,6 +435,16 @@ fn pick_segment_k(total_mem_bytes: usize, frac: f64, residues_len: usize) -> u64
     k
 }
 
+fn estimate_seconds_for_limit(limit: u64, wheel_m: u32, residues_len: usize, cand_per_sec: f64) -> Option<f64> {
+    if cand_per_sec <= 0.0 || residues_len == 0 {
+        return None;
+    }
+    let k_end_excl = (limit / (wheel_m as u64)) + 2;
+    let total_candidates = (k_end_excl as u128) * (residues_len as u128);
+    let total_candidates_f = total_candidates as f64;
+    Some(total_candidates_f / cand_per_sec)
+}
+
 fn gpu_worker(
     device_id: u32,
     wheel_m: u32,
@@ -562,6 +584,9 @@ fn main() -> Result<()> {
     if limit < 5 {
         anyhow::bail!("limit must be >= 5");
     }
+    if args.benchmark && args.test_wheels {
+        anyhow::bail!("--benchmark and --test-wheels cannot be used together");
+    }
 
     let mp = MultiProgress::new();
     
@@ -635,6 +660,31 @@ fn main() -> Result<()> {
         } else {
             None
         };
+
+        if args.benchmark {
+            let duration = Duration::from_secs(args.benchmark_seconds.max(1));
+            let (_twins, _sum, elapsed, cand) = run_search(
+                w, limit, residues, primes, inv_m, num_gpus, min_vram, &args, &mp, Some(duration)
+            )?;
+
+            let cand_per_sec = if elapsed > 0.0 { cand as f64 / elapsed } else { 0.0 };
+            let est = estimate_seconds_for_limit(args.benchmark_target, w, residues.len(), cand_per_sec);
+
+            let _ = mp.println(format!(
+                "Benchmark: M={} | {:.2e} cand/s | {:.2}s elapsed",
+                w, cand_per_sec, elapsed
+            ));
+            if let Some(sec) = est {
+                let days = sec / 86400.0;
+                let _ = mp.println(format!(
+                    "Estimate to reach limit {}: {:.2} days (≈{:.2e} s)",
+                    format_with_commas(args.benchmark_target),
+                    days,
+                    sec
+                ));
+            }
+            return Ok(());
+        }
 
         if !args.test_wheels {
             // If not testing, just run the final report directly and return.
