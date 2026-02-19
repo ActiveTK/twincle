@@ -5,8 +5,11 @@ use cust::memory::{CopyDestination, DeviceBuffer}; // <-- CopyDestination を追
 use cust::module::Module;
 use cust::prelude::{CudaFlags, Device, Stream, StreamFlags};
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
+use std::fs::OpenOptions;
+use std::io::{BufWriter, Write};
 use std::mem::size_of;
 use std::process::Command;
+use std::sync::{Mutex, OnceLock};
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, mpsc};
 use std::thread;
@@ -17,6 +20,17 @@ const PTX: &str = include_str!(concat!(env!("OUT_DIR"), "/kernel.ptx"));
 /// Twin prime constant C2 (OEIS A005597) — enough precision for f64 usage
 const TWIN_PRIME_CONSTANT_C2: f64 = 0.6601618158468695739;
 const SMALL_PRIME_MAX: u32 = 1 << 15;
+
+static LOG: OnceLock<Mutex<BufWriter<std::fs::File>>> = OnceLock::new();
+
+fn log_line(line: &str) {
+    if let Some(log) = LOG.get() {
+        if let Ok(mut f) = log.lock() {
+            let _ = writeln!(f, "{line}");
+            let _ = f.flush();
+        }
+    }
+}
 
 #[derive(Parser, Debug, Clone)]
 #[command(author, version, about)]
@@ -630,6 +644,9 @@ fn main() -> Result<()> {
     }
 
     let mp = MultiProgress::new();
+    let _ = LOG.set(Mutex::new(BufWriter::new(
+        OpenOptions::new().create(true).append(true).open("run.log")?
+    )));
 
     if let Ok(output) = Command::new("wmic")
         .args(["cpu", "get", "Name,NumberOfCores,NumberOfLogicalProcessors", "/format:list"])
@@ -641,7 +658,9 @@ fn main() -> Result<()> {
                 if line.trim().is_empty() {
                     continue;
                 }
-                let _ = mp.println(format!("CPU {}", line));
+                let msg = format!("CPU {}", line);
+                let _ = mp.println(&msg);
+                log_line(&msg);
             }
         }
     }
@@ -658,12 +677,18 @@ fn main() -> Result<()> {
                 if let Some((k, v)) = line.split_once('=') {
                     if let Ok(kb) = v.trim().parse::<u64>() {
                         let gb = kb as f64 / (1024.0 * 1024.0);
-                        let _ = mp.println(format!("MEM {}={:.2} GB", k.trim(), gb));
+                        let msg = format!("MEM {}={:.2} GB", k.trim(), gb);
+                        let _ = mp.println(&msg);
+                        log_line(&msg);
                     } else {
-                        let _ = mp.println(format!("MEM {}", line.trim()));
+                        let msg = format!("MEM {}", line.trim());
+                        let _ = mp.println(&msg);
+                        log_line(&msg);
                     }
                 } else {
-                    let _ = mp.println(format!("MEM {}", line.trim()));
+                    let msg = format!("MEM {}", line.trim());
+                    let _ = mp.println(&msg);
+                    log_line(&msg);
                 }
             }
         }
@@ -680,10 +705,12 @@ fn main() -> Result<()> {
         let dev = Device::get_device(i)?;
         let mem = dev.total_memory()? as usize;
         let name = dev.name()?;
-        let _ = mp.println(format!(
+        let msg = format!(
             "GPU {}: {} ({:.1} GB VRAM)",
             i, name, mem as f64 / (1u64 << 30) as f64
-        ));
+        );
+        let _ = mp.println(&msg);
+        log_line(&msg);
         min_vram = min_vram.min(mem);
     }
 
@@ -716,13 +743,17 @@ fn main() -> Result<()> {
         let residues = wheel_residues(w, Some(&pb_pre));
         if residues.is_empty() {
             pb_pre.finish_and_clear();
-            let _ = mp.println(format!("Skipping M={}: no valid twin residues", w));
+            let msg = format!("Skipping M={}: no valid twin residues", w);
+            let _ = mp.println(&msg);
+            log_line(&msg);
             continue;
         }
         let mut base_primes = sieve_odd_primes_u32(base_limit, Some(&pb_pre));
         pb_pre.finish_and_clear();
 
-        let _ = mp.println(format!("Testing M={}: {} residues, {} base primes", w, residues.len(), base_primes.len()));
+        let msg = format!("Testing M={}: {} residues, {} base primes", w, residues.len(), base_primes.len());
+        let _ = mp.println(&msg);
+        log_line(&msg);
 
         base_primes.retain(|&p| (w as u64) % (p as u64) != 0);
         let mut small_primes = Vec::new();
@@ -763,18 +794,22 @@ fn main() -> Result<()> {
             let cand_per_sec = if elapsed > 0.0 { cand as f64 / elapsed } else { 0.0 };
             let est = estimate_seconds_for_limit(args.benchmark_target, w, residues_len, cand_per_sec);
 
-            println!(
+            let msg = format!(
                 "Benchmark: M={} | {:.2e} cand/s | {:.2}s elapsed",
                 w, cand_per_sec, elapsed
             );
+            println!("{msg}");
+            log_line(&msg);
             if let Some(sec) = est {
                 let days = sec / 86400.0;
-                println!(
+                let msg = format!(
                     "Estimate to reach limit {}: {:.2} days (≈{:.2e} s)",
                     format_with_commas(args.benchmark_target),
                     days,
                     sec
                 );
+                println!("{msg}");
+                log_line(&msg);
             }
             return Ok(());
         }
@@ -793,7 +828,9 @@ fn main() -> Result<()> {
         )?;
 
         let speed = cand as f64 / elapsed;
-        let _ = mp.println(format!("  M={w}: {:.2e} cand/s", speed));
+        let msg = format!("  M={w}: {:.2e} cand/s", speed);
+        let _ = mp.println(&msg);
+        log_line(&msg);
         if speed > best_speed {
             best_speed = speed;
             best_wheel = w;
@@ -801,8 +838,12 @@ fn main() -> Result<()> {
     }
 
     if args.test_wheels {
-        let _ = mp.println(format!("Best wheel found: M={best_wheel} ({:.2e} cand/s)", best_speed));
-        let _ = mp.println("Starting final search...");
+        let msg = format!("Best wheel found: M={best_wheel} ({:.2e} cand/s)", best_speed);
+        let _ = mp.println(&msg);
+        log_line(&msg);
+        let msg = "Starting final search...".to_string();
+        let _ = mp.println(&msg);
+        log_line(&msg);
 
         let pb_pre = mp.add(ProgressBar::new(0));
         pb_pre.set_style(
@@ -858,13 +899,17 @@ fn final_report(
     args: &Args,
     mp: &MultiProgress,
 ) -> Result<()> {
-    let _ = mp.println(format!("Running final search with M={wheel_m}..."));
+    let msg = format!("Running final search with M={wheel_m}...");
+    let _ = mp.println(&msg);
+    log_line(&msg);
     let (missed_count, missed_sum) = count_wheel_missed_twins(wheel_m, limit);
     if missed_count > 0 {
-        let _ = mp.println(format!(
+        let msg = format!(
             "Wheel-missed small twin pairs: {} (sum contribution: {:.15})",
             missed_count, missed_sum
-        ));
+        );
+        let _ = mp.println(&msg);
+        log_line(&msg);
     }
 
     let (total_twins, total_sum, elapsed, _cand) = run_search(
@@ -878,13 +923,21 @@ fn final_report(
     let ln = (limit as f64).ln();
     let b2_star = final_sum + 4.0 * TWIN_PRIME_CONSTANT_C2 / ln;
 
-    println!(
+    let msg = format!(
         "Done. gpus={}, twins={}",
         num_gpus,
         format_with_commas(final_twins)
     );
-    println!("Brun partial sum up to {limit}: {:.15}", final_sum);
-    println!("Brun extrapolated  B2* (HL):    {:.15}", b2_star);
-    println!("Elapsed: {:.2}s", elapsed);
+    println!("{msg}");
+    log_line(&msg);
+    let msg = format!("Brun partial sum up to {limit}: {:.15}", final_sum);
+    println!("{msg}");
+    log_line(&msg);
+    let msg = format!("Brun extrapolated  B2* (HL):    {:.15}", b2_star);
+    println!("{msg}");
+    log_line(&msg);
+    let msg = format!("Elapsed: {:.2}s", elapsed);
+    println!("{msg}");
+    log_line(&msg);
     Ok(())
 }
