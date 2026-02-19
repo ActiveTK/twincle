@@ -26,31 +26,24 @@ static LOG: OnceLock<Mutex<BufWriter<std::fs::File>>> = OnceLock::new();
 fn log_system_info(mp: &MultiProgress) {
     let logical = num_cpus::get();
     let physical = num_cpus::get_physical();
-    print_mp_and_log(mp, &format!("CPU logical cores={logical} physical cores={physical}"));
+    let core_suffix = format!("[{physical}c{logical}t]");
 
     #[cfg(target_os = "linux")]
     {
+        let mut cpu_name: Option<String> = None;
+        let mut total_kb: Option<u64> = None;
+        let mut avail_kb: Option<u64> = None;
         if let Ok(cpuinfo) = std::fs::read_to_string("/proc/cpuinfo") {
-            let mut models: Vec<(String, u32)> = Vec::new();
             for line in cpuinfo.lines() {
                 if let Some((k, v)) = line.split_once(':') {
                     if k.trim() == "model name" {
-                        let name = v.trim().to_string();
-                        if let Some(entry) = models.iter_mut().find(|(n, _)| n == &name) {
-                            entry.1 += 1;
-                        } else {
-                            models.push((name, 1));
-                        }
+                        cpu_name = Some(v.trim().to_string());
+                        break;
                     }
                 }
             }
-            for (name, count) in models {
-                print_mp_and_log(mp, &format!("CPU model={name} (x{count})"));
-            }
         }
         if let Ok(meminfo) = std::fs::read_to_string("/proc/meminfo") {
-            let mut total_kb: Option<u64> = None;
-            let mut avail_kb: Option<u64> = None;
             for line in meminfo.lines() {
                 if let Some((k, v)) = line.split_once(':') {
                     let val = v.trim().split_whitespace().next().and_then(|x| x.parse::<u64>().ok());
@@ -61,19 +54,26 @@ fn log_system_info(mp: &MultiProgress) {
                     }
                 }
             }
-            if let Some(kb) = total_kb {
-                let gb = kb as f64 / (1024.0 * 1024.0);
-                print_mp_and_log(mp, &format!("MEM total={:.2} GB", gb));
-            }
-            if let Some(kb) = avail_kb {
-                let gb = kb as f64 / (1024.0 * 1024.0);
-                print_mp_and_log(mp, &format!("MEM available={:.2} GB", gb));
+        }
+        if let Some(name) = cpu_name {
+            print_mp_and_log(mp, &format!("CPU: {name} {core_suffix}"));
+        } else {
+            print_mp_and_log(mp, &format!("CPU: {core_suffix}"));
+        }
+        if let Some(total) = total_kb {
+            let total_gb = total as f64 / (1024.0 * 1024.0);
+            let avail_gb = avail_kb.map(|kb| kb as f64 / (1024.0 * 1024.0));
+            if let Some(av) = avail_gb {
+                print_mp_and_log(mp, &format!("RAM: {:.2} GB ({:.2} GB available)", total_gb, av));
+            } else {
+                print_mp_and_log(mp, &format!("RAM: {:.2} GB", total_gb));
             }
         }
     }
 
     #[cfg(target_os = "macos")]
     {
+        let mut cpu_name: Option<String> = None;
         if let Ok(output) = std::process::Command::new("sysctl")
             .args(["-n", "machdep.cpu.brand_string"])
             .output()
@@ -81,14 +81,20 @@ fn log_system_info(mp: &MultiProgress) {
             if output.status.success() {
                 let name = String::from_utf8_lossy(&output.stdout).trim().to_string();
                 if !name.is_empty() {
-                    print_mp_and_log(mp, &format!("CPU model={name}"));
+                    cpu_name = Some(name);
                 }
             }
+        }
+        if let Some(name) = cpu_name {
+            print_mp_and_log(mp, &format!("CPU: {name} {core_suffix}"));
+        } else {
+            print_mp_and_log(mp, &format!("CPU: {core_suffix}"));
         }
     }
 
     #[cfg(target_os = "windows")]
     {
+        let mut cpu_name: Option<String> = None;
         if let Ok(output) = std::process::Command::new("powershell")
             .args([
                 "-NoProfile",
@@ -99,13 +105,16 @@ fn log_system_info(mp: &MultiProgress) {
         {
             if output.status.success() {
                 let text = String::from_utf8_lossy(&output.stdout);
-                for line in text.lines() {
-                    let name = line.trim();
-                    if !name.is_empty() {
-                        print_mp_and_log(mp, &format!("CPU model={name}"));
-                    }
+                if let Some(line) = text.lines().find(|l| !l.trim().is_empty()) {
+                    cpu_name = Some(line.trim().to_string());
                 }
             }
+        }
+
+        if let Some(name) = cpu_name {
+            print_mp_and_log(mp, &format!("CPU: {name} {core_suffix}"));
+        } else {
+            print_mp_and_log(mp, &format!("CPU: {core_suffix}"));
         }
 
         if let Ok(output) = std::process::Command::new("powershell")
@@ -130,13 +139,14 @@ fn log_system_info(mp: &MultiProgress) {
                         }
                     }
                 }
-                if let Some(kb) = total_kb {
-                    let gb = kb as f64 / (1024.0 * 1024.0);
-                    print_mp_and_log(mp, &format!("MEM total={:.2} GB", gb));
-                }
-                if let Some(kb) = free_kb {
-                    let gb = kb as f64 / (1024.0 * 1024.0);
-                    print_mp_and_log(mp, &format!("MEM free={:.2} GB", gb));
+                if let Some(total) = total_kb {
+                    let total_gb = total as f64 / (1024.0 * 1024.0);
+                    let avail_gb = free_kb.map(|kb| kb as f64 / (1024.0 * 1024.0));
+                    if let Some(av) = avail_gb {
+                        print_mp_and_log(mp, &format!("RAM: {:.2} GB ({:.2} GB available)", total_gb, av));
+                    } else {
+                        print_mp_and_log(mp, &format!("RAM: {:.2} GB", total_gb));
+                    }
                 }
             }
         }
