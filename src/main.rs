@@ -1,7 +1,7 @@
 use anyhow::Result;
 use clap::Parser;
 use cust::context::Context as CudaContext;
-use cust::memory::{CopyDestination, DeviceBuffer}; // <-- CopyDestination を追加
+use cust::memory::{CopyDestination, DeviceBuffer};
 use cust::module::Module;
 use cust::prelude::{CudaFlags, Device, Stream, StreamFlags};
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
@@ -15,6 +15,7 @@ const PTX: &str = include_str!(concat!(env!("OUT_DIR"), "/kernel.ptx"));
 
 /// Twin prime constant C2 (OEIS A005597) — enough precision for f64 usage
 const TWIN_PRIME_CONSTANT_C2: f64 = 0.6601618158468695739;
+const SMALL_PRIME_MAX: u32 = 1 << 15;
 
 #[derive(Parser, Debug, Clone)]
 #[command(author, version, about)]
@@ -64,8 +65,10 @@ fn run_search(
     wheel_m: u32,
     limit: u64,
     residues: Arc<Vec<u32>>,
-    primes: Arc<Vec<u32>>,
-    inv_m: Arc<Vec<u32>>,
+    small_primes: Arc<Vec<u32>>,
+    small_inv_m: Arc<Vec<u32>>,
+    large_primes: Arc<Vec<u32>>,
+    large_inv_m: Arc<Vec<u32>>,
     num_gpus: u32,
     min_vram: usize,
     args: &Args,
@@ -104,8 +107,10 @@ fn run_search(
     let mut handles = Vec::with_capacity(num_gpus as usize);
     for gpu_id in 0..num_gpus {
         let residues = Arc::clone(&residues);
-        let primes = Arc::clone(&primes);
-        let inv_m_mod_p = Arc::clone(&inv_m);
+        let small_primes = Arc::clone(&small_primes);
+        let small_inv_m_mod_p = Arc::clone(&small_inv_m);
+        let large_primes = Arc::clone(&large_primes);
+        let large_inv_m_mod_p = Arc::clone(&large_inv_m);
         let next_k_low = Arc::clone(&next_k_low);
         let pb = Arc::clone(&pb);
         let tx = tx.clone();
@@ -113,7 +118,8 @@ fn run_search(
             .name(format!("gpu-{}", gpu_id))
             .spawn(move || -> Result<()> {
                 gpu_worker(
-                    gpu_id, wheel_m, residues, primes, inv_m_mod_p, segment_k, k_end_excl, limit,
+                    gpu_id, wheel_m, residues, small_primes, small_inv_m_mod_p,
+                    large_primes, large_inv_m_mod_p, segment_k, k_end_excl, limit,
                     next_k_low, pb, tx,
                 )
             })?;
@@ -449,8 +455,10 @@ fn gpu_worker(
     device_id: u32,
     wheel_m: u32,
     residues: Arc<Vec<u32>>,
-    primes: Arc<Vec<u32>>,
-    inv_m_mod_p: Arc<Vec<u32>>,
+    small_primes: Arc<Vec<u32>>,
+    small_inv_m_mod_p: Arc<Vec<u32>>,
+    large_primes: Arc<Vec<u32>>,
+    large_inv_m_mod_p: Arc<Vec<u32>>,
     segment_k: u64,
     k_end_excl: u64,
     limit: u64,
@@ -463,18 +471,22 @@ fn gpu_worker(
     let module = Module::from_ptx(PTX, &[])?;
 
     let clear_kernel = module.get_function("clear_buffers")?;
+    let sieve_small_kernel = module.get_function("sieve_wheel_primes_small")?;
     let sieve_kernel = module.get_function("sieve_wheel_primes")?;
     let twin_kernel = module.get_function("twin_sum_wheel")?;
 
     let stream = Stream::new(StreamFlags::NON_BLOCKING, None)?;
 
     let res_len = residues.len();
-    let prime_count = primes.len();
+    let small_prime_count = small_primes.len();
+    let large_prime_count = large_primes.len();
     let sieve_shared = (res_len * size_of::<u32>()) as u32;
 
     let d_residues = DeviceBuffer::from_slice(&residues)?;
-    let d_primes = DeviceBuffer::from_slice(&primes)?;
-    let d_inv = DeviceBuffer::from_slice(&inv_m_mod_p)?;
+    let d_small_primes = DeviceBuffer::from_slice(&small_primes)?;
+    let d_small_inv = DeviceBuffer::from_slice(&small_inv_m_mod_p)?;
+    let d_large_primes = DeviceBuffer::from_slice(&large_primes)?;
+    let d_large_inv = DeviceBuffer::from_slice(&large_inv_m_mod_p)?;
 
     // bitsets: comp_p and comp_p2
     let candidates_per_seg = segment_k.saturating_mul(res_len as u64);
@@ -485,10 +497,11 @@ fn gpu_worker(
 
     // kernel launch config — grid sized to the actual workload
     let block = 256u32;
-    let sieve_pairs = prime_count as u64 * res_len as u64;
+    let sieve_pairs = large_prime_count as u64 * res_len as u64;
     let sieve_grid = ((sieve_pairs + block as u64 - 1) / block as u64).min(262144) as u32;
     let twin_grid = ((words as u64 + block as u64 - 1) / block as u64).min(262144) as u32;
     let clear_grid = ((words as u64 + block as u64 - 1) / block as u64).min(65535) as u32;
+    let sieve_small_grid = small_prime_count as u32;
 
     let d_block_sums = DeviceBuffer::<f64>::zeroed(twin_grid as usize)?;
     let d_block_counts = DeviceBuffer::<u64>::zeroed(twin_grid as usize)?;
@@ -517,21 +530,42 @@ fn gpu_worker(
             )?;
         }
 
-        unsafe {
-            cust::launch!(
-                sieve_kernel<<<sieve_grid, block, sieve_shared, stream>>>(
-                    k_low as u64,
-                    k_count as u64,
-                    wheel_m as u32,
-                    d_residues.as_device_ptr(),
-                    res_len as i32,
-                    d_primes.as_device_ptr(),
-                    d_inv.as_device_ptr(),
-                    prime_count as i32,
-                    d_comp_p.as_device_ptr(),
-                    d_comp_p2.as_device_ptr()
-                )
-            )?;
+        if small_prime_count > 0 {
+            unsafe {
+                cust::launch!(
+                    sieve_small_kernel<<<sieve_small_grid, block, sieve_shared, stream>>>(
+                        k_low as u64,
+                        k_count as u64,
+                        wheel_m as u32,
+                        d_residues.as_device_ptr(),
+                        res_len as i32,
+                        d_small_primes.as_device_ptr(),
+                        d_small_inv.as_device_ptr(),
+                        small_prime_count as i32,
+                        d_comp_p.as_device_ptr(),
+                        d_comp_p2.as_device_ptr()
+                    )
+                )?;
+            }
+        }
+
+        if large_prime_count > 0 {
+            unsafe {
+                cust::launch!(
+                    sieve_kernel<<<sieve_grid, block, sieve_shared, stream>>>(
+                        k_low as u64,
+                        k_count as u64,
+                        wheel_m as u32,
+                        d_residues.as_device_ptr(),
+                        res_len as i32,
+                        d_large_primes.as_device_ptr(),
+                        d_large_inv.as_device_ptr(),
+                        large_prime_count as i32,
+                        d_comp_p.as_device_ptr(),
+                        d_comp_p2.as_device_ptr()
+                    )
+                )?;
+            }
         }
 
         unsafe {
@@ -552,8 +586,7 @@ fn gpu_worker(
         }
 
         stream.synchronize()?;
-
-        d_block_sums.copy_to(&mut h_block_sums)?; // CopyDestination in scope
+        d_block_sums.copy_to(&mut h_block_sums)?;
         d_block_counts.copy_to(&mut h_block_counts)?;
 
         let mut seg_sum = Kahan::default();
@@ -562,7 +595,6 @@ fn gpu_worker(
             seg_sum.add(h_block_sums[i]);
             seg_count = seg_count.wrapping_add(h_block_counts[i]);
         }
-
         if tx
             .send(SegResult {
                 sum: seg_sum.value(),
@@ -652,14 +684,26 @@ fn main() -> Result<()> {
         let _ = mp.println(format!("Testing M={}: {} residues, {} base primes", w, residues.len(), base_primes.len()));
 
         base_primes.retain(|&p| (w as u64) % (p as u64) != 0);
-        let mut inv = Vec::with_capacity(base_primes.len());
+        let mut small_primes = Vec::new();
+        let mut small_inv = Vec::new();
+        let mut large_primes = Vec::new();
+        let mut large_inv = Vec::new();
         for &p in &base_primes {
-            inv.push(modinv_u32(w % p, p));
+            let invp = modinv_u32(w % p, p);
+            if p <= SMALL_PRIME_MAX {
+                small_primes.push(p);
+                small_inv.push(invp);
+            } else {
+                large_primes.push(p);
+                large_inv.push(invp);
+            }
         }
 
         let residues = Arc::new(residues);
-        let primes = Arc::new(base_primes);
-        let inv_m = Arc::new(inv);
+        let small_primes = Arc::new(small_primes);
+        let small_inv_m = Arc::new(small_inv);
+        let large_primes = Arc::new(large_primes);
+        let large_inv_m = Arc::new(large_inv);
         let residues_len = residues.len();
 
         let duration = if args.test_wheels {
@@ -671,7 +715,8 @@ fn main() -> Result<()> {
         if args.benchmark {
             let duration = Duration::from_secs(args.benchmark_seconds.max(1));
             let (_twins, _sum, elapsed, cand) = run_search(
-                w, limit, residues, primes, inv_m, num_gpus, min_vram, &args, &mp, Some(duration)
+                w, limit, residues, small_primes, small_inv_m, large_primes, large_inv_m,
+                num_gpus, min_vram, &args, &mp, Some(duration)
             )?;
 
             let cand_per_sec = if elapsed > 0.0 { cand as f64 / elapsed } else { 0.0 };
@@ -695,11 +740,15 @@ fn main() -> Result<()> {
 
         if !args.test_wheels {
             // If not testing, just run the final report directly and return.
-            return final_report(w, limit, residues, primes, inv_m, num_gpus, min_vram, &args, &mp);
+            return final_report(
+                w, limit, residues, small_primes, small_inv_m, large_primes, large_inv_m,
+                num_gpus, min_vram, &args, &mp
+            );
         }
 
         let (_twins, _sum, elapsed, cand) = run_search(
-            w, limit, residues, primes, inv_m, num_gpus, min_vram, &args, &mp, duration
+            w, limit, residues, small_primes, small_inv_m, large_primes, large_inv_m,
+            num_gpus, min_vram, &args, &mp, duration
         )?;
 
         let speed = cand as f64 / elapsed;
@@ -725,16 +774,31 @@ fn main() -> Result<()> {
         pb_pre.finish_and_clear();
 
         base_primes.retain(|&p| (best_wheel as u64) % (p as u64) != 0);
-        let mut inv = Vec::with_capacity(base_primes.len());
+        let mut small_primes = Vec::new();
+        let mut small_inv = Vec::new();
+        let mut large_primes = Vec::new();
+        let mut large_inv = Vec::new();
         for &p in &base_primes {
-            inv.push(modinv_u32(best_wheel % p, p));
+            let invp = modinv_u32(best_wheel % p, p);
+            if p <= SMALL_PRIME_MAX {
+                small_primes.push(p);
+                small_inv.push(invp);
+            } else {
+                large_primes.push(p);
+                large_inv.push(invp);
+            }
         }
 
         let residues = Arc::new(residues);
-        let primes = Arc::new(base_primes);
-        let inv_m = Arc::new(inv);
+        let small_primes = Arc::new(small_primes);
+        let small_inv_m = Arc::new(small_inv);
+        let large_primes = Arc::new(large_primes);
+        let large_inv_m = Arc::new(large_inv);
 
-        final_report(best_wheel, limit, residues, primes, inv_m, num_gpus, min_vram, &args, &mp)?;
+        final_report(
+            best_wheel, limit, residues, small_primes, small_inv_m, large_primes, large_inv_m,
+            num_gpus, min_vram, &args, &mp
+        )?;
     }
 
     Ok(())
@@ -744,8 +808,10 @@ fn final_report(
     wheel_m: u32,
     limit: u64,
     residues: Arc<Vec<u32>>,
-    primes: Arc<Vec<u32>>,
-    inv_m: Arc<Vec<u32>>,
+    small_primes: Arc<Vec<u32>>,
+    small_inv_m: Arc<Vec<u32>>,
+    large_primes: Arc<Vec<u32>>,
+    large_inv_m: Arc<Vec<u32>>,
     num_gpus: u32,
     min_vram: usize,
     args: &Args,
@@ -761,7 +827,8 @@ fn final_report(
     }
 
     let (total_twins, total_sum, elapsed, _cand) = run_search(
-        wheel_m, limit, residues, primes, inv_m, num_gpus, min_vram, args, mp, None
+        wheel_m, limit, residues, small_primes, small_inv_m, large_primes, large_inv_m,
+        num_gpus, min_vram, args, mp, None
     )?;
 
     let final_twins = total_twins + missed_count;

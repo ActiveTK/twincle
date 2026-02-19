@@ -150,6 +150,90 @@ extern "C" __global__ void sieve_wheel_primes(
     }
 }
 
+/* Prime-major sieve for small primes.
+   One block per prime, threads iterate residues. */
+extern "C" __global__ void sieve_wheel_primes_small(
+    unsigned long long k_low,
+    unsigned long long k_count,
+    unsigned int M,
+    const unsigned int *__restrict__ residues, // length R
+    int R,
+    const unsigned int *__restrict__ primes,
+    const unsigned int *__restrict__ invM_mod_p,
+    int prime_count,
+    unsigned int *__restrict__ comp_p_words,
+    unsigned int *__restrict__ comp_p2_words)
+{
+    unsigned int pi = (unsigned int)blockIdx.x;
+    if ((int)pi >= prime_count) return;
+
+    extern __shared__ unsigned int s_res[];
+    for (int i = threadIdx.x; i < R; i += (int)blockDim.x)
+        s_res[i] = residues[i];
+    __syncthreads();
+
+    unsigned int q = primes[pi];
+    unsigned int invM = invM_mod_p[pi];
+    unsigned long long qq  = (unsigned long long)q * (unsigned long long)q;
+    unsigned long long mod = (unsigned long long)q;
+    unsigned long long k_end = k_low + k_count;
+
+    for (int ridx = threadIdx.x; ridx < R; ridx += (int)blockDim.x)
+    {
+        unsigned int r = s_res[ridx];
+
+        /* --- comp_p: mark k where M*k + r ≡ 0 (mod q) --- */
+        {
+            unsigned int neg_r = (q - (r % q)) % q;
+            unsigned int k0    = mul_mod_u32(neg_r, invM, q);
+
+            unsigned long long k_mod = k_low % mod;
+            unsigned long long need  = (k0 >= k_mod) ? (k0 - k_mod) : (mod + k0 - k_mod);
+            unsigned long long first_k = k_low + need;
+
+            while (first_k < k_end)
+            {
+                unsigned long long p = (unsigned long long)M * first_k + (unsigned long long)r;
+                if (p >= qq) break;
+                first_k += mod;
+            }
+
+            for (unsigned long long kk = first_k; kk < k_end; kk += mod)
+            {
+                unsigned long long idx = (unsigned long long)ridx * (unsigned long long)k_count
+                                       + (kk - k_low);
+                atomicOr(&comp_p_words[bit_word(idx)], bit_mask(idx));
+            }
+        }
+
+        /* --- comp_p2: mark k where M*k + r + 2 ≡ 0 (mod q) --- */
+        {
+            unsigned int rp2     = r + 2U;
+            unsigned int neg_rp2 = (q - (rp2 % q)) % q;
+            unsigned int k1      = mul_mod_u32(neg_rp2, invM, q);
+
+            unsigned long long k_mod = k_low % mod;
+            unsigned long long need  = (k1 >= k_mod) ? (k1 - k_mod) : (mod + k1 - k_mod);
+            unsigned long long first_k = k_low + need;
+
+            while (first_k < k_end)
+            {
+                unsigned long long p  = (unsigned long long)M * first_k + (unsigned long long)r;
+                unsigned long long p2 = p + 2ULL;
+                if (p2 >= qq) break;
+                first_k += mod;
+            }
+
+            for (unsigned long long kk = first_k; kk < k_end; kk += mod)
+            {
+                unsigned long long idx = (unsigned long long)ridx * (unsigned long long)k_count
+                                       + (kk - k_low);
+                atomicOr(&comp_p2_words[bit_word(idx)], bit_mask(idx));
+            }
+        }
+    }
+}
+
 /* Twin sum over wheel candidates.
    A candidate idx corresponds to:
      ridx = idx / k_count
