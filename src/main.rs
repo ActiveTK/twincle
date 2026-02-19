@@ -107,6 +107,39 @@ fn log_system_info(mp: &MultiProgress) {
                 }
             }
         }
+
+        if let Ok(output) = std::process::Command::new("powershell")
+            .args([
+                "-NoProfile",
+                "-Command",
+                "Get-CimInstance Win32_OperatingSystem | Select-Object TotalVisibleMemorySize,FreePhysicalMemory | Format-List",
+            ])
+            .output()
+        {
+            if output.status.success() {
+                let text = String::from_utf8_lossy(&output.stdout);
+                let mut total_kb: Option<u64> = None;
+                let mut free_kb: Option<u64> = None;
+                for line in text.lines() {
+                    if let Some((k, v)) = line.split_once(':') {
+                        let val = v.trim().parse::<u64>().ok();
+                        if k.trim() == "TotalVisibleMemorySize" {
+                            total_kb = val;
+                        } else if k.trim() == "FreePhysicalMemory" {
+                            free_kb = val;
+                        }
+                    }
+                }
+                if let Some(kb) = total_kb {
+                    let gb = kb as f64 / (1024.0 * 1024.0);
+                    print_mp_and_log(mp, &format!("MEM total={:.2} GB", gb));
+                }
+                if let Some(kb) = free_kb {
+                    let gb = kb as f64 / (1024.0 * 1024.0);
+                    print_mp_and_log(mp, &format!("MEM free={:.2} GB", gb));
+                }
+            }
+        }
     }
 }
 
