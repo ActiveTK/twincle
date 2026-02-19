@@ -767,6 +767,7 @@ fn main() -> Result<()> {
     let _ = LOG.set(Mutex::new(BufWriter::new(
         OpenOptions::new().create(true).append(true).open("run.log")?
     )));
+    log_line("***** Lunched *****");
     log_system_info(&mp);
     
     cust::init(CudaFlags::empty())?;
