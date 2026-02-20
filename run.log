@@ -246,3 +246,62 @@
 [2026-02-20 19:17:50] Running final search with M=30030...
 [2026-02-20 19:17:50] Wheel-missed small twin pairs: 3 (sum contribution: 1.044022644022644)
 [2026-02-20 19:17:57] PROGRESS seg 1/79,394 | twins=277,294,535 | B2_partial≈0.754822937495 | 8.69e8 cand/s | ETA 9483.1 min
+[2026-02-20 19:32:36] **********************************************************************
+[2026-02-20 19:32:36] ** Started: K:\dev\2026\twincle\target\release\twincle.exe --benchmark --benchmark-seconds 10 --limit 100000000
+[2026-02-20 19:32:36] **********************************************************************
+[2026-02-20 19:32:37] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-02-20 19:32:38] RAM: 127.75 GB (102.61 GB available)
+[2026-02-20 19:32:38] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-02-20 19:32:38] Testing M=30030: 1485 residues, 1228 base primes
+[2026-02-20 19:32:38] Benchmark: M=30030 | 3.58e7 cand/s | 0.14s elapsed
+[2026-02-20 19:32:38] Estimate to reach limit 100,000,000,000,000,000: 1600.45 days (≈1.38e8 s)
+[2026-02-20 19:32:47] **********************************************************************
+[2026-02-20 19:32:47] ** Started: K:\dev\2026\twincle\target\release\twincle.exe --benchmark --benchmark-seconds 10 --limit 1000000000000
+[2026-02-20 19:32:47] **********************************************************************
+[2026-02-20 19:32:48] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-02-20 19:32:49] RAM: 127.75 GB (102.66 GB available)
+[2026-02-20 19:32:49] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-02-20 19:32:49] Testing M=30030: 1485 residues, 78497 base primes
+[2026-02-20 19:32:56] PROGRESS seg 1/8 | twins=277,294,535 | B2_partial≈0.754822937495 | 8.81e8 cand/s | ETA 0.8 min
+[2026-02-20 19:33:03] PROGRESS seg 2/8 | twins=524,374,326 | B2_partial≈0.757550730382 | 8.77e8 cand/s | ETA 0.7 min
+[2026-02-20 19:33:11] PROGRESS seg 3/8 | twins=761,779,666 | B2_partial≈0.759080788050 | 8.71e8 cand/s | ETA 0.6 min
+[2026-02-20 19:33:11] Benchmark: M=30030 | 8.48e8 cand/s | 22.04s elapsed
+[2026-02-20 19:33:11] Estimate to reach limit 100,000,000,000,000,000: 67.51 days (≈5.83e6 s)
+[2026-02-20 19:33:19] **********************************************************************
+[2026-02-20 19:33:19] ** Started: K:\dev\2026\twincle\target\release\twincle.exe --limit 100000000
+[2026-02-20 19:33:19] **********************************************************************
+[2026-02-20 19:33:20] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-02-20 19:33:21] RAM: 127.75 GB (102.71 GB available)
+[2026-02-20 19:33:21] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-02-20 19:33:21] Testing M=30030: 1485 residues, 1228 base primes
+[2026-02-20 19:33:21] Running final search with M=30030...
+[2026-02-20 19:33:21] Wheel-missed small twin pairs: 3 (sum contribution: 1.044022644022644)
+[2026-02-20 19:33:21] Done. gpus=1, twins=440,312
+[2026-02-20 19:33:21] Brun partial sum up to 100000000: 1.758815621067975
+[2026-02-20 19:33:21] Brun extrapolated  B2* (HL):    1.902167937960738
+[2026-02-20 19:33:21] Elapsed: 0.14s
+[2026-02-20 19:34:48] **********************************************************************
+[2026-02-20 19:34:48] ** Started: K:\dev\2026\twincle\target\release\twincle.exe --benchmark --benchmark-seconds 10 --limit 1000000000000
+[2026-02-20 19:34:48] **********************************************************************
+[2026-02-20 19:34:49] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-02-20 19:34:49] RAM: 127.75 GB (102.30 GB available)
+[2026-02-20 19:34:49] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-02-20 19:34:49] Testing M=30030: 1485 residues, 78497 base primes
+[2026-02-20 19:34:56] PROGRESS seg 1/8 | twins=277,294,535 | B2_partial≈0.754822937495 | 8.71e8 cand/s | ETA 0.8 min
+[2026-02-20 19:35:04] PROGRESS seg 2/8 | twins=524,374,326 | B2_partial≈0.757550730382 | 8.69e8 cand/s | ETA 0.7 min
+[2026-02-20 19:35:11] PROGRESS seg 3/8 | twins=761,779,666 | B2_partial≈0.759080788050 | 8.67e8 cand/s | ETA 0.6 min
+[2026-02-20 19:35:11] Benchmark: M=30030 | 8.55e8 cand/s | 21.87s elapsed
+[2026-02-20 19:35:11] Estimate to reach limit 100,000,000,000,000,000: 66.97 days (≈5.79e6 s)
+[2026-02-20 19:35:18] **********************************************************************
+[2026-02-20 19:35:18] ** Started: K:\dev\2026\twincle\target\release\twincle.exe --limit 100000000
+[2026-02-20 19:35:18] **********************************************************************
+[2026-02-20 19:35:19] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-02-20 19:35:19] RAM: 127.75 GB (102.40 GB available)
+[2026-02-20 19:35:19] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-02-20 19:35:19] Testing M=30030: 1485 residues, 1228 base primes
+[2026-02-20 19:35:19] Running final search with M=30030...
+[2026-02-20 19:35:19] Wheel-missed small twin pairs: 3 (sum contribution: 1.044022644022644)
+[2026-02-20 19:35:20] Done. gpus=1, twins=440,312
+[2026-02-20 19:35:20] Brun partial sum up to 100000000: 1.758815621067975
+[2026-02-20 19:35:20] Brun extrapolated  B2* (HL):    1.902167937960738
+[2026-02-20 19:35:20] Elapsed: 0.14s

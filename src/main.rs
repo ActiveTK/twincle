@@ -706,10 +706,10 @@ fn gpu_worker(
 
     // bitsets: comp_p and comp_p2
     let candidates_per_seg = segment_k.saturating_mul(res_len as u64);
-    let words = ((candidates_per_seg + 31) / 32) as usize;
+    let words = ((candidates_per_seg + 63) / 64) as usize;
 
-    let d_comp_p = DeviceBuffer::<u32>::zeroed(words)?;
-    let d_comp_p2 = DeviceBuffer::<u32>::zeroed(words)?;
+    let d_comp_p = DeviceBuffer::<u64>::zeroed(words)?;
+    let d_comp_p2 = DeviceBuffer::<u64>::zeroed(words)?;
 
     // kernel launch config — grid sized to the actual workload
     let block = 256u32;

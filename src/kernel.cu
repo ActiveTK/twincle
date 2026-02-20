@@ -24,11 +24,11 @@ where R = residues_len, k in [k_low, k_low + k_count).
 
 __device__ __forceinline__ unsigned int bit_word(unsigned long long idx)
 {
-    return (unsigned int)(idx >> 5ULL);
+    return (unsigned int)(idx >> 6ULL);
 }
-__device__ __forceinline__ unsigned int bit_mask(unsigned long long idx)
+__device__ __forceinline__ unsigned long long bit_mask(unsigned long long idx)
 {
-    return 1U << (unsigned int)(idx & 31ULL);
+    return 1ULL << (unsigned int)(idx & 63ULL);
 }
 
 /* Extended Euclid for modular inverse (device) — only used if you choose to compute inverses on GPU.
@@ -42,16 +42,16 @@ static __device__ __forceinline__ unsigned int mul_mod_u32(unsigned int a, unsig
    Replaces cuMemsetD32_v2 (default-stream, blocks host) so that the clear
    is enqueued on the same non-blocking stream as the sieve/twin kernels. */
 extern "C" __global__ void clear_buffers(
-    unsigned int *comp_p,
-    unsigned int *comp_p2,
+    unsigned long long *comp_p,
+    unsigned long long *comp_p2,
     unsigned int  word_count)
 {
     unsigned int tid    = blockIdx.x * blockDim.x + threadIdx.x;
     unsigned int stride = blockDim.x * gridDim.x;
     for (unsigned int i = tid; i < word_count; i += stride)
     {
-        comp_p[i]  = 0U;
-        comp_p2[i] = 0U;
+        comp_p[i]  = 0ULL;
+        comp_p2[i] = 0ULL;
     }
 }
 
@@ -72,8 +72,8 @@ extern "C" __global__ void sieve_wheel_primes(
     const unsigned int *__restrict__ primes,
     const unsigned int *__restrict__ invM_mod_p,
     int prime_count,
-    unsigned int *__restrict__ comp_p_words,
-    unsigned int *__restrict__ comp_p2_words)
+    unsigned long long *__restrict__ comp_p_words,
+    unsigned long long *__restrict__ comp_p2_words)
 {
     extern __shared__ unsigned int s_res[];
     for (int i = threadIdx.x; i < R; i += (int)blockDim.x)
@@ -115,14 +115,14 @@ extern "C" __global__ void sieve_wheel_primes(
             }
 
             unsigned int cur_word = 0;
-            unsigned int cur_mask = 0;
+            unsigned long long cur_mask = 0ULL;
             bool has_word = false;
             for (unsigned long long kk = first_k; kk < k_end; kk += mod)
             {
                 unsigned long long idx = (unsigned long long)ridx * (unsigned long long)k_count
                                        + (kk - k_low);
                 unsigned int w = bit_word(idx);
-                unsigned int m = bit_mask(idx);
+                unsigned long long m = bit_mask(idx);
                 if (!has_word)
                 {
                     cur_word = w;
@@ -165,14 +165,14 @@ extern "C" __global__ void sieve_wheel_primes(
             }
 
             unsigned int cur_word = 0;
-            unsigned int cur_mask = 0;
+            unsigned long long cur_mask = 0ULL;
             bool has_word = false;
             for (unsigned long long kk = first_k; kk < k_end; kk += mod)
             {
                 unsigned long long idx = (unsigned long long)ridx * (unsigned long long)k_count
                                        + (kk - k_low);
                 unsigned int w = bit_word(idx);
-                unsigned int m = bit_mask(idx);
+                unsigned long long m = bit_mask(idx);
                 if (!has_word)
                 {
                     cur_word = w;
@@ -209,8 +209,8 @@ extern "C" __global__ void sieve_wheel_primes_small(
     const unsigned int *__restrict__ primes,
     const unsigned int *__restrict__ invM_mod_p,
     int prime_count,
-    unsigned int *__restrict__ comp_p_words,
-    unsigned int *__restrict__ comp_p2_words)
+    unsigned long long *__restrict__ comp_p_words,
+    unsigned long long *__restrict__ comp_p2_words)
 {
     unsigned int pi = (unsigned int)blockIdx.x;
     if ((int)pi >= prime_count) return;
@@ -247,14 +247,14 @@ extern "C" __global__ void sieve_wheel_primes_small(
             }
 
             unsigned int cur_word = 0;
-            unsigned int cur_mask = 0;
+            unsigned long long cur_mask = 0ULL;
             bool has_word = false;
             for (unsigned long long kk = first_k; kk < k_end; kk += mod)
             {
                 unsigned long long idx = (unsigned long long)ridx * (unsigned long long)k_count
                                        + (kk - k_low);
                 unsigned int w = bit_word(idx);
-                unsigned int m = bit_mask(idx);
+                unsigned long long m = bit_mask(idx);
                 if (!has_word)
                 {
                     cur_word = w;
@@ -297,14 +297,14 @@ extern "C" __global__ void sieve_wheel_primes_small(
             }
 
             unsigned int cur_word = 0;
-            unsigned int cur_mask = 0;
+            unsigned long long cur_mask = 0ULL;
             bool has_word = false;
             for (unsigned long long kk = first_k; kk < k_end; kk += mod)
             {
                 unsigned long long idx = (unsigned long long)ridx * (unsigned long long)k_count
                                        + (kk - k_low);
                 unsigned int w = bit_word(idx);
-                unsigned int m = bit_mask(idx);
+                unsigned long long m = bit_mask(idx);
                 if (!has_word)
                 {
                     cur_word = w;
@@ -376,13 +376,13 @@ extern "C" __global__ void twin_sum_wheel(
     const unsigned int *__restrict__ residues,
     int R,
     unsigned long long limit,
-    const unsigned int *__restrict__ comp_p_words,
-    const unsigned int *__restrict__ comp_p2_words,
+    const unsigned long long *__restrict__ comp_p_words,
+    const unsigned long long *__restrict__ comp_p2_words,
     double *__restrict__ block_sums,
     unsigned long long *__restrict__ block_counts)
 {
     unsigned long long total_candidates = k_count * (unsigned long long)R;
-    unsigned int total_words = (unsigned int)((total_candidates + 31ULL) / 32ULL);
+    unsigned int total_words = (unsigned int)((total_candidates + 63ULL) / 64ULL);
 
     unsigned int tid = blockIdx.x * blockDim.x + threadIdx.x;
     unsigned int stride = blockDim.x * gridDim.x;
@@ -392,25 +392,25 @@ extern "C" __global__ void twin_sum_wheel(
 
     for (unsigned int w = tid; w < total_words; w += stride)
     {
-        unsigned int cp = comp_p_words[w];
-        unsigned int c2 = comp_p2_words[w];
-        unsigned int ok = ~(cp | c2); // 1 bits are "both not composite"
+        unsigned long long cp = comp_p_words[w];
+        unsigned long long c2 = comp_p2_words[w];
+        unsigned long long ok = ~(cp | c2); // 1 bits are "both not composite"
         // Clamp last word
-        unsigned long long base_idx = (unsigned long long)w * 32ULL;
+        unsigned long long base_idx = (unsigned long long)w * 64ULL;
         unsigned long long remaining = (total_candidates > base_idx) ? (total_candidates - base_idx) : 0ULL;
         if (remaining == 0ULL)
         {
-            ok = 0U;
+            ok = 0ULL;
         }
-        else if (remaining < 32ULL)
+        else if (remaining < 64ULL)
         {
-            ok &= (1U << (unsigned int)remaining) - 1U;
+            ok &= (1ULL << (unsigned int)remaining) - 1ULL;
         }
 
-        while (ok != 0U)
+        while (ok != 0ULL)
         {
-            int bit = __ffs((int)ok) - 1;
-            ok &= ok - 1U;
+            int bit = __ffsll((long long)ok) - 1;
+            ok &= ok - 1ULL;
 
             unsigned long long idx = base_idx + (unsigned int)bit;
             unsigned long long kk = k_low + (idx % (unsigned long long)k_count);
