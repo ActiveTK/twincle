@@ -1,11 +1,9 @@
 use anyhow::Result;
 use clap::Parser;
 use cust::context::Context as CudaContext;
-use cust::device::DeviceAttribute;
 use cust::memory::{CopyDestination, DeviceBuffer}; // <-- CopyDestination を追加
 use cust::module::Module;
 use cust::prelude::{CudaFlags, Device, Stream, StreamFlags};
-use cust::sys::{cuFuncSetAttribute, CUfunction_attribute, CUresult};
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 use std::fs::OpenOptions;
 use std::io::{BufWriter, Write};
@@ -798,23 +796,6 @@ fn auto_tune_segment_k(
     Ok(best_k)
 }
 
-fn set_max_dynamic_shared(func: &cust::function::Function, bytes: usize) -> Result<()> {
-    if bytes == 0 {
-        return Ok(());
-    }
-    let res = unsafe {
-        cuFuncSetAttribute(
-            func.to_raw(),
-            CUfunction_attribute::CU_FUNC_ATTRIBUTE_MAX_DYNAMIC_SHARED_SIZE_BYTES,
-            bytes as i32,
-        )
-    };
-    if res != CUresult::CUDA_SUCCESS {
-        anyhow::bail!("cuFuncSetAttribute failed for shared bytes={bytes} (code={res:?})");
-    }
-    Ok(())
-}
-
 fn estimate_seconds_for_limit(
     limit: u64,
     wheel_m: u32,
@@ -890,13 +871,6 @@ fn gpu_worker(
     let d_final_count = DeviceBuffer::<u64>::zeroed(1)?;
     let mut h_final_sum = vec![0f64; 1];
     let mut h_final_count = vec![0u64; 1];
-
-    if sieve_shared > 48 * 1024 {
-        set_max_dynamic_shared(&sieve_kernel, sieve_shared as usize)?;
-    }
-    if sieve_small_shared > 48 * 1024 {
-        set_max_dynamic_shared(&sieve_small_kernel, sieve_small_shared as usize)?;
-    }
 
     loop {
         let k_low = next_k_low.fetch_add(segment_k, Ordering::Relaxed);
@@ -1268,11 +1242,9 @@ fn main() -> Result<()> {
     }
 
     let mut min_vram: usize = usize::MAX;
-    let mut min_shared_per_block: usize = usize::MAX;
     for i in 0..num_gpus {
         let dev = Device::get_device(i)?;
         let mem = dev.total_memory()? as usize;
-        let shared = dev.get_attribute(DeviceAttribute::MaxSharedMemoryPerBlock)? as usize;
         let name = dev.name()?;
         let msg = format!(
             "GPU {}: {} ({:.1} GB VRAM)",
@@ -1282,13 +1254,12 @@ fn main() -> Result<()> {
         );
         print_mp_and_log(&mp, &msg);
         min_vram = min_vram.min(mem);
-        min_shared_per_block = min_shared_per_block.min(shared);
     }
 
     let base_limit = ceil_sqrt(limit);
 
     let wheels_to_test = if args.test_wheels {
-        let primes = [2, 3, 5, 7, 11, 13, 17, 19, 23];
+        let primes = [2, 3, 5, 7, 11, 13, 17];
         let mut v = vec![2]; // M=2 (parity only)
         let mut m = 2;
         for &p in &primes[1..] {
@@ -1315,19 +1286,6 @@ fn main() -> Result<()> {
         if residues.is_empty() {
             pb_pre.finish_and_clear();
             let msg = format!("Skipping M={}: no valid twin residues", w);
-            print_mp_and_log(&mp, &msg);
-            continue;
-        }
-        let sieve_shared = residues.len() * size_of::<u32>();
-        if sieve_shared > min_shared_per_block {
-            pb_pre.finish_and_clear();
-            let msg = format!(
-                "Skipping M={}: residues {} require {} bytes shared > device max {}",
-                w,
-                residues.len(),
-                sieve_shared,
-                min_shared_per_block
-            );
             print_mp_and_log(&mp, &msg);
             continue;
         }
