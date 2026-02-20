@@ -354,15 +354,3 @@
 [2026-02-20 20:20:06] Brun partial sum up to 100000000: 1.758815621067975
 [2026-02-20 20:20:06] Brun extrapolated  B2* (HL):    1.902167937960738
 [2026-02-20 20:20:06] Elapsed: 0.13s
-[2026-02-20 20:25:12] **********************************************************************
-[2026-02-20 20:25:12] ** Started: K:\dev\2026\twincle\target\release\twincle.exe --benchmark --benchmark-seconds 10 --limit 1000000000000
-[2026-02-20 20:25:12] **********************************************************************
-[2026-02-20 20:25:13] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
-[2026-02-20 20:25:13] RAM: 127.75 GB (102.05 GB available)
-[2026-02-20 20:25:13] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
-[2026-02-20 20:25:13] Testing M=30030: 1485 residues, 78497 base primes
-[2026-02-20 20:25:20] PROGRESS seg 1/8 | twins=277,294,535 | B2_partial≈0.754822937495 | 9.96e8 cand/s | ETA 0.7 min
-[2026-02-20 20:25:26] PROGRESS seg 2/8 | twins=524,374,326 | B2_partial≈0.757550730382 | 9.93e8 cand/s | ETA 0.6 min
-[2026-02-20 20:25:33] PROGRESS seg 3/8 | twins=761,779,666 | B2_partial≈0.759080788050 | 9.86e8 cand/s | ETA 0.5 min
-[2026-02-20 20:25:33] Benchmark: M=30030 | 9.60e8 cand/s | 19.47s elapsed
-[2026-02-20 20:25:33] Estimate to reach limit 100,000,000,000,000,000: 59.64 days (≈5.15e6 s)
