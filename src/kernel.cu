@@ -2,6 +2,8 @@
 #include <device_launch_parameters.h>
 #include <stdint.h>
 
+#define SMALL_RES_TILE 128
+
 /*
 Wheel-based twin-candidate representation:
 
@@ -212,23 +214,30 @@ extern "C" __global__ void sieve_wheel_primes_small(
     unsigned long long *__restrict__ comp_p_words,
     unsigned long long *__restrict__ comp_p2_words)
 {
-    unsigned int pi = (unsigned int)blockIdx.x;
-    if ((int)pi >= prime_count) return;
+    unsigned int r_base = (unsigned int)blockIdx.x * (unsigned int)SMALL_RES_TILE;
+    if ((int)r_base >= R) return;
+    unsigned int r_end = r_base + (unsigned int)SMALL_RES_TILE;
+    if (r_end > (unsigned int)R) r_end = (unsigned int)R;
+    unsigned int tile_len = r_end - r_base;
 
     extern __shared__ unsigned int s_res[];
-    for (int i = threadIdx.x; i < R; i += (int)blockDim.x)
-        s_res[i] = residues[i];
+    for (unsigned int i = threadIdx.x; i < tile_len; i += (unsigned int)blockDim.x)
+        s_res[i] = residues[r_base + i];
     __syncthreads();
 
-    unsigned int q = primes[pi];
-    unsigned int invM = invM_mod_p[pi];
-    unsigned long long qq  = (unsigned long long)q * (unsigned long long)q;
-    unsigned long long mod = (unsigned long long)q;
     unsigned long long k_end = k_low + k_count;
 
-    for (int ridx = threadIdx.x; ridx < R; ridx += (int)blockDim.x)
+    for (int pi = 0; pi < prime_count; ++pi)
     {
-        unsigned int r = s_res[ridx];
+        unsigned int q = primes[pi];
+        unsigned int invM = invM_mod_p[pi];
+        unsigned long long qq  = (unsigned long long)q * (unsigned long long)q;
+        unsigned long long mod = (unsigned long long)q;
+
+        for (unsigned int t = threadIdx.x; t < tile_len; t += (unsigned int)blockDim.x)
+        {
+            unsigned int ridx = r_base + t;
+            unsigned int r = s_res[t];
 
         /* --- comp_p: mark k where M*k + r ≡ 0 (mod q) --- */
         {
@@ -326,6 +335,7 @@ extern "C" __global__ void sieve_wheel_primes_small(
             {
                 atomicOr(&comp_p2_words[cur_word], cur_mask);
             }
+        }
         }
     }
 }

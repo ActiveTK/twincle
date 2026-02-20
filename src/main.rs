@@ -20,6 +20,7 @@ const PTX: &str = include_str!(concat!(env!("OUT_DIR"), "/kernel.ptx"));
 /// Twin prime constant C2 (OEIS A005597) — enough precision for f64 usage
 const TWIN_PRIME_CONSTANT_C2: f64 = 0.6601618158468695739;
 const SMALL_PRIME_MAX: u32 = 1 << 15;
+const SMALL_RES_TILE: usize = 128;
 
 static LOG: OnceLock<Mutex<BufWriter<std::fs::File>>> = OnceLock::new();
 
@@ -698,6 +699,7 @@ fn gpu_worker(
     let small_prime_count = small_primes.len();
     let large_prime_count = large_primes.len();
     let sieve_shared = (res_len * size_of::<u32>()) as u32;
+    let sieve_small_shared = (SMALL_RES_TILE * size_of::<u32>()) as u32;
 
     let d_residues = DeviceBuffer::from_slice(&residues)?;
     let d_small_primes = DeviceBuffer::from_slice(&small_primes)?;
@@ -718,7 +720,7 @@ fn gpu_worker(
     let sieve_grid = ((sieve_pairs + block as u64 - 1) / block as u64).min(262144) as u32;
     let twin_grid = ((words as u64 + block as u64 - 1) / block as u64).min(262144) as u32;
     let clear_grid = ((words as u64 + block as u64 - 1) / block as u64).min(65535) as u32;
-    let sieve_small_grid = small_prime_count as u32;
+    let sieve_small_grid = ((res_len + SMALL_RES_TILE - 1) / SMALL_RES_TILE) as u32;
 
     let d_block_sums = DeviceBuffer::<f64>::zeroed(twin_grid as usize)?;
     let d_block_counts = DeviceBuffer::<u64>::zeroed(twin_grid as usize)?;
@@ -752,7 +754,7 @@ fn gpu_worker(
         if small_prime_count > 0 {
             unsafe {
                 cust::launch!(
-                    sieve_small_kernel<<<sieve_small_grid, block, sieve_shared, stream>>>(
+                    sieve_small_kernel<<<sieve_small_grid, block, sieve_small_shared, stream>>>(
                         k_low as u64,
                         k_count as u64,
                         wheel_m as u32,

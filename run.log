@@ -330,3 +330,27 @@
 [2026-02-20 20:18:46] Brun partial sum up to 100000000: 1.758815621067975
 [2026-02-20 20:18:46] Brun extrapolated  B2* (HL):    1.902167937960738
 [2026-02-20 20:18:46] Elapsed: 0.13s
+[2026-02-20 20:19:42] **********************************************************************
+[2026-02-20 20:19:42] ** Started: K:\dev\2026\twincle\target\release\twincle.exe --benchmark --benchmark-seconds 10 --limit 1000000000000
+[2026-02-20 20:19:42] **********************************************************************
+[2026-02-20 20:19:43] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-02-20 20:19:43] RAM: 127.75 GB (101.74 GB available)
+[2026-02-20 20:19:43] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-02-20 20:19:43] Testing M=30030: 1485 residues, 78497 base primes
+[2026-02-20 20:19:49] PROGRESS seg 1/8 | twins=277,294,535 | B2_partial≈0.754822937495 | 9.92e8 cand/s | ETA 0.7 min
+[2026-02-20 20:19:56] PROGRESS seg 2/8 | twins=524,374,326 | B2_partial≈0.757550730382 | 8.91e8 cand/s | ETA 0.8 min
+[2026-02-20 20:19:56] Benchmark: M=30030 | 9.66e8 cand/s | 12.90s elapsed
+[2026-02-20 20:19:56] Estimate to reach limit 100,000,000,000,000,000: 59.26 days (≈5.12e6 s)
+[2026-02-20 20:20:04] **********************************************************************
+[2026-02-20 20:20:04] ** Started: K:\dev\2026\twincle\target\release\twincle.exe --limit 100000000
+[2026-02-20 20:20:04] **********************************************************************
+[2026-02-20 20:20:05] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-02-20 20:20:06] RAM: 127.75 GB (101.70 GB available)
+[2026-02-20 20:20:06] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-02-20 20:20:06] Testing M=30030: 1485 residues, 1228 base primes
+[2026-02-20 20:20:06] Running final search with M=30030...
+[2026-02-20 20:20:06] Wheel-missed small twin pairs: 3 (sum contribution: 1.044022644022644)
+[2026-02-20 20:20:06] Done. gpus=1, twins=440,312
+[2026-02-20 20:20:06] Brun partial sum up to 100000000: 1.758815621067975
+[2026-02-20 20:20:06] Brun extrapolated  B2* (HL):    1.902167937960738
+[2026-02-20 20:20:06] Elapsed: 0.13s
