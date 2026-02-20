@@ -220,6 +220,10 @@ struct Args {
     #[arg(long, default_value_t = 0.25)]
     segment_mem_frac: f64,
 
+    /// Auto-tune segment_k by testing a few sizes (adds a short startup cost).
+    #[arg(long)]
+    auto_tune_seg: bool,
+
     /// Run a timed benchmark instead of a full search.
     #[arg(long)]
     benchmark: bool,
@@ -239,23 +243,17 @@ struct Args {
 fn run_search(
     wheel_m: u32,
     limit: u64,
+    segment_k: u64,
     residues: Arc<Vec<u32>>,
     small_primes: Arc<Vec<u32>>,
     small_inv_m: Arc<Vec<u32>>,
     large_primes: Arc<Vec<u32>>,
     large_inv_m: Arc<Vec<u32>>,
     num_gpus: u32,
-    min_vram: usize,
-    args: &Args,
     mp: &MultiProgress,
     max_duration: Option<Duration>,
 ) -> Result<(u64, f64, f64, u64)> {
     let k_end_excl = (limit / (wheel_m as u64)) + 2;
-    let segment_k = if args.segment_k == 0 {
-        pick_segment_k(min_vram, args.segment_mem_frac, residues.len())
-    } else {
-        args.segment_k
-    };
 
     let total_candidates = (k_end_excl as u128) * (residues.len() as u128);
     let pb = mp.add(ProgressBar::new(
@@ -648,14 +646,90 @@ fn pick_segment_k(total_mem_bytes: usize, frac: f64, residues_len: usize) -> u64
         return 1 << 20;
     }
 
-    let max_k = if total_mem_bytes >= (8u64 << 30) as usize {
-        1 << 23
-    } else {
-        1 << 22
-    };
+    let max_k = segment_k_max(total_mem_bytes);
     let k = (budget.saturating_mul(4) / r).clamp(1 << 14, max_k);
 
     k
+}
+
+fn segment_k_max(total_mem_bytes: usize) -> u64 {
+    if total_mem_bytes >= (8u64 << 30) as usize {
+        1 << 23
+    } else {
+        1 << 22
+    }
+}
+
+fn auto_tune_segment_k(
+    wheel_m: u32,
+    limit: u64,
+    residues: Arc<Vec<u32>>,
+    small_primes: Arc<Vec<u32>>,
+    small_inv_m: Arc<Vec<u32>>,
+    large_primes: Arc<Vec<u32>>,
+    large_inv_m: Arc<Vec<u32>>,
+    num_gpus: u32,
+    min_vram: usize,
+    args: &Args,
+    mp: &MultiProgress,
+) -> Result<u64> {
+    let base = pick_segment_k(min_vram, args.segment_mem_frac, residues.len());
+    let min_k = 1 << 14;
+    let max_k = segment_k_max(min_vram);
+
+    let mut base_pow2 = base.next_power_of_two();
+    if base_pow2 < min_k {
+        base_pow2 = min_k;
+    } else if base_pow2 > max_k {
+        base_pow2 = max_k;
+    }
+
+    let mut cands = Vec::new();
+    if base_pow2 >= min_k {
+        cands.push(base_pow2);
+    }
+    if base_pow2 / 2 >= min_k {
+        cands.push(base_pow2 / 2);
+    }
+    if base_pow2 * 2 <= max_k {
+        cands.push(base_pow2 * 2);
+    }
+    cands.sort_unstable();
+    cands.dedup();
+
+    let mut best_k = base_pow2;
+    let mut best_speed = -1.0;
+
+    for &k in &cands {
+        let (_twins, _sum, elapsed, cand) = run_search(
+            wheel_m,
+            limit,
+            k,
+            Arc::clone(&residues),
+            Arc::clone(&small_primes),
+            Arc::clone(&small_inv_m),
+            Arc::clone(&large_primes),
+            Arc::clone(&large_inv_m),
+            num_gpus,
+            mp,
+            Some(Duration::from_secs(2)),
+        )?;
+        let speed = if elapsed > 0.0 { cand as f64 / elapsed } else { 0.0 };
+        let msg = format!("Auto-tune seg_k={} => {:.2e} cand/s", format_with_commas(k), speed);
+        print_mp_and_log(mp, &msg);
+        if speed > best_speed {
+            best_speed = speed;
+            best_k = k;
+        }
+    }
+
+    let msg = format!(
+        "Auto-tune chose seg_k={} ({:.2e} cand/s)",
+        format_with_commas(best_k),
+        best_speed
+    );
+    print_mp_and_log(mp, &msg);
+    Ok(best_k)
 }
 
 fn estimate_seconds_for_limit(
@@ -978,19 +1052,40 @@ fn main() -> Result<()> {
             None
         };
 
+        let segment_k = if args.segment_k == 0 {
+            if args.auto_tune_seg {
+                auto_tune_segment_k(
+                    w,
+                    limit,
+                    Arc::clone(&residues),
+                    Arc::clone(&small_primes),
+                    Arc::clone(&small_inv_m),
+                    Arc::clone(&large_primes),
+                    Arc::clone(&large_inv_m),
+                    num_gpus,
+                    min_vram,
+                    &args,
+                    &mp,
+                )?
+            } else {
+                pick_segment_k(min_vram, args.segment_mem_frac, residues_len)
+            }
+        } else {
+            args.segment_k
+        };
+
         if args.benchmark {
             let duration = Duration::from_secs(args.benchmark_seconds.max(1));
             let (_twins, _sum, elapsed, cand) = run_search(
                 w,
                 limit,
+                segment_k,
                 residues,
                 small_primes,
                 small_inv_m,
                 large_primes,
                 large_inv_m,
                 num_gpus,
-                min_vram,
-                &args,
                 &mp,
                 Some(duration),
             )?;
@@ -1026,14 +1121,13 @@ fn main() -> Result<()> {
             return final_report(
                 w,
                 limit,
+                segment_k,
                 residues,
                 small_primes,
                 small_inv_m,
                 large_primes,
                 large_inv_m,
                 num_gpus,
-                min_vram,
-                &args,
                 &mp,
             );
         }
@@ -1041,14 +1135,13 @@ fn main() -> Result<()> {
         let (_twins, _sum, elapsed, cand) = run_search(
             w,
             limit,
+            segment_k,
             residues,
             small_primes,
             small_inv_m,
             large_primes,
             large_inv_m,
             num_gpus,
-            min_vram,
-            &args,
             &mp,
             duration,
         )?;
@@ -1102,18 +1195,40 @@ fn main() -> Result<()> {
         let small_inv_m = Arc::new(small_inv);
         let large_primes = Arc::new(large_primes);
         let large_inv_m = Arc::new(large_inv);
+        let residues_len = residues.len();
+
+        let segment_k = if args.segment_k == 0 {
+            if args.auto_tune_seg {
+                auto_tune_segment_k(
+                    best_wheel,
+                    limit,
+                    Arc::clone(&residues),
+                    Arc::clone(&small_primes),
+                    Arc::clone(&small_inv_m),
+                    Arc::clone(&large_primes),
+                    Arc::clone(&large_inv_m),
+                    num_gpus,
+                    min_vram,
+                    &args,
+                    &mp,
+                )?
+            } else {
+                pick_segment_k(min_vram, args.segment_mem_frac, residues_len)
+            }
+        } else {
+            args.segment_k
+        };
 
         final_report(
             best_wheel,
             limit,
+            segment_k,
             residues,
             small_primes,
             small_inv_m,
             large_primes,
             large_inv_m,
             num_gpus,
-            min_vram,
-            &args,
             &mp,
         )?;
     }
@@ -1124,14 +1239,13 @@ fn main() -> Result<()> {
 fn final_report(
     wheel_m: u32,
     limit: u64,
+    segment_k: u64,
     residues: Arc<Vec<u32>>,
     small_primes: Arc<Vec<u32>>,
     small_inv_m: Arc<Vec<u32>>,
     large_primes: Arc<Vec<u32>>,
     large_inv_m: Arc<Vec<u32>>,
     num_gpus: u32,
-    min_vram: usize,
-    args: &Args,
     mp: &MultiProgress,
 ) -> Result<()> {
     let msg = format!("Running final search with M={wheel_m}...");
@@ -1148,14 +1262,13 @@ fn final_report(
     let (total_twins, total_sum, elapsed, _cand) = run_search(
         wheel_m,
         limit,
+        segment_k,
         residues,
         small_primes,
         small_inv_m,
         large_primes,
         large_inv_m,
         num_gpus,
-        min_vram,
-        args,
         mp,
         None,
     )?;
