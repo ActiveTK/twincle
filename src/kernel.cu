@@ -417,23 +417,51 @@ extern "C" __global__ void twin_sum_wheel(
             ok &= (1ULL << (unsigned int)remaining) - 1ULL;
         }
 
-        while (ok != 0ULL)
+        unsigned long long ridx = base_idx / (unsigned long long)k_count;
+        unsigned long long k_off = base_idx - ridx * (unsigned long long)k_count;
+
+        if (k_off + 64ULL <= (unsigned long long)k_count)
         {
-            int bit = __ffsll((long long)ok) - 1;
-            ok &= ok - 1ULL;
+            unsigned long long k_base = k_low + k_off;
+            unsigned long long p_base = (unsigned long long)M * k_base
+                                      + (unsigned long long)residues[(unsigned int)ridx];
 
-            unsigned long long idx = base_idx + (unsigned int)bit;
-            unsigned long long kk = k_low + (idx % (unsigned long long)k_count);
-            unsigned int ridx = (unsigned int)(idx / (unsigned long long)k_count);
-            unsigned long long p = (unsigned long long)M * kk + (unsigned long long)residues[ridx];
+            while (ok != 0ULL)
+            {
+                int bit = __ffsll((long long)ok) - 1;
+                ok &= ok - 1ULL;
 
-            if (p < 3ULL)
-                continue;
-            if (p + 2ULL > limit)
-                continue;
+                unsigned long long p = p_base + (unsigned long long)M * (unsigned long long)bit;
 
-            local_sum += 1.0 / (double)p + 1.0 / (double)(p + 2ULL);
-            local_count += 1ULL;
+                if (p < 3ULL)
+                    continue;
+                if (p + 2ULL > limit)
+                    continue;
+
+                local_sum += 1.0 / (double)p + 1.0 / (double)(p + 2ULL);
+                local_count += 1ULL;
+            }
+        }
+        else
+        {
+            while (ok != 0ULL)
+            {
+                int bit = __ffsll((long long)ok) - 1;
+                ok &= ok - 1ULL;
+
+                unsigned long long idx = base_idx + (unsigned int)bit;
+                unsigned long long kk = k_low + (idx % (unsigned long long)k_count);
+                unsigned int r = (unsigned int)(idx / (unsigned long long)k_count);
+                unsigned long long p = (unsigned long long)M * kk + (unsigned long long)residues[r];
+
+                if (p < 3ULL)
+                    continue;
+                if (p + 2ULL > limit)
+                    continue;
+
+                local_sum += 1.0 / (double)p + 1.0 / (double)(p + 2ULL);
+                local_count += 1ULL;
+            }
         }
     }
 
