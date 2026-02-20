@@ -1,7 +1,7 @@
 use anyhow::Result;
 use clap::Parser;
 use cust::context::Context as CudaContext;
-use cust::memory::{AsyncCopyDestination, CopyDestination, DeviceBuffer}; // <-- CopyDestination を追加
+use cust::memory::{CopyDestination, DeviceBuffer}; // <-- CopyDestination を追加
 use cust::module::Module;
 use cust::prelude::{CudaFlags, Device, Stream, StreamFlags};
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
@@ -648,7 +648,12 @@ fn pick_segment_k(total_mem_bytes: usize, frac: f64, residues_len: usize) -> u64
         return 1 << 20;
     }
 
-    let k = (budget.saturating_mul(4) / r).clamp(1 << 14, 1 << 22);
+    let max_k = if total_mem_bytes >= (8u64 << 30) as usize {
+        1 << 23
+    } else {
+        1 << 22
+    };
+    let k = (budget.saturating_mul(4) / r).clamp(1 << 14, max_k);
 
     k
 }
