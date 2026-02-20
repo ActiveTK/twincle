@@ -1,0 +1,74 @@
+# Optimization Summary (2026-02-20)
+
+Environment
+- CPU: 12th Gen Intel(R) Core(TM) i9-12900K (16c/24t)
+- GPU: NVIDIA GeForce RTX 4070 (12 GB)
+- OS: Windows
+
+Baseline (before new optimizations in this session)
+- Benchmark cmd: target\release\twincle.exe --benchmark --benchmark-seconds 10 --limit 1000000000000
+- Throughput: 8.48e8 cand/s (2026-02-20 19:33:11)
+- Correctness check: --limit 100000000 => twins=440,312 (OK)
+
+Optimizations Attempted
+
+1) 64-bit bitsets for comp_p/comp_p2
+- Change: u32 -> u64 bitsets, 64 candidates per word
+- Commit: 158d7c7
+- Result: 8.48e8 -> 8.55e8 cand/s (+0.8%)
+- Correctness: --limit 100000000 => twins=440,312 (OK)
+- Revert: No
+
+2) GPU-side reduction of block_sums/counts
+- Change: reduce_block_results kernel; copy 1 element to host
+- Commit: a27a731
+- Result: 8.55e8 -> 8.71e8 cand/s (+1.9%)
+- Correctness: --limit 100000000 => twins=440,312 (OK)
+- Revert: No
+
+3) Small-prime sieve residue tiling
+- Change: sieve_wheel_primes_small processes residue tiles; reduces contention
+- Commit: 16fcc73
+- Result: 8.71e8 -> 9.66e8 cand/s (+10.9%)
+- Correctness: --limit 100000000 => twins=440,312 (OK)
+- Revert: No
+
+4) Pipeline segments with async copies (double buffering)
+- Change: two streams + async D2H; overlap compute/transfer
+- Commit: 627e661
+- Result: 9.66e8 -> 9.65e8 cand/s (~-0.1%)
+- Correctness: not required (reverted)
+- Revert: Yes (1b1570d)
+
+5) twin_sum fast path within residue
+- Change: avoid division/mod when 64-bit word stays inside one residue block
+- Commit: 778a1d1
+- Result: 9.66e8 -> 9.60e8 cand/s (~-0.6%)
+- Correctness: not required (reverted)
+- Revert: Yes (a3aed36)
+
+6) Larger auto segment_k upper bound on big VRAM
+- Change: max segment_k increases to 1<<23 when VRAM >= 8GB
+- Commit: 1d5affe
+- Result: 9.66e8 -> 9.67e8 cand/s (~+0.1%)
+- Correctness: --limit 100000000 => twins=440,312 (OK)
+- Revert: No
+
+7) Bitmask for k_count power-of-two in twin_sum
+- Change: pass k_mask/k_shift; replace % and / with bit ops when k_count is pow2
+- Commit: c889a5f
+- Result: 9.67e8 -> 9.79e8 cand/s (+1.2%)
+- Correctness: --limit 100000000 => twins=440,312 (OK)
+- Revert: No
+
+8) Optional segment_k auto-tuning
+- Change: --auto-tune-seg runs short probes (2s) across 3 candidates
+- Commit: 66b2e61
+- Result: 9.55e8 cand/s with auto-tune; 9.54–9.55e8 without (no improvement)
+- Correctness: --limit 100000000 => twins=440,312 (OK)
+- Revert: No (kept as optional feature per user request)
+
+Current state
+- Effective optimizations kept: 1,2,3,6,7,8
+- Reverted: 4,5
+
