@@ -382,6 +382,8 @@ static __device__ __forceinline__ unsigned long long warp_reduce_sum_u64(unsigne
 extern "C" __global__ void twin_sum_wheel(
     unsigned long long k_low,
     unsigned long long k_count,
+    unsigned long long k_mask,
+    unsigned int k_shift,
     unsigned int M,
     const unsigned int *__restrict__ residues,
     int R,
@@ -423,8 +425,18 @@ extern "C" __global__ void twin_sum_wheel(
             ok &= ok - 1ULL;
 
             unsigned long long idx = base_idx + (unsigned int)bit;
-            unsigned long long kk = k_low + (idx % (unsigned long long)k_count);
-            unsigned int ridx = (unsigned int)(idx / (unsigned long long)k_count);
+            unsigned long long kk;
+            unsigned int ridx;
+            if (k_mask != 0ULL)
+            {
+                kk = k_low + (idx & k_mask);
+                ridx = (unsigned int)(idx >> k_shift);
+            }
+            else
+            {
+                kk = k_low + (idx % (unsigned long long)k_count);
+                ridx = (unsigned int)(idx / (unsigned long long)k_count);
+            }
             unsigned long long p = (unsigned long long)M * kk + (unsigned long long)residues[ridx];
 
             if (p < 3ULL)

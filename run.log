@@ -378,3 +378,51 @@
 [2026-02-20 20:26:56] Brun partial sum up to 100000000: 1.758815621067975
 [2026-02-20 20:26:56] Brun extrapolated  B2* (HL):    1.902167937960738
 [2026-02-20 20:26:56] Elapsed: 0.18s
+[2026-02-20 20:29:18] **********************************************************************
+[2026-02-20 20:29:18] ** Started: K:\dev\2026\twincle\target\release\twincle.exe --benchmark --benchmark-seconds 10 --limit 1000000000000
+[2026-02-20 20:29:18] **********************************************************************
+[2026-02-20 20:29:20] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-02-20 20:29:20] RAM: 127.75 GB (101.39 GB available)
+[2026-02-20 20:29:20] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-02-20 20:29:20] Testing M=30030: 1485 residues, 78497 base primes
+[2026-02-20 20:29:33] PROGRESS seg 1/4 | twins=524,374,326 | B2_partial≈0.757550730382 | 0.00e0 cand/s | ETA 0.0 min
+[2026-02-20 20:29:33] Benchmark: M=30030 | 9.71e8 cand/s | 12.83s elapsed
+[2026-02-20 20:29:33] Estimate to reach limit 100,000,000,000,000,000: 58.96 days (≈5.09e6 s)
+[2026-02-20 20:29:37] **********************************************************************
+[2026-02-20 20:29:37] ** Started: K:\dev\2026\twincle\target\release\twincle.exe --limit 100000000
+[2026-02-20 20:29:37] **********************************************************************
+[2026-02-20 20:29:38] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-02-20 20:29:39] RAM: 127.75 GB (101.43 GB available)
+[2026-02-20 20:29:39] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-02-20 20:29:39] Testing M=30030: 1485 residues, 1228 base primes
+[2026-02-20 20:29:39] Running final search with M=30030...
+[2026-02-20 20:29:39] Wheel-missed small twin pairs: 3 (sum contribution: 1.044022644022644)
+[2026-02-20 20:29:39] PROGRESS seg 1/1 | twins=293 | B2_partial≈0.111504796395 | 3.22e7 cand/s | ETA 0.0 min
+[2026-02-20 20:29:39] Done. gpus=1, twins=296
+[2026-02-20 20:29:39] Brun partial sum up to 100000000: 1.155527440418032
+[2026-02-20 20:29:39] Brun extrapolated  B2* (HL):    1.298879757310796
+[2026-02-20 20:29:39] Elapsed: 0.18s
+[2026-02-20 20:30:00] **********************************************************************
+[2026-02-20 20:30:00] ** Started: K:\dev\2026\twincle\target\release\twincle.exe --benchmark --benchmark-seconds 10 --limit 1000000000000
+[2026-02-20 20:30:00] **********************************************************************
+[2026-02-20 20:30:02] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-02-20 20:30:02] RAM: 127.75 GB (101.52 GB available)
+[2026-02-20 20:30:02] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-02-20 20:30:02] Testing M=30030: 1485 residues, 78497 base primes
+[2026-02-20 20:30:15] PROGRESS seg 1/4 | twins=524,374,326 | B2_partial≈0.757550730382 | 0.00e0 cand/s | ETA 0.0 min
+[2026-02-20 20:30:15] Benchmark: M=30030 | 9.79e8 cand/s | 12.72s elapsed
+[2026-02-20 20:30:15] Estimate to reach limit 100,000,000,000,000,000: 58.44 days (≈5.05e6 s)
+[2026-02-20 20:30:20] **********************************************************************
+[2026-02-20 20:30:20] ** Started: K:\dev\2026\twincle\target\release\twincle.exe --limit 100000000
+[2026-02-20 20:30:20] **********************************************************************
+[2026-02-20 20:30:22] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-02-20 20:30:22] RAM: 127.75 GB (101.78 GB available)
+[2026-02-20 20:30:22] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-02-20 20:30:22] Testing M=30030: 1485 residues, 1228 base primes
+[2026-02-20 20:30:22] Running final search with M=30030...
+[2026-02-20 20:30:22] Wheel-missed small twin pairs: 3 (sum contribution: 1.044022644022644)
+[2026-02-20 20:30:22] PROGRESS seg 1/1 | twins=440,309 | B2_partial≈0.714792977045 | 3.20e7 cand/s | ETA 0.0 min
+[2026-02-20 20:30:22] Done. gpus=1, twins=440,312
+[2026-02-20 20:30:22] Brun partial sum up to 100000000: 1.758815621067975
+[2026-02-20 20:30:22] Brun extrapolated  B2* (HL):    1.902167937960738
+[2026-02-20 20:30:22] Elapsed: 0.19s

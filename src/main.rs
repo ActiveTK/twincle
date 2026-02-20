@@ -794,11 +794,19 @@ fn gpu_worker(
             }
         }
 
+        let (k_mask, k_shift) = if k_count.is_power_of_two() {
+            (k_count - 1, k_count.trailing_zeros())
+        } else {
+            (0, 0)
+        };
+
         unsafe {
             cust::launch!(
                 twin_kernel<<<twin_grid, block, 0, stream>>>(
                     k_low as u64,
                     k_count as u64,
+                    k_mask,
+                    k_shift,
                     wheel_m as u32,
                     d_residues.as_device_ptr(),
                     res_len as i32,
