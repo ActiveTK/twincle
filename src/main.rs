@@ -17,7 +17,10 @@ use time::{OffsetDateTime, format_description};
 
 mod cpu;
 
+#[cfg(ptx_only)]
 const PTX: &str = include_str!(concat!(env!("OUT_DIR"), "/kernel.ptx"));
+#[cfg(not(ptx_only))]
+const FATBIN: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/kernel.fatbin"));
 
 /// Twin prime constant C2 (OEIS A005597) — enough precision for f64 usage
 const TWIN_PRIME_CONSTANT_C2: f64 = 0.6601618158468695739;
@@ -828,7 +831,10 @@ fn gpu_worker(
 ) -> Result<()> {
     let device = Device::get_device(device_id)?;
     let _ctx = CudaContext::new(device)?;
+    #[cfg(ptx_only)]
     let module = Module::from_ptx(PTX, &[])?;
+    #[cfg(not(ptx_only))]
+    let module = Module::from_fatbin(FATBIN, &[])?;
 
     let clear_kernel = module.get_function("clear_buffers")?;
     let sieve_small_kernel = module.get_function("sieve_wheel_primes_small")?;
