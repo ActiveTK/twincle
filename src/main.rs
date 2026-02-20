@@ -15,6 +15,8 @@ use std::thread;
 use std::time::{Duration, Instant};
 use time::{OffsetDateTime, format_description};
 
+mod cpu;
+
 const PTX: &str = include_str!(concat!(env!("OUT_DIR"), "/kernel.ptx"));
 
 /// Twin prime constant C2 (OEIS A005597) — enough precision for f64 usage
@@ -210,6 +212,10 @@ struct Args {
     /// If set, tests all wheel sizes (30, 210, 30030) for 30s each to find the best.
     #[arg(long)]
     test_wheels: bool,
+
+    /// Run on CPU (no CUDA).
+    #[arg(long)]
+    cpu: bool,
 
     /// Segment size in number of k values (p = M*k + r).
     /// If 0, auto-pick from VRAM.
@@ -652,6 +658,63 @@ fn pick_segment_k(total_mem_bytes: usize, frac: f64, residues_len: usize) -> u64
     k
 }
 
+fn final_report_cpu(
+    wheel_m: u32,
+    limit: u64,
+    segment_k: u64,
+    residues: Arc<Vec<u32>>,
+    small_primes: Arc<Vec<u32>>,
+    small_inv_m: Arc<Vec<u32>>,
+    large_primes: Arc<Vec<u32>>,
+    large_inv_m: Arc<Vec<u32>>,
+    mp: &MultiProgress,
+) -> Result<()> {
+    let msg = format!("Running final search (cpu) with M={wheel_m}...");
+    print_mp_and_log(mp, &msg);
+    let (missed_count, missed_sum) = count_wheel_missed_twins(wheel_m, limit);
+    if missed_count > 0 {
+        let msg = format!(
+            "Wheel-missed small twin pairs: {} (sum contribution: {:.15})",
+            missed_count, missed_sum
+        );
+        print_mp_and_log(mp, &msg);
+    }
+
+    let (total_twins, total_sum, elapsed, _cand) = cpu::run_search_cpu(
+        wheel_m,
+        limit,
+        segment_k,
+        &residues,
+        &small_primes,
+        &small_inv_m,
+        &large_primes,
+        &large_inv_m,
+        mp,
+        None,
+    )?;
+
+    let final_twins = total_twins + missed_count;
+    let final_sum = total_sum + missed_sum;
+
+    let ln = (limit as f64).ln();
+    let b2_star = final_sum + 4.0 * TWIN_PRIME_CONSTANT_C2 / ln;
+
+    let cpu_threads = num_cpus::get();
+    let msg = format!(
+        "Done. cpus={} threads, twins={}",
+        cpu_threads,
+        format_with_commas(final_twins)
+    );
+    print_and_log(&msg);
+    let msg = format!("Brun partial sum up to {limit}: {:.15}", final_sum);
+    print_and_log(&msg);
+    let msg = format!("Brun extrapolated  B2* (HL):    {:.15}", b2_star);
+    print_and_log(&msg);
+    let msg = format!("Elapsed: {:.2}s", elapsed);
+    print_and_log(&msg);
+    Ok(())
+}
+
 fn segment_k_max(total_mem_bytes: usize) -> u64 {
     if total_mem_bytes >= (8u64 << 30) as usize {
         1 << 23
@@ -957,6 +1020,210 @@ fn main() -> Result<()> {
     log_line(&format!("** Started: {cmdline}"));
     log_line("**********************************************************************");
     log_system_info(&mp);
+
+    if args.cpu {
+        if args.auto_tune_seg {
+            print_mp_and_log(&mp, "--auto-tune-seg is not supported in CPU mode; ignoring.");
+        }
+        let default_seg_k = if args.segment_k == 0 { 1 << 15 } else { args.segment_k };
+        let base_limit = ceil_sqrt(limit);
+        let wheels_to_test = if args.test_wheels {
+            let primes = [2, 3, 5, 7, 11, 13, 17];
+            let mut v = vec![2]; // M=2 (parity only)
+            let mut m = 2;
+            for &p in &primes[1..] {
+                m *= p;
+                v.push(m);
+            }
+            v
+        } else {
+            vec![args.wheel]
+        };
+
+        let mut best_wheel = wheels_to_test[0];
+        let mut best_speed = -1.0;
+
+        for &w in &wheels_to_test {
+            let pb_pre = mp.add(ProgressBar::new(0));
+            pb_pre.set_style(
+                ProgressStyle::default_bar()
+                    .template("[{elapsed_precise}] [{bar:40.green/dim}] {pos}/{len} | {msg}")?
+                    .progress_chars("#>-"),
+            );
+
+            let residues = wheel_residues(w, Some(&pb_pre));
+            if residues.is_empty() {
+                pb_pre.finish_and_clear();
+                let msg = format!("Skipping M={}: no valid twin residues", w);
+                print_mp_and_log(&mp, &msg);
+                continue;
+            }
+            let mut base_primes = sieve_odd_primes_u32(base_limit, Some(&pb_pre));
+            pb_pre.finish_and_clear();
+
+            let msg = format!(
+                "Testing M={}: {} residues, {} base primes (cpu)",
+                w,
+                residues.len(),
+                base_primes.len()
+            );
+            print_mp_and_log(&mp, &msg);
+
+            base_primes.retain(|&p| (w as u64) % (p as u64) != 0);
+            let mut small_primes = Vec::new();
+            let mut small_inv = Vec::new();
+            let mut large_primes = Vec::new();
+            let mut large_inv = Vec::new();
+            for &p in &base_primes {
+                let invp = modinv_u32(w % p, p);
+                if p <= SMALL_PRIME_MAX {
+                    small_primes.push(p);
+                    small_inv.push(invp);
+                } else {
+                    large_primes.push(p);
+                    large_inv.push(invp);
+                }
+            }
+
+            let residues = Arc::new(residues);
+            let small_primes = Arc::new(small_primes);
+            let small_inv_m = Arc::new(small_inv);
+            let large_primes = Arc::new(large_primes);
+            let large_inv_m = Arc::new(large_inv);
+            let residues_len = residues.len();
+
+            let segment_k = default_seg_k;
+
+            if args.benchmark {
+                let duration = Duration::from_secs(args.benchmark_seconds.max(1));
+                let (_twins, _sum, elapsed, cand) = cpu::run_search_cpu(
+                    w,
+                    limit,
+                    segment_k,
+                    &residues,
+                    &small_primes,
+                    &small_inv_m,
+                    &large_primes,
+                    &large_inv_m,
+                    &mp,
+                    Some(duration),
+                )?;
+                let cand_per_sec = if elapsed > 0.0 { cand as f64 / elapsed } else { 0.0 };
+                let est = estimate_seconds_for_limit(args.benchmark_target, w, residues_len, cand_per_sec);
+                let msg = format!(
+                    "Benchmark (cpu): M={} | {:.2e} cand/s | {:.2}s elapsed",
+                    w, cand_per_sec, elapsed
+                );
+                print_and_log(&msg);
+                if let Some(sec) = est {
+                    let days = sec / 86400.0;
+                    let msg = format!(
+                        "Estimate to reach limit {}: {:.2} days (≈{:.2e} s)",
+                        format_with_commas(args.benchmark_target),
+                        days,
+                        sec
+                    );
+                    print_and_log(&msg);
+                }
+                return Ok(());
+            }
+
+            if !args.test_wheels {
+                return final_report_cpu(
+                    w,
+                    limit,
+                    segment_k,
+                    residues,
+                    small_primes,
+                    small_inv_m,
+                    large_primes,
+                    large_inv_m,
+                    &mp,
+                );
+            }
+
+            let duration = if args.test_wheels {
+                Some(Duration::from_secs(30))
+            } else {
+                None
+            };
+            let (_twins, _sum, elapsed, cand) = cpu::run_search_cpu(
+                w,
+                limit,
+                segment_k,
+                &residues,
+                &small_primes,
+                &small_inv_m,
+                &large_primes,
+                &large_inv_m,
+                &mp,
+                duration,
+            )?;
+            let speed = cand as f64 / elapsed;
+            let msg = format!("  M={w}: {:.2e} cand/s (cpu)", speed);
+            print_mp_and_log(&mp, &msg);
+            if speed > best_speed {
+                best_speed = speed;
+                best_wheel = w;
+            }
+        }
+
+        if args.test_wheels {
+            let msg = format!(
+                "Best wheel found (cpu): M={best_wheel} ({:.2e} cand/s)",
+                best_speed
+            );
+            print_mp_and_log(&mp, &msg);
+            let msg = "Starting final search (cpu)...".to_string();
+            print_mp_and_log(&mp, &msg);
+
+            let pb_pre = mp.add(ProgressBar::new(0));
+            pb_pre.set_style(
+                ProgressStyle::default_bar()
+                    .template("[{elapsed_precise}] [{bar:40.green/dim}] {pos}/{len} | {msg}")?
+                    .progress_chars("#>-"),
+            );
+            let residues = wheel_residues(best_wheel, Some(&pb_pre));
+            let mut base_primes = sieve_odd_primes_u32(base_limit, Some(&pb_pre));
+            pb_pre.finish_and_clear();
+
+            base_primes.retain(|&p| (best_wheel as u64) % (p as u64) != 0);
+            let mut small_primes = Vec::new();
+            let mut small_inv = Vec::new();
+            let mut large_primes = Vec::new();
+            let mut large_inv = Vec::new();
+            for &p in &base_primes {
+                let invp = modinv_u32(best_wheel % p, p);
+                if p <= SMALL_PRIME_MAX {
+                    small_primes.push(p);
+                    small_inv.push(invp);
+                } else {
+                    large_primes.push(p);
+                    large_inv.push(invp);
+                }
+            }
+
+            let residues = Arc::new(residues);
+            let small_primes = Arc::new(small_primes);
+            let small_inv_m = Arc::new(small_inv);
+            let large_primes = Arc::new(large_primes);
+            let large_inv_m = Arc::new(large_inv);
+
+            return final_report_cpu(
+                best_wheel,
+                limit,
+                default_seg_k,
+                residues,
+                small_primes,
+                small_inv_m,
+                large_primes,
+                large_inv_m,
+                &mp,
+            );
+        }
+
+        return Ok(());
+    }
 
     cust::init(CudaFlags::empty())?;
     let num_gpus = Device::num_devices()? as u32;

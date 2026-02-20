@@ -495,3 +495,34 @@
 [2026-02-20 20:38:24] Brun partial sum up to 100000000: 1.758815621067975
 [2026-02-20 20:38:24] Brun extrapolated  B2* (HL):    1.902167937960738
 [2026-02-20 20:38:24] Elapsed: 0.17s
+[2026-02-20 20:50:02] **********************************************************************
+[2026-02-20 20:50:02] ** Started: K:\dev\2026\twincle\target\release\twincle.exe --benchmark --benchmark-seconds 10 --limit 1000000000000 --cpu
+[2026-02-20 20:50:02] **********************************************************************
+[2026-02-20 20:50:04] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-02-20 20:50:04] RAM: 127.75 GB (102.30 GB available)
+[2026-02-20 20:50:04] Testing M=30030: 1485 residues, 78497 base primes (cpu)
+[2026-02-20 20:50:14] Benchmark (cpu): M=30030 | 2.80e7 cand/s | 10.44s elapsed
+[2026-02-20 20:50:14] Estimate to reach limit 100,000,000,000,000,000: 2045.83 days (≈1.77e8 s)
+[2026-02-20 20:50:19] **********************************************************************
+[2026-02-20 20:50:19] ** Started: K:\dev\2026\twincle\target\release\twincle.exe --limit 100000000 --cpu
+[2026-02-20 20:50:19] **********************************************************************
+[2026-02-20 20:50:21] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-02-20 20:50:21] RAM: 127.75 GB (102.21 GB available)
+[2026-02-20 20:50:21] Testing M=30030: 1485 residues, 1228 base primes (cpu)
+[2026-02-20 20:50:21] Running final search (cpu) with M=30030...
+[2026-02-20 20:50:21] Wheel-missed small twin pairs: 3 (sum contribution: 1.044022644022644)
+[2026-02-20 20:50:21] Done. cpus=24 threads, twins=440,312
+[2026-02-20 20:50:21] Brun partial sum up to 100000000: 1.758815621067975
+[2026-02-20 20:50:21] Brun extrapolated  B2* (HL):    1.902167937960738
+[2026-02-20 20:50:21] Elapsed: 0.04s
+[2026-02-20 20:50:27] **********************************************************************
+[2026-02-20 20:50:27] ** Started: K:\dev\2026\twincle\target\release\twincle.exe --benchmark --benchmark-seconds 10 --limit 1000000000000
+[2026-02-20 20:50:27] **********************************************************************
+[2026-02-20 20:50:28] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-02-20 20:50:28] RAM: 127.75 GB (101.86 GB available)
+[2026-02-20 20:50:28] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-02-20 20:50:28] Testing M=30030: 1485 residues, 78497 base primes
+[2026-02-20 20:50:41] PROGRESS seg 1/4 | twins=524,374,326 | B2_partial≈0.757550730382 | 9.65e8 cand/s | ETA 0.6 min
+[2026-02-20 20:50:55] PROGRESS seg 2/4 | twins=993,171,237 | B2_partial≈0.760138333812 | 9.61e8 cand/s | ETA 0.4 min
+[2026-02-20 20:50:55] Benchmark: M=30030 | 9.44e8 cand/s | 26.39s elapsed
+[2026-02-20 20:50:55] Estimate to reach limit 100,000,000,000,000,000: 60.64 days (≈5.24e6 s)
