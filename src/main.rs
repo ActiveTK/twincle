@@ -213,9 +213,9 @@ struct Args {
     #[arg(long)]
     test_wheels: bool,
 
-    /// Run on CPU (no CUDA).
-    #[arg(long)]
-    cpu: bool,
+    /// Run on CPU (no CUDA). Optional thread count, e.g. --cpu 10
+    #[arg(long, value_name = "N", num_args = 0..=1, default_missing_value = "0")]
+    cpu: Option<u32>,
 
     /// Segment size in number of k values (p = M*k + r).
     /// If 0, auto-pick from VRAM.
@@ -667,6 +667,7 @@ fn final_report_cpu(
     small_inv_m: Arc<Vec<u32>>,
     large_primes: Arc<Vec<u32>>,
     large_inv_m: Arc<Vec<u32>>,
+    cpu_threads: usize,
     mp: &MultiProgress,
 ) -> Result<()> {
     let msg = format!("Running final search (cpu) with M={wheel_m}...");
@@ -689,6 +690,7 @@ fn final_report_cpu(
         &small_inv_m,
         &large_primes,
         &large_inv_m,
+        cpu_threads,
         mp,
         None,
     )?;
@@ -699,7 +701,6 @@ fn final_report_cpu(
     let ln = (limit as f64).ln();
     let b2_star = final_sum + 4.0 * TWIN_PRIME_CONSTANT_C2 / ln;
 
-    let cpu_threads = num_cpus::get();
     let msg = format!(
         "Done. cpus={} threads, twins={}",
         cpu_threads,
@@ -1021,10 +1022,15 @@ fn main() -> Result<()> {
     log_line("**********************************************************************");
     log_system_info(&mp);
 
-    if args.cpu {
+    if let Some(cpu_arg) = args.cpu {
         if args.auto_tune_seg {
             print_mp_and_log(&mp, "--auto-tune-seg is not supported in CPU mode; ignoring.");
         }
+        let cpu_threads = if cpu_arg == 0 {
+            num_cpus::get().max(1)
+        } else {
+            (cpu_arg as usize).max(1)
+        };
         let default_seg_k = if args.segment_k == 0 { 1 << 15 } else { args.segment_k };
         let base_limit = ceil_sqrt(limit);
         let wheels_to_test = if args.test_wheels {
@@ -1105,6 +1111,7 @@ fn main() -> Result<()> {
                     &small_inv_m,
                     &large_primes,
                     &large_inv_m,
+                    cpu_threads,
                     &mp,
                     Some(duration),
                 )?;
@@ -1138,6 +1145,7 @@ fn main() -> Result<()> {
                     small_inv_m,
                     large_primes,
                     large_inv_m,
+                    cpu_threads,
                     &mp,
                 );
             }
@@ -1156,6 +1164,7 @@ fn main() -> Result<()> {
                 &small_inv_m,
                 &large_primes,
                 &large_inv_m,
+                cpu_threads,
                 &mp,
                 duration,
             )?;
@@ -1218,6 +1227,7 @@ fn main() -> Result<()> {
                 small_inv_m,
                 large_primes,
                 large_inv_m,
+                cpu_threads,
                 &mp,
             );
         }

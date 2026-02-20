@@ -526,3 +526,39 @@
 [2026-02-20 20:50:55] PROGRESS seg 2/4 | twins=993,171,237 | B2_partial≈0.760138333812 | 9.61e8 cand/s | ETA 0.4 min
 [2026-02-20 20:50:55] Benchmark: M=30030 | 9.44e8 cand/s | 26.39s elapsed
 [2026-02-20 20:50:55] Estimate to reach limit 100,000,000,000,000,000: 60.64 days (≈5.24e6 s)
+[2026-02-20 20:54:33] **********************************************************************
+[2026-02-20 20:54:33] ** Started: target\release\twincle.exe --exp 16 --cpu
+[2026-02-20 20:54:33] **********************************************************************
+[2026-02-20 20:54:34] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-02-20 20:54:35] RAM: 127.75 GB (102.34 GB available)
+[2026-02-20 20:54:35] Testing M=30030: 1485 residues, 5761454 base primes (cpu)
+[2026-02-20 20:54:35] Running final search (cpu) with M=30030...
+[2026-02-20 20:54:35] Wheel-missed small twin pairs: 3 (sum contribution: 1.044022644022644)
+[2026-02-20 20:57:02] **********************************************************************
+[2026-02-20 20:57:02] ** Started: K:\dev\2026\twincle\target\release\twincle.exe --benchmark --benchmark-seconds 10 --limit 1000000000000 --cpu
+[2026-02-20 20:57:02] **********************************************************************
+[2026-02-20 20:57:03] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-02-20 20:57:03] RAM: 127.75 GB (101.77 GB available)
+[2026-02-20 20:57:03] Testing M=30030: 1485 residues, 78497 base primes (cpu)
+[2026-02-20 20:57:22] Benchmark (cpu): M=30030 | 6.32e7 cand/s | 18.47s elapsed
+[2026-02-20 20:57:22] Estimate to reach limit 100,000,000,000,000,000: 905.32 days (≈7.82e7 s)
+[2026-02-20 20:57:29] **********************************************************************
+[2026-02-20 20:57:29] ** Started: K:\dev\2026\twincle\target\release\twincle.exe --benchmark --benchmark-seconds 10 --limit 1000000000000 --cpu 1
+[2026-02-20 20:57:29] **********************************************************************
+[2026-02-20 20:57:30] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-02-20 20:57:30] RAM: 127.75 GB (101.61 GB available)
+[2026-02-20 20:57:30] Testing M=30030: 1485 residues, 78497 base primes (cpu)
+[2026-02-20 20:57:41] Benchmark (cpu): M=30030 | 2.79e7 cand/s | 10.45s elapsed
+[2026-02-20 20:57:41] Estimate to reach limit 100,000,000,000,000,000: 2049.36 days (≈1.77e8 s)
+[2026-02-20 20:57:47] **********************************************************************
+[2026-02-20 20:57:47] ** Started: K:\dev\2026\twincle\target\release\twincle.exe --limit 100000000 --cpu
+[2026-02-20 20:57:47] **********************************************************************
+[2026-02-20 20:57:49] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-02-20 20:57:49] RAM: 127.75 GB (101.71 GB available)
+[2026-02-20 20:57:49] Testing M=30030: 1485 residues, 1228 base primes (cpu)
+[2026-02-20 20:57:49] Running final search (cpu) with M=30030...
+[2026-02-20 20:57:49] Wheel-missed small twin pairs: 3 (sum contribution: 1.044022644022644)
+[2026-02-20 20:57:49] Done. cpus=24 threads, twins=440,312
+[2026-02-20 20:57:49] Brun partial sum up to 100000000: 1.758815621067975
+[2026-02-20 20:57:49] Brun extrapolated  B2* (HL):    1.902167937960738
+[2026-02-20 20:57:49] Elapsed: 0.04s
