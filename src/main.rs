@@ -1,7 +1,7 @@
 use anyhow::Result;
 use clap::Parser;
 use cust::context::Context as CudaContext;
-use cust::memory::{CopyDestination, DeviceBuffer}; // <-- CopyDestination を追加
+use cust::memory::{AsyncCopyDestination, CopyDestination, DeviceBuffer}; // <-- CopyDestination を追加
 use cust::module::Module;
 use cust::prelude::{CudaFlags, Device, Stream, StreamFlags};
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
@@ -690,6 +690,7 @@ fn gpu_worker(
     let sieve_small_kernel = module.get_function("sieve_wheel_primes_small")?;
     let sieve_kernel = module.get_function("sieve_wheel_primes")?;
     let twin_kernel = module.get_function("twin_sum_wheel")?;
+    let reduce_kernel = module.get_function("reduce_block_results")?;
 
     let stream = Stream::new(StreamFlags::NON_BLOCKING, None)?;
 
@@ -721,8 +722,10 @@ fn gpu_worker(
 
     let d_block_sums = DeviceBuffer::<f64>::zeroed(twin_grid as usize)?;
     let d_block_counts = DeviceBuffer::<u64>::zeroed(twin_grid as usize)?;
-    let mut h_block_sums = vec![0f64; twin_grid as usize];
-    let mut h_block_counts = vec![0u64; twin_grid as usize];
+    let d_final_sum = DeviceBuffer::<f64>::zeroed(1)?;
+    let d_final_count = DeviceBuffer::<u64>::zeroed(1)?;
+    let mut h_final_sum = vec![0f64; 1];
+    let mut h_final_count = vec![0u64; 1];
 
     loop {
         let k_low = next_k_low.fetch_add(segment_k, Ordering::Relaxed);
@@ -801,17 +804,26 @@ fn gpu_worker(
             )?;
         }
 
+        unsafe {
+            cust::launch!(
+                reduce_kernel<<<1, block, 0, stream>>>(
+                    d_block_sums.as_device_ptr(),
+                    d_block_counts.as_device_ptr(),
+                    twin_grid as u32,
+                    d_final_sum.as_device_ptr(),
+                    d_final_count.as_device_ptr()
+                )
+            )?;
+        }
+
         stream.synchronize()?;
 
-        d_block_sums.copy_to(&mut h_block_sums)?; // CopyDestination in scope
-        d_block_counts.copy_to(&mut h_block_counts)?;
+        d_final_sum.copy_to(&mut h_final_sum)?;
+        d_final_count.copy_to(&mut h_final_count)?;
 
         let mut seg_sum = Kahan::default();
-        let mut seg_count: u64 = 0;
-        for i in 0..(twin_grid as usize) {
-            seg_sum.add(h_block_sums[i]);
-            seg_count = seg_count.wrapping_add(h_block_counts[i]);
-        }
+        seg_sum.add(h_final_sum[0]);
+        let seg_count: u64 = h_final_count[0];
 
         if tx
             .send(SegResult {

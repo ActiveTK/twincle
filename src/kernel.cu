@@ -459,3 +459,52 @@ extern "C" __global__ void twin_sum_wheel(
         }
     }
 }
+
+extern "C" __global__ void reduce_block_results(
+    const double *__restrict__ block_sums,
+    const unsigned long long *__restrict__ block_counts,
+    unsigned int n,
+    double *__restrict__ out_sum,
+    unsigned long long *__restrict__ out_count)
+{
+    double sum = 0.0;
+    unsigned long long cnt = 0ULL;
+
+    for (unsigned int i = threadIdx.x; i < n; i += blockDim.x)
+    {
+        sum += block_sums[i];
+        cnt += block_counts[i];
+    }
+
+    sum = warp_reduce_sum_f64(sum);
+    cnt = warp_reduce_sum_u64(cnt);
+
+    int lane = threadIdx.x & 31;
+    int warp_id = threadIdx.x >> 5;
+
+    __shared__ double s_sum[8];
+    __shared__ unsigned long long s_cnt[8];
+
+    if (lane == 0)
+    {
+        s_sum[warp_id] = sum;
+        s_cnt[warp_id] = cnt;
+    }
+    __syncthreads();
+
+    if (warp_id == 0)
+    {
+        int num_warps = (int)(blockDim.x >> 5);
+        sum = (lane < num_warps) ? s_sum[lane] : 0.0;
+        cnt = (lane < num_warps) ? s_cnt[lane] : 0ULL;
+
+        sum = warp_reduce_sum_f64(sum);
+        cnt = warp_reduce_sum_u64(cnt);
+
+        if (lane == 0)
+        {
+            *out_sum = sum;
+            *out_count = cnt;
+        }
+    }
+}
