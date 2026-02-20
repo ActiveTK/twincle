@@ -8,9 +8,9 @@ use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 use std::fs::OpenOptions;
 use std::io::{BufWriter, Write};
 use std::mem::size_of;
-use std::sync::{Mutex, OnceLock};
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, mpsc};
+use std::sync::{Mutex, OnceLock};
 use std::thread;
 use std::time::{Duration, Instant};
 use time::{OffsetDateTime, format_description};
@@ -46,7 +46,11 @@ fn log_system_info(mp: &MultiProgress) {
         if let Ok(meminfo) = std::fs::read_to_string("/proc/meminfo") {
             for line in meminfo.lines() {
                 if let Some((k, v)) = line.split_once(':') {
-                    let val = v.trim().split_whitespace().next().and_then(|x| x.parse::<u64>().ok());
+                    let val = v
+                        .trim()
+                        .split_whitespace()
+                        .next()
+                        .and_then(|x| x.parse::<u64>().ok());
                     if k == "MemTotal" {
                         total_kb = val;
                     } else if k == "MemAvailable" {
@@ -64,7 +68,10 @@ fn log_system_info(mp: &MultiProgress) {
             let total_gb = total as f64 / (1024.0 * 1024.0);
             let avail_gb = avail_kb.map(|kb| kb as f64 / (1024.0 * 1024.0));
             if let Some(av) = avail_gb {
-                print_mp_and_log(mp, &format!("RAM: {:.2} GB ({:.2} GB available)", total_gb, av));
+                print_mp_and_log(
+                    mp,
+                    &format!("RAM: {:.2} GB ({:.2} GB available)", total_gb, av),
+                );
             } else {
                 print_mp_and_log(mp, &format!("RAM: {:.2} GB", total_gb));
             }
@@ -155,9 +162,12 @@ fn log_system_info(mp: &MultiProgress) {
 
 fn timestamp() -> String {
     let format = format_description::parse("[year]-[month]-[day] [hour]:[minute]:[second]")
-        .unwrap_or_else(|_| format_description::parse("[year]-[month]-[day] [hour]:[minute]:[second]").unwrap());
+        .unwrap_or_else(|_| {
+            format_description::parse("[year]-[month]-[day] [hour]:[minute]:[second]").unwrap()
+        });
     let now = OffsetDateTime::now_local().unwrap_or_else(|_| OffsetDateTime::now_utc());
-    now.format(&format).unwrap_or_else(|_| "0000-00-00 00:00:00".to_string())
+    now.format(&format)
+        .unwrap_or_else(|_| "0000-00-00 00:00:00".to_string())
 }
 
 fn log_line(line: &str) {
@@ -255,11 +265,18 @@ fn run_search(
             .template("[{elapsed_precise}] [{bar:40.cyan/dim}] {percent:>3}% {pos}/{len} | {msg}")?
             .progress_chars("#>-"),
     );
-    let msg_prefix = if max_duration.is_some() { "testing" } else { "searching" };
+    let msg_prefix = if max_duration.is_some() {
+        "testing"
+    } else {
+        "searching"
+    };
     let num_segments = (k_end_excl + segment_k - 1) / segment_k;
     pb.set_message(format!(
         "{} M={} | seg_k={} | {} segments",
-        msg_prefix, wheel_m, format_with_commas(segment_k), format_with_commas(num_segments)
+        msg_prefix,
+        wheel_m,
+        format_with_commas(segment_k),
+        format_with_commas(num_segments)
     ));
     pb.enable_steady_tick(Duration::from_millis(200));
 
@@ -282,9 +299,19 @@ fn run_search(
             .name(format!("gpu-{}", gpu_id))
             .spawn(move || -> Result<()> {
                 gpu_worker(
-                    gpu_id, wheel_m, residues, small_primes, small_inv_m_mod_p,
-                    large_primes, large_inv_m_mod_p, segment_k, k_end_excl, limit,
-                    next_k_low, pb, tx,
+                    gpu_id,
+                    wheel_m,
+                    residues,
+                    small_primes,
+                    small_inv_m_mod_p,
+                    large_primes,
+                    large_inv_m_mod_p,
+                    segment_k,
+                    k_end_excl,
+                    limit,
+                    next_k_low,
+                    pb,
+                    tx,
                 )
             })?;
         handles.push(handle);
@@ -301,7 +328,7 @@ fn run_search(
         total.add(r.sum);
         total_twins += r.count;
         segments_done += 1;
-        
+
         if let Some(d) = max_duration {
             if run0.elapsed() >= d {
                 // Signal termination by exhausting the atomic counter
@@ -319,7 +346,11 @@ fn run_search(
                 0.2 * inst_speed + 0.8 * ema_speed
             };
             let remaining = (total_candidates.min(u64::MAX as u128) as u64).saturating_sub(done);
-            let eta_secs = if ema_speed > 0.0 { remaining as f64 / ema_speed } else { 0.0 };
+            let eta_secs = if ema_speed > 0.0 {
+                remaining as f64 / ema_speed
+            } else {
+                0.0
+            };
 
             let msg = format!(
                 "seg {}/{} | twins={} | B2_partial≈{:.12} | {:.2e} cand/s | ETA {:.1} min",
@@ -337,12 +368,14 @@ fn run_search(
     }
 
     for handle in handles {
-        handle.join().map_err(|e| anyhow::anyhow!("GPU thread panicked: {:?}", e))??;
+        handle
+            .join()
+            .map_err(|e| anyhow::anyhow!("GPU thread panicked: {:?}", e))??;
     }
 
     let elapsed = run0.elapsed().as_secs_f64();
     let cand_processed = pb.position();
-    
+
     if max_duration.is_some() {
         pb.finish_and_clear();
     } else {
@@ -613,13 +646,18 @@ fn pick_segment_k(total_mem_bytes: usize, frac: f64, residues_len: usize) -> u64
     if r == 0 {
         return 1 << 20;
     }
-    
+
     let k = (budget.saturating_mul(4) / r).clamp(1 << 14, 1 << 22);
 
     k
 }
 
-fn estimate_seconds_for_limit(limit: u64, wheel_m: u32, residues_len: usize, cand_per_sec: f64) -> Option<f64> {
+fn estimate_seconds_for_limit(
+    limit: u64,
+    wheel_m: u32,
+    residues_len: usize,
+    cand_per_sec: f64,
+) -> Option<f64> {
     if cand_per_sec <= 0.0 || residues_len == 0 {
         return None;
     }
@@ -808,12 +846,17 @@ fn main() -> Result<()> {
 
     let mp = MultiProgress::new();
     let _ = LOG.set(Mutex::new(BufWriter::new(
-        OpenOptions::new().create(true).append(true).open("run.log")?
+        OpenOptions::new()
+            .create(true)
+            .append(true)
+            .open("run.log")?,
     )));
     let cmdline = std::env::args().collect::<Vec<_>>().join(" ");
+    log_line("**********************************************************************");
     log_line(&format!("** Started: {cmdline}"));
+    log_line("**********************************************************************");
     log_system_info(&mp);
-    
+
     cust::init(CudaFlags::empty())?;
     let num_gpus = Device::num_devices()? as u32;
     if num_gpus == 0 {
@@ -827,7 +870,9 @@ fn main() -> Result<()> {
         let name = dev.name()?;
         let msg = format!(
             "GPU {}: {} ({:.1} GB VRAM)",
-            i, name, mem as f64 / (1u64 << 30) as f64
+            i,
+            name,
+            mem as f64 / (1u64 << 30) as f64
         );
         print_mp_and_log(&mp, &msg);
         min_vram = min_vram.min(mem);
@@ -869,7 +914,12 @@ fn main() -> Result<()> {
         let mut base_primes = sieve_odd_primes_u32(base_limit, Some(&pb_pre));
         pb_pre.finish_and_clear();
 
-        let msg = format!("Testing M={}: {} residues, {} base primes", w, residues.len(), base_primes.len());
+        let msg = format!(
+            "Testing M={}: {} residues, {} base primes",
+            w,
+            residues.len(),
+            base_primes.len()
+        );
         print_mp_and_log(&mp, &msg);
 
         base_primes.retain(|&p| (w as u64) % (p as u64) != 0);
@@ -904,12 +954,27 @@ fn main() -> Result<()> {
         if args.benchmark {
             let duration = Duration::from_secs(args.benchmark_seconds.max(1));
             let (_twins, _sum, elapsed, cand) = run_search(
-                w, limit, residues, small_primes, small_inv_m, large_primes, large_inv_m,
-                num_gpus, min_vram, &args, &mp, Some(duration)
+                w,
+                limit,
+                residues,
+                small_primes,
+                small_inv_m,
+                large_primes,
+                large_inv_m,
+                num_gpus,
+                min_vram,
+                &args,
+                &mp,
+                Some(duration),
             )?;
 
-            let cand_per_sec = if elapsed > 0.0 { cand as f64 / elapsed } else { 0.0 };
-            let est = estimate_seconds_for_limit(args.benchmark_target, w, residues_len, cand_per_sec);
+            let cand_per_sec = if elapsed > 0.0 {
+                cand as f64 / elapsed
+            } else {
+                0.0
+            };
+            let est =
+                estimate_seconds_for_limit(args.benchmark_target, w, residues_len, cand_per_sec);
 
             let msg = format!(
                 "Benchmark: M={} | {:.2e} cand/s | {:.2}s elapsed",
@@ -932,14 +997,33 @@ fn main() -> Result<()> {
         if !args.test_wheels {
             // If not testing, just run the final report directly and return.
             return final_report(
-                w, limit, residues, small_primes, small_inv_m, large_primes, large_inv_m,
-                num_gpus, min_vram, &args, &mp
+                w,
+                limit,
+                residues,
+                small_primes,
+                small_inv_m,
+                large_primes,
+                large_inv_m,
+                num_gpus,
+                min_vram,
+                &args,
+                &mp,
             );
         }
 
         let (_twins, _sum, elapsed, cand) = run_search(
-            w, limit, residues, small_primes, small_inv_m, large_primes, large_inv_m,
-            num_gpus, min_vram, &args, &mp, duration
+            w,
+            limit,
+            residues,
+            small_primes,
+            small_inv_m,
+            large_primes,
+            large_inv_m,
+            num_gpus,
+            min_vram,
+            &args,
+            &mp,
+            duration,
         )?;
 
         let speed = cand as f64 / elapsed;
@@ -952,7 +1036,10 @@ fn main() -> Result<()> {
     }
 
     if args.test_wheels {
-        let msg = format!("Best wheel found: M={best_wheel} ({:.2e} cand/s)", best_speed);
+        let msg = format!(
+            "Best wheel found: M={best_wheel} ({:.2e} cand/s)",
+            best_speed
+        );
         print_mp_and_log(&mp, &msg);
         let msg = "Starting final search...".to_string();
         print_mp_and_log(&mp, &msg);
@@ -990,8 +1077,17 @@ fn main() -> Result<()> {
         let large_inv_m = Arc::new(large_inv);
 
         final_report(
-            best_wheel, limit, residues, small_primes, small_inv_m, large_primes, large_inv_m,
-            num_gpus, min_vram, &args, &mp
+            best_wheel,
+            limit,
+            residues,
+            small_primes,
+            small_inv_m,
+            large_primes,
+            large_inv_m,
+            num_gpus,
+            min_vram,
+            &args,
+            &mp,
         )?;
     }
 
@@ -1023,8 +1119,18 @@ fn final_report(
     }
 
     let (total_twins, total_sum, elapsed, _cand) = run_search(
-        wheel_m, limit, residues, small_primes, small_inv_m, large_primes, large_inv_m,
-        num_gpus, min_vram, args, mp, None
+        wheel_m,
+        limit,
+        residues,
+        small_primes,
+        small_inv_m,
+        large_primes,
+        large_inv_m,
+        num_gpus,
+        min_vram,
+        args,
+        mp,
+        None,
     )?;
 
     let final_twins = total_twins + missed_count;
