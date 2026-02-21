@@ -2,10 +2,15 @@
   {"gpu":"RTX_4090","offer_id":18943999,"dph":0.38830555555555557,"status":"ok","cand_per_sec":1.34e9,"image":"cuda12.4","note":""},
   {"gpu":"RTX_3090","offer_id":26477572,"dph":0.14074074074074075,"status":"ok","cand_per_sec":1.84e9,"image":"cuda12.4","note":""},
   {"gpu":"RTX_3080","offer_id":29430929,"dph":0.09425925925925926,"status":"ok","cand_per_sec":1.57e9,"image":"cuda12.4","note":""},
+  {"gpu":"RTX_3080_Ti","offer_id":31444005,"dph":0.09872222222222221,"status":"ok","cand_per_sec":1.72e9,"image":"cuda12.4","note":"benchmark 10s"},
   {"gpu":"RTX_3060","offer_id":30739424,"dph":0.0572962962962963,"status":"ok","cand_per_sec":7.78e8,"image":"cuda12.4","note":""},
+  {"gpu":"RTX_3060_Ti","offer_id":30952119,"dph":0.06898148148148148,"status":"ok","cand_per_sec":1.08e9,"image":"cuda13.0","note":"benchmark 10s"},
   {"gpu":"RTX_4080","offer_id":30781310,"dph":0.10851851851851853,"status":"ok","cand_per_sec":1.31e9,"image":"cuda12.4","note":""},
+  {"gpu":"RTX_4080","offer_id":31637636,"dph":0.21472222222222223,"status":"ok","cand_per_sec":1.35e9,"image":"cuda12.4","note":"benchmark 10s"},
   {"gpu":"RTX_3070","offer_id":31136376,"dph":0.049388888888888885,"status":"ok","cand_per_sec":1.21e9,"image":"cuda12.4","note":""},
+  {"gpu":"RTX_3070_Ti","offer_id":12242594,"dph":0.08722222222222223,"status":"ok","cand_per_sec":1.26e9,"image":"cuda13.0","note":"benchmark 10s"},
   {"gpu":"RTX_4070","offer_id":29013531,"dph":0.08231481481481481,"status":"ok","cand_per_sec":9.53e8,"image":"cuda12.4","note":""},
+  {"gpu":"RTX_4070","offer_id":18246127,"dph":0.07505555555555556,"status":"ok","cand_per_sec":9.59e8,"image":"cuda13.0","note":"benchmark 10s"},
   {"gpu":"A100_SXM4","offer_id":30178907,"dph":0.6675925925925925,"status":"ok","cand_per_sec":2.57e9,"image":"cuda12.4","note":""},
   {"gpu":"H100_SXM","offer_id":21671170,"dph":1.502601851851852,"status":"ok","cand_per_sec":4.53e9,"image":"cuda12.4","note":""},
   {"gpu":"H100_NVL","offer_id":24548917,"dph":1.6013888888888888,"status":"ok","cand_per_sec":4.59e9,"image":"cuda12.4","note":""},
@@ -14,5 +19,6 @@
   {"gpu":"L40","offer_id":28021844,"dph":0.5761111111111111,"status":"ok","cand_per_sec":1.21e9,"image":"cuda12.4","note":""},
   {"gpu":"A10","offer_id":13756662,"dph":0.32796296296296296,"status":"ok","cand_per_sec":1.42e9,"image":"cuda12.4","note":""},
   {"gpu":"RTX_4060","offer_id":30827346,"dph":0.05472222222222223,"status":"ok","cand_per_sec":6.18e8,"image":"cuda13.0","note":"benchmark 10s"},
+  {"gpu":"RTX_4060_Ti","offer_id":31484844,"dph":0.08185185185185186,"status":"ok","cand_per_sec":6.41e8,"image":"cuda13.0","note":"benchmark 10s"},
   {"gpu":"RTX_5090","offer_id":29087334,"dph":0.4543,"status":"ok","cand_per_sec":3.08e9,"image":"cuda13.0","note":"benchmark 10s"}
 ]
