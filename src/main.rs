@@ -623,18 +623,16 @@ fn git_sha_short() -> Option<String> {
 }
 
 fn exp_checkpoint_limits(exp: u32) -> Vec<u64> {
-    if exp < 14 {
+    if exp <= 4 {
         return Vec::new();
     }
-    let step = match pow10_u64(14) {
+    // Ensure 10^exp == 1000 * 10^(exp-3), so k ranges 1..=1000.
+    let step = match pow10_u64(exp - 3) {
         Ok(v) => v,
         Err(_) => return Vec::new(),
     };
-    let steps = match pow10_u64(exp - 14) {
-        Ok(v) => v,
-        Err(_) => return Vec::new(),
-    };
-    if step == 0 || steps == 0 {
+    let steps = 1000u64;
+    if step == 0 {
         return Vec::new();
     }
     let mut v = Vec::with_capacity(steps as usize);
