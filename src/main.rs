@@ -576,52 +576,22 @@ fn gcd_u64(mut a: u64, mut b: u64) -> u64 {
 /// The wheel only considers candidates p where gcd(p,M)==1 and gcd(p+2,M)==1,
 /// so twin pairs involving prime factors of M are missed.
 fn count_wheel_missed_twins(wheel_m: u32, limit: u64) -> (u64, f64) {
-    // Find prime factors of M
-    let mut factors = Vec::new();
-    let mut m = wheel_m;
-    let mut d = 2u32;
-    while d * d <= m {
-        if m % d == 0 {
-            factors.push(d as u64);
-            while m % d == 0 {
-                m /= d;
-            }
-        }
-        d += 1;
-    }
-    if m > 1 {
-        factors.push(m as u64);
-    }
-
-    // For each prime factor q, candidate pairs are (q-2, q) and (q, q+2).
-    let mut seen = std::collections::BTreeSet::new();
+    // A twin prime (p, p+2) can only be "missed" if p or p+2 shares a factor with M.
+    // For true twin primes, that implies p or p+2 equals a prime factor of M, so
+    // all missed pairs must satisfy p <= M. We brute-force this small range to avoid
+    // logic gaps and keep correctness obvious.
     let mut count = 0u64;
     let mut sum = 0.0f64;
-
-    for &q in &factors {
-        // pair (q-2, q)
-        if q >= 5 && seen.insert(q - 2) {
-            let p = q - 2;
-            if p + 2 <= limit && is_prime_small(p) && is_prime_small(p + 2) {
-                let pc = gcd_u64(p, wheel_m as u64) == 1;
-                let p2c = gcd_u64(p + 2, wheel_m as u64) == 1;
-                if !(pc && p2c) {
-                    count += 1;
-                    sum += 1.0 / (p as f64) + 1.0 / ((p + 2) as f64);
-                }
-            }
+    let max_p = std::cmp::min(limit.saturating_sub(2), wheel_m as u64);
+    for p in 3..=max_p {
+        if !is_prime_small(p) || !is_prime_small(p + 2) {
+            continue;
         }
-        // pair (q, q+2)
-        if q >= 3 && seen.insert(q) {
-            let p = q;
-            if p + 2 <= limit && is_prime_small(p) && is_prime_small(p + 2) {
-                let pc = gcd_u64(p, wheel_m as u64) == 1;
-                let p2c = gcd_u64(p + 2, wheel_m as u64) == 1;
-                if !(pc && p2c) {
-                    count += 1;
-                    sum += 1.0 / (p as f64) + 1.0 / ((p + 2) as f64);
-                }
-            }
+        let pc = gcd_u64(p, wheel_m as u64) == 1;
+        let p2c = gcd_u64(p + 2, wheel_m as u64) == 1;
+        if !(pc && p2c) {
+            count += 1;
+            sum += 1.0 / (p as f64) + 1.0 / ((p + 2) as f64);
         }
     }
 

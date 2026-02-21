@@ -3,6 +3,9 @@ use std::path::PathBuf;
 use std::process::{Command, Output};
 
 fn main() {
+    // Allow custom cfg used in src/main.rs without triggering unexpected_cfgs.
+    println!("cargo:rustc-check-cfg=cfg(ptx_only)");
+
     let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
     let fatbin_path = out_dir.join("kernel.fatbin");
     let ptx_path = out_dir.join("kernel.ptx");
