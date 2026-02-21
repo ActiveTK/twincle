@@ -692,10 +692,12 @@ fn mod_pow_u64(mut a: u64, mut d: u64, m: u64) -> u64 {
     r
 }
 
+// Deterministic Miller-Rabin for u64 using a fixed base set.
 fn is_prime_u64(n: u64) -> bool {
     if n < 2 {
         return false;
     }
+    // Deterministic for 64-bit range with this base set.
     const BASES: [u64; 12] = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37];
     for &p in &BASES {
         if n == p {
