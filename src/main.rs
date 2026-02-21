@@ -14,6 +14,7 @@ use std::sync::{Mutex, OnceLock};
 use std::thread;
 use std::time::{Duration, Instant};
 use time::{OffsetDateTime, format_description};
+use serde_json::json;
 
 mod cpu;
 
@@ -248,7 +249,7 @@ struct Args {
 
 /// Runs the search for a given wheel configuration.
 /// If `max_duration` is Some, it stops after that duration.
-/// Returns (total_twins, total_sum, elapsed_secs, candidates_processed).
+/// Returns (total_twins, total_sum, elapsed_secs, candidates_processed, optional segment results).
 fn run_search(
     wheel_m: u32,
     limit: u64,
@@ -261,6 +262,7 @@ fn run_search(
     num_gpus: u32,
     mp: &MultiProgress,
     max_duration: Option<Duration>,
+    mut exp_log: Option<ExpLog>,
 ) -> Result<(u64, f64, f64, u64)> {
     let k_end_excl = (limit / (wheel_m as u64)) + 2;
 
@@ -293,6 +295,7 @@ fn run_search(
     let (tx, rx) = mpsc::channel::<SegResult>();
     let run0 = Instant::now();
 
+    let checkpoint_ks = exp_log.as_ref().map(|l| Arc::new(l.k_floors.clone()));
     let mut handles = Vec::with_capacity(num_gpus as usize);
     for gpu_id in 0..num_gpus {
         let residues = Arc::clone(&residues);
@@ -302,6 +305,7 @@ fn run_search(
         let large_inv_m_mod_p = Arc::clone(&large_inv_m);
         let next_k_low = Arc::clone(&next_k_low);
         let pb = Arc::clone(&pb);
+        let checkpoint_ks = checkpoint_ks.clone();
         let tx = tx.clone();
         let handle = thread::Builder::new()
             .name(format!("gpu-{}", gpu_id))
@@ -320,6 +324,7 @@ fn run_search(
                     next_k_low,
                     pb,
                     tx,
+                    checkpoint_ks,
                 )
             })?;
         handles.push(handle);
@@ -331,11 +336,15 @@ fn run_search(
     let mut segments_done: u64 = 0;
     let mut last_msg = Instant::now();
     let mut ema_speed: f64 = 0.0;
-
     for r in rx.iter() {
         total.add(r.sum);
         total_twins += r.count;
         segments_done += 1;
+        if let Some(ref mut log) = exp_log {
+            if let Err(e) = log.on_segment(r) {
+                print_mp_and_log(mp, &format!("exp log error: {e}"));
+            }
+        }
 
         if let Some(d) = max_duration {
             if run0.elapsed() >= d {
@@ -394,7 +403,10 @@ fn run_search(
 }
 
 /// Per-segment result sent back through the channel.
+#[derive(Clone)]
 struct SegResult {
+    k_low: u64,
+    k_count: u64,
     sum: f64,
     count: u64,
 }
@@ -598,6 +610,257 @@ fn count_wheel_missed_twins(wheel_m: u32, limit: u64) -> (u64, f64) {
     (count, sum)
 }
 
+fn git_sha_short() -> Option<String> {
+    let output = std::process::Command::new("git")
+        .args(["rev-parse", "--short=12", "HEAD"])
+        .output()
+        .ok()?;
+    if !output.status.success() {
+        return None;
+    }
+    let s = String::from_utf8_lossy(&output.stdout).trim().to_string();
+    if s.is_empty() { None } else { Some(s) }
+}
+
+fn exp_checkpoint_limits(exp: u32) -> Vec<u64> {
+    if exp < 14 {
+        return Vec::new();
+    }
+    let step = match pow10_u64(14) {
+        Ok(v) => v,
+        Err(_) => return Vec::new(),
+    };
+    let steps = match pow10_u64(exp - 14) {
+        Ok(v) => v,
+        Err(_) => return Vec::new(),
+    };
+    if step == 0 || steps == 0 {
+        return Vec::new();
+    }
+    let mut v = Vec::with_capacity(steps as usize);
+    for k in 1..=steps {
+        v.push(k.saturating_mul(step));
+    }
+    v
+}
+
+fn reserve_k_range(
+    next_k_low: &AtomicU64,
+    segment_k: u64,
+    k_end_excl: u64,
+    checkpoint_ks: Option<&[u64]>,
+) -> Option<(u64, u64)> {
+    loop {
+        let k_low = next_k_low.load(Ordering::Relaxed);
+        if k_low >= k_end_excl {
+            return None;
+        }
+        let mut k_high = k_low.saturating_add(segment_k).min(k_end_excl);
+        if let Some(cks) = checkpoint_ks {
+            if let Some(boundary) = cks.iter().copied().find(|&b| b > k_low) {
+                if boundary < k_high {
+                    k_high = boundary;
+                }
+            }
+        }
+        if next_k_low
+            .compare_exchange(k_low, k_high, Ordering::SeqCst, Ordering::SeqCst)
+            .is_ok()
+        {
+            let k_count = k_high.saturating_sub(k_low);
+            if k_count == 0 {
+                return None;
+            }
+            return Some((k_low, k_count));
+        }
+    }
+}
+
+fn mod_mul_u64(a: u64, b: u64, m: u64) -> u64 {
+    ((a as u128 * b as u128) % (m as u128)) as u64
+}
+
+fn mod_pow_u64(mut a: u64, mut d: u64, m: u64) -> u64 {
+    let mut r = 1u64;
+    while d > 0 {
+        if d & 1 == 1 {
+            r = mod_mul_u64(r, a, m);
+        }
+        a = mod_mul_u64(a, a, m);
+        d >>= 1;
+    }
+    r
+}
+
+fn is_prime_u64(n: u64) -> bool {
+    if n < 2 {
+        return false;
+    }
+    const BASES: [u64; 12] = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37];
+    for &p in &BASES {
+        if n == p {
+            return true;
+        }
+        if n % p == 0 {
+            return n == p;
+        }
+    }
+    let mut d = n - 1;
+    let mut s = 0u32;
+    while d & 1 == 0 {
+        d >>= 1;
+        s += 1;
+    }
+    for &a in &BASES {
+        if a % n == 0 {
+            continue;
+        }
+        let mut x = mod_pow_u64(a, d, n);
+        if x == 1 || x == n - 1 {
+            continue;
+        }
+        let mut witness = true;
+        for _ in 1..s {
+            x = mod_mul_u64(x, x, n);
+            if x == n - 1 {
+                witness = false;
+                break;
+            }
+        }
+        if witness {
+            return false;
+        }
+    }
+    true
+}
+
+struct ExpLog {
+    writer: BufWriter<std::fs::File>,
+    wheel_m: u32,
+    limits: Vec<u64>,
+    k_floors: Vec<u64>,
+    remainders: Vec<u64>,
+    next_idx: usize,
+    pending: std::collections::BTreeMap<u64, SegResult>,
+    next_k_low: u64,
+    sum: f64,
+    count: u64,
+    residues: Arc<Vec<u32>>,
+}
+
+impl ExpLog {
+    fn new(
+        path: &str,
+        args: &Args,
+        wheel_m: u32,
+        segment_k: u64,
+        residues: Arc<Vec<u32>>,
+        gpu_names: &[String],
+    ) -> Result<Option<Self>> {
+        let exp = match args.exp {
+            Some(e) => e,
+            None => return Ok(None),
+        };
+        if args.benchmark {
+            return Ok(None);
+        }
+        let limits = exp_checkpoint_limits(exp);
+        if limits.is_empty() {
+            return Ok(None);
+        }
+        let mut k_floors = Vec::with_capacity(limits.len());
+        let mut remainders = Vec::with_capacity(limits.len());
+        for &lim in &limits {
+            k_floors.push(lim / (wheel_m as u64));
+            remainders.push(lim % (wheel_m as u64));
+        }
+
+        let mut writer = BufWriter::new(
+            OpenOptions::new().create(true).write(true).truncate(true).open(path)?
+        );
+        let git_sha = git_sha_short().unwrap_or_else(|| "unknown".to_string());
+        let meta = json!({
+            "type": "meta",
+            "timestamp": timestamp(),
+            "git_sha": git_sha,
+            "cmdline": std::env::args().collect::<Vec<_>>().join(" "),
+            "exp": args.exp,
+            "limit": pow10_u64(exp).ok(),
+            "wheel_m": wheel_m,
+            "segment_k": segment_k,
+            "segment_mem_frac": args.segment_mem_frac,
+            "auto_tune_seg": args.auto_tune_seg,
+            "residues_len": residues.len(),
+            "gpu_names": gpu_names,
+            "note": "checkpoint sums are exact for limit_requested, computed as full k<k_floor plus partial k_floor by residue filter."
+        });
+        writeln!(writer, "{}", meta)?;
+
+        Ok(Some(Self {
+            writer,
+            wheel_m,
+            limits,
+            k_floors,
+            remainders,
+            next_idx: 0,
+            pending: std::collections::BTreeMap::new(),
+            next_k_low: 0,
+            sum: 0.0,
+            count: 0,
+            residues,
+        }))
+    }
+
+    fn on_segment(&mut self, seg: SegResult) -> Result<()> {
+        self.pending.insert(seg.k_low, seg);
+        while let Some(seg) = self.pending.remove(&self.next_k_low) {
+            self.sum += seg.sum;
+            self.count += seg.count;
+            self.next_k_low = self.next_k_low.saturating_add(seg.k_count);
+
+            while self.next_idx < self.k_floors.len()
+                && self.next_k_low >= self.k_floors[self.next_idx]
+            {
+                let k_floor = self.k_floors[self.next_idx];
+                let rem = self.remainders[self.next_idx];
+                let mut partial_sum = 0.0f64;
+                let mut partial_count = 0u64;
+                if k_floor > 0 {
+                    let base = (self.wheel_m as u64).saturating_mul(k_floor);
+                    for &r in self.residues.iter() {
+                        let r_u = r as u64;
+                        if r_u > rem {
+                            break;
+                        }
+                        let p = base + r_u;
+                        if p < 3 {
+                            continue;
+                        }
+                        if is_prime_u64(p) && is_prime_u64(p + 2) {
+                            partial_count += 1;
+                            partial_sum += 1.0 / (p as f64) + 1.0 / ((p + 2) as f64);
+                        }
+                    }
+                }
+
+                let total_count = self.count + partial_count;
+                let total_sum = self.sum + partial_sum;
+                let rec = json!({
+                    "type": "checkpoint",
+                    "limit_requested": self.limits[self.next_idx],
+                    "k_floor": k_floor,
+                    "limit_covered": self.limits[self.next_idx],
+                    "twins": total_count,
+                    "sum": total_sum
+                });
+                writeln!(self.writer, "{}", rec)?;
+                self.next_idx += 1;
+            }
+        }
+        Ok(())
+    }
+}
+
 fn format_with_commas(n: u64) -> String {
     let s = n.to_string();
     let mut result = String::with_capacity(s.len() + s.len() / 3);
@@ -750,6 +1013,7 @@ fn auto_tune_segment_k(
             num_gpus,
             mp,
             Some(Duration::from_secs(2)),
+            None,
         )?;
         let speed = if elapsed > 0.0 { cand as f64 / elapsed } else { 0.0 };
         let msg = format!("Auto-tune seg_k={} => {:.2e} cand/s", format_with_commas(k), speed);
@@ -798,6 +1062,7 @@ fn gpu_worker(
     next_k_low: Arc<AtomicU64>,
     pb: Arc<ProgressBar>,
     tx: mpsc::Sender<SegResult>,
+    checkpoint_ks: Option<Arc<Vec<u64>>>,
 ) -> Result<()> {
     let device = Device::get_device(device_id)?;
     let _ctx = CudaContext::new(device)?;
@@ -849,15 +1114,15 @@ fn gpu_worker(
     let mut h_final_count = vec![0u64; 1];
 
     loop {
-        let k_low = next_k_low.fetch_add(segment_k, Ordering::Relaxed);
-        if k_low >= k_end_excl {
-            break;
-        }
-
-        let k_count = (k_end_excl - k_low).min(segment_k);
-        if k_count == 0 {
-            break;
-        }
+        let (k_low, k_count) = match reserve_k_range(
+            &next_k_low,
+            segment_k,
+            k_end_excl,
+            checkpoint_ks.as_deref().map(|v| v.as_slice()),
+        ) {
+            Some(v) => v,
+            None => break,
+        };
 
         // Stream-ordered clear (avoids default-stream serialisation)
         unsafe {
@@ -956,6 +1221,8 @@ fn gpu_worker(
 
         if tx
             .send(SegResult {
+                k_low,
+                k_count,
                 sum: seg_sum.value(),
                 count: seg_count,
             })
@@ -1218,10 +1485,12 @@ fn main() -> Result<()> {
     }
 
     let mut min_vram: usize = usize::MAX;
+    let mut gpu_names: Vec<String> = Vec::new();
     for i in 0..num_gpus {
         let dev = Device::get_device(i)?;
         let mem = dev.total_memory()? as usize;
         let name = dev.name()?;
+        gpu_names.push(name.clone());
         let msg = format!(
             "GPU {}: {} ({:.1} GB VRAM)",
             i,
@@ -1341,6 +1610,7 @@ fn main() -> Result<()> {
                 num_gpus,
                 &mp,
                 Some(duration),
+                None,
             )?;
 
             let cand_per_sec = if elapsed > 0.0 {
@@ -1382,6 +1652,8 @@ fn main() -> Result<()> {
                 large_inv_m,
                 num_gpus,
                 &mp,
+                &args,
+                gpu_names.clone(),
             );
         }
 
@@ -1397,6 +1669,7 @@ fn main() -> Result<()> {
             num_gpus,
             &mp,
             duration,
+            None,
         )?;
 
         let speed = cand as f64 / elapsed;
@@ -1483,6 +1756,8 @@ fn main() -> Result<()> {
             large_inv_m,
             num_gpus,
             &mp,
+            &args,
+            gpu_names.clone(),
         )?;
     }
 
@@ -1500,6 +1775,8 @@ fn final_report(
     large_inv_m: Arc<Vec<u32>>,
     num_gpus: u32,
     mp: &MultiProgress,
+    args: &Args,
+    gpu_names: Vec<String>,
 ) -> Result<()> {
     let msg = format!("Running final search with M={wheel_m}...");
     print_mp_and_log(mp, &msg);
@@ -1511,6 +1788,15 @@ fn final_report(
         );
         print_mp_and_log(mp, &msg);
     }
+
+    let exp_log = ExpLog::new(
+        &format!("exp_log_e{}.jsonl", args.exp.unwrap_or(0)),
+        args,
+        wheel_m,
+        segment_k,
+        Arc::clone(&residues),
+        &gpu_names,
+    )?;
 
     let (total_twins, total_sum, elapsed, _cand) = run_search(
         wheel_m,
@@ -1524,6 +1810,7 @@ fn final_report(
         num_gpus,
         mp,
         None,
+        exp_log,
     )?;
 
     let final_twins = total_twins + missed_count;
