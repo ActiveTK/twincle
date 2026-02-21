@@ -71,8 +71,28 @@ fn main() {
         sm120_args.push("arch=compute_120,code=compute_120".to_string());
     }
 
+    // B200 (SM100) 対応: nvccが対応していればPTXを含める。
+    // CUDA_SM100=1 で強制、CUDA_SM100=0 で無効化、未指定なら自動検出。
+    let sm100_mode = env::var("CUDA_SM100").ok();
+    let try_sm100 = match sm100_mode.as_deref() {
+        Some("1") => true,
+        Some("0") => false,
+        _ => !ptx_only,
+    };
+
+    let mut sm100_args: Vec<String> = Vec::new();
+    if try_sm100 && !ptx_only {
+        sm100_args.push("-gencode".to_string());
+        sm100_args.push("arch=compute_100,code=sm_100".to_string());
+        sm100_args.push("-gencode".to_string());
+        sm100_args.push("arch=compute_100,code=compute_100".to_string());
+    }
+
     let output_path = if ptx_only { &ptx_path } else { &fatbin_path };
-    let output = run_nvcc(&base_args, &sm120_args, output_path);
+    let mut extra_args = Vec::new();
+    extra_args.extend_from_slice(&sm120_args);
+    extra_args.extend_from_slice(&sm100_args);
+    let output = run_nvcc(&base_args, &extra_args, output_path);
     if !output.status.success() && !ptx_only {
         let stderr = String::from_utf8_lossy(&output.stderr);
         let unsupported = stderr.contains("Unsupported gpu architecture")
@@ -80,6 +100,7 @@ fn main() {
             || stderr.contains("invalid value for --gpu-name");
         if unsupported && sm120_mode.as_deref() != Some("1") {
             println!("cargo:warning=SM120 not supported by nvcc; building without RTX 5090 PTX.");
+            // Retry without SM120 and SM100 extras.
             let output2 = run_nvcc(&base_args, &[], output_path);
             if !output2.status.success() {
                 panic!(

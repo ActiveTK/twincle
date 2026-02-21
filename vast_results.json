@@ -20,5 +20,6 @@
   {"gpu":"A10","offer_id":13756662,"dph":0.32796296296296296,"status":"ok","cand_per_sec":1.42e9,"image":"cuda12.4","note":""},
   {"gpu":"RTX_4060","offer_id":30827346,"dph":0.05472222222222223,"status":"ok","cand_per_sec":6.18e8,"image":"cuda13.0","note":"benchmark 10s"},
   {"gpu":"RTX_4060_Ti","offer_id":31484844,"dph":0.08185185185185186,"status":"ok","cand_per_sec":6.41e8,"image":"cuda13.0","note":"benchmark 10s"},
+  {"gpu":"B200","offer_id":30936570,"dph":2.6482843137254903,"status":"ok","cand_per_sec":4.91e9,"image":"cuda13.0","note":"benchmark 10s"},
   {"gpu":"RTX_5090","offer_id":29087334,"dph":0.4543,"status":"ok","cand_per_sec":3.08e9,"image":"cuda13.0","note":"benchmark 10s"}
 ]
