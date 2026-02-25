@@ -5,9 +5,11 @@ ARG CUDA_SM120=0
 ARG CUDA_PTX_ONLY=0
 
 FROM nvidia/cuda:${CUDA_TAG}-devel-ubuntu${UBUNTU_VERSION} AS build
+ARG CUDA_SM120
+ARG CUDA_PTX_ONLY
 
 WORKDIR /src
-COPY rustup-init /usr/local/bin/rustup-init
+COPY benchmarks/rustup-init /usr/local/bin/rustup-init
 RUN chmod +x /usr/local/bin/rustup-init && \
     /usr/local/bin/rustup-init -y
 ENV PATH="/root/.cargo/bin:${PATH}"
@@ -18,6 +20,8 @@ COPY . .
 RUN cargo build --release
 
 FROM nvidia/cuda:${CUDA_TAG}-runtime-ubuntu${UBUNTU_VERSION}
+ARG CUDA_SM120
+ARG CUDA_PTX_ONLY
 WORKDIR /app
 COPY --from=build /src/target/release/twincle /app/twincle
 

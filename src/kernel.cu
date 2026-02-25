@@ -379,6 +379,14 @@ static __device__ __forceinline__ unsigned long long warp_reduce_sum_u64(unsigne
     return val;
 }
 
+static __device__ __forceinline__ void kahan_add(double &sum, double &c, double x)
+{
+    double y = x - c;
+    double t = sum + y;
+    c = (t - sum) - y;
+    sum = t;
+}
+
 extern "C" __global__ void twin_sum_wheel(
     unsigned long long k_low,
     unsigned long long k_count,
@@ -400,6 +408,7 @@ extern "C" __global__ void twin_sum_wheel(
     unsigned int stride = blockDim.x * gridDim.x;
 
     double local_sum = 0.0;
+    double local_c = 0.0;
     unsigned long long local_count = 0ULL;
 
     for (unsigned int w = tid; w < total_words; w += stride)
@@ -444,7 +453,8 @@ extern "C" __global__ void twin_sum_wheel(
             if (p + 2ULL > limit)
                 continue;
 
-            local_sum += 1.0 / (double)p + 1.0 / (double)(p + 2ULL);
+            double term = 1.0 / (double)p + 1.0 / (double)(p + 2ULL);
+            kahan_add(local_sum, local_c, term);
             local_count += 1ULL;
         }
     }
@@ -490,11 +500,12 @@ extern "C" __global__ void reduce_block_results(
     unsigned long long *__restrict__ out_count)
 {
     double sum = 0.0;
+    double c = 0.0;
     unsigned long long cnt = 0ULL;
 
     for (unsigned int i = threadIdx.x; i < n; i += blockDim.x)
     {
-        sum += block_sums[i];
+        kahan_add(sum, c, block_sums[i]);
         cnt += block_counts[i];
     }
 
