@@ -224,13 +224,13 @@ struct Args {
     #[arg(long)]
     exp: Option<u32>,
 
-    /// Inclusive start of the k-range shard (p = M*k + r).
+    /// Enable fixed 10-way split mode.
     #[arg(long)]
-    k_start: Option<u64>,
+    splitmode: bool,
 
-    /// Exclusive end of the k-range shard (p = M*k + r).
+    /// Which split to run in split mode (1..=10).
     #[arg(long)]
-    k_end: Option<u64>,
+    split: Option<u32>,
 
     /// Wheel modulus: 30 / 210 / 30030
     #[arg(long, default_value = "30030")]
@@ -271,7 +271,8 @@ struct Args {
 /// Returns (total_twins, total_sum, elapsed_secs, candidates_processed, optional segment results).
 fn run_search(
     wheel_m: u32,
-    limit: u64,
+    lower_limit_exclusive: u64,
+    upper_limit_inclusive: u64,
     k_start: u64,
     k_end_excl: u64,
     segment_k: u64,
@@ -306,9 +307,11 @@ fn run_search(
         (total_k + segment_k - 1) / segment_k
     };
     pb.set_message(format!(
-        "{} M={} | k=[{}, {}) | seg_k={} | {} segments",
+        "{} M={} | p=({}, {}] | k=[{}, {}) | seg_k={} | {} segments",
         msg_prefix,
         wheel_m,
+        format_with_commas(lower_limit_exclusive),
+        format_with_commas(upper_limit_inclusive),
         format_with_commas(k_start),
         format_with_commas(k_end_excl),
         format_with_commas(segment_k),
@@ -339,6 +342,8 @@ fn run_search(
                 gpu_worker(
                     gpu_id,
                     wheel_m,
+                    lower_limit_exclusive,
+                    upper_limit_inclusive,
                     residues,
                     small_primes,
                     small_inv_m_mod_p,
@@ -346,7 +351,6 @@ fn run_search(
                     large_inv_m_mod_p,
                     segment_k,
                     k_end_excl,
-                    limit,
                     next_k_low,
                     pb,
                     tx,
@@ -435,6 +439,16 @@ struct SegResult {
     k_count: u64,
     sum: f64,
     count: u64,
+}
+
+#[derive(Clone, Copy)]
+struct SplitConfig {
+    index: u32,
+    count: u32,
+    lower_limit_exclusive: u64,
+    upper_limit_inclusive: u64,
+    k_start: u64,
+    k_end_excl: u64,
 }
 
 #[derive(Default, Clone, Copy)]
@@ -636,6 +650,38 @@ fn count_wheel_missed_twins(wheel_m: u32, limit: u64) -> (u64, f64) {
     (count, sum)
 }
 
+fn split_config(args: &Args, limit: u64) -> Result<Option<SplitConfig>> {
+    if !args.splitmode {
+        return Ok(None);
+    }
+    let split = args
+        .split
+        .ok_or_else(|| anyhow::anyhow!("--splitmode requires --split"))?;
+    if !(1..=10).contains(&split) {
+        anyhow::bail!("--split must be in 1..=10");
+    }
+    let exp = args
+        .exp
+        .ok_or_else(|| anyhow::anyhow!("--splitmode requires --exp"))?;
+    let unit = pow10_u64(exp - 1)?;
+    let lower_limit_exclusive = ((split - 1) as u64).saturating_mul(unit);
+    let upper_limit_inclusive = if split == 10 {
+        limit
+    } else {
+        (split as u64).saturating_mul(unit)
+    };
+    let k_start = lower_limit_exclusive / (args.wheel as u64);
+    let k_end_excl = (upper_limit_inclusive / (args.wheel as u64)) + 2;
+    Ok(Some(SplitConfig {
+        index: split,
+        count: 10,
+        lower_limit_exclusive,
+        upper_limit_inclusive,
+        k_start,
+        k_end_excl,
+    }))
+}
+
 fn git_sha_short() -> Option<String> {
     let output = std::process::Command::new("git")
         .args(["rev-parse", "--short=12", "HEAD"])
@@ -764,8 +810,9 @@ struct ExpLog {
     writer: BufWriter<std::fs::File>,
     wheel_m: u32,
     part_mode: bool,
-    k_start: u64,
-    k_end_excl: u64,
+    split: Option<u32>,
+    lower_limit_exclusive: u64,
+    upper_limit_inclusive: u64,
     limits: Vec<u64>,
     k_floors: Vec<u64>,
     remainders: Vec<u64>,
@@ -800,19 +847,23 @@ impl ExpLog {
         if args.benchmark {
             return Ok(None);
         }
-        let k_start = args.k_start.unwrap_or(0);
-        let k_end_excl = args.k_end.unwrap_or((limit / (wheel_m as u64)) + 2);
-        let part_mode = args.k_start.is_some() || args.k_end.is_some();
+        let split_cfg = split_config(args, limit)?;
+        let lower_limit_exclusive = split_cfg
+            .as_ref()
+            .map(|cfg| cfg.lower_limit_exclusive)
+            .unwrap_or(0);
+        let upper_limit_inclusive = split_cfg
+            .as_ref()
+            .map(|cfg| cfg.upper_limit_inclusive)
+            .unwrap_or(limit);
+        let part_mode = split_cfg.is_some();
         if !part_mode && args.exp.is_none() {
             return Ok(None);
         }
         let limits = match args.exp {
             Some(exp) => exp_checkpoint_limits(exp)
                 .into_iter()
-                .filter(|&lim| {
-                    let k_floor = lim / (wheel_m as u64);
-                    k_floor >= k_start && k_floor < k_end_excl
-                })
+                .filter(|&lim| lim > lower_limit_exclusive && lim <= upper_limit_inclusive)
                 .collect::<Vec<_>>(),
             None => Vec::new(),
         };
@@ -837,15 +888,18 @@ impl ExpLog {
             "limit": limit,
             "wheel_m": wheel_m,
             "part_mode": part_mode,
-            "k_start": k_start,
-            "k_end": k_end_excl,
+            "split_mode": part_mode,
+            "split": split_cfg.as_ref().map(|cfg| cfg.index),
+            "split_count": split_cfg.as_ref().map(|cfg| cfg.count),
+            "range_start_exclusive": lower_limit_exclusive,
+            "range_end_inclusive": upper_limit_inclusive,
             "segment_k": segment_k,
             "segment_mem_frac": args.segment_mem_frac,
             "auto_tune_seg": args.auto_tune_seg,
             "residues_len": residues.len(),
             "gpu_names": gpu_names,
             "note": if part_mode {
-                "checkpoint sums are shard-local partial sums from k_start up to limit_requested within the shard; final excludes wheel-missed correction."
+                "checkpoint sums are split-local partial sums over (range_start_exclusive, limit_requested]; final excludes wheel-missed correction."
             } else {
                 "checkpoint sums are exact for limit_requested, computed as full k<k_floor plus partial k_floor by residue filter; error bounds are IEEE-754 gamma_n upper bounds."
             }
@@ -856,14 +910,15 @@ impl ExpLog {
             writer,
             wheel_m,
             part_mode,
-            k_start,
-            k_end_excl,
+            split: split_cfg.as_ref().map(|cfg| cfg.index),
+            lower_limit_exclusive,
+            upper_limit_inclusive,
             limits,
             k_floors,
             remainders,
             next_idx: 0,
             pending: std::collections::BTreeMap::new(),
-            next_k_low: k_start,
+            next_k_low: split_cfg.as_ref().map(|cfg| cfg.k_start).unwrap_or(0),
             sum: Kahan::default(),
             count: 0,
             residues,
@@ -920,8 +975,9 @@ impl ExpLog {
                 let rec = json!({
                     "type": "checkpoint",
                     "limit_requested": self.limits[self.next_idx],
-                    "k_start": self.k_start,
-                    "k_end": self.k_end_excl,
+                    "split": self.split,
+                    "range_start_exclusive": self.lower_limit_exclusive,
+                    "range_end_inclusive": self.upper_limit_inclusive,
                     "k_floor": k_floor,
                     "limit_covered": self.limits[self.next_idx],
                     "twins": total_count,
@@ -957,8 +1013,9 @@ impl ExpLog {
             "timestamp": timestamp(),
             "part_mode": self.part_mode,
             "limit": limit,
-            "k_start": self.k_start,
-            "k_end": self.k_end_excl,
+            "split": self.split,
+            "range_start_exclusive": self.lower_limit_exclusive,
+            "range_end_inclusive": self.upper_limit_inclusive,
             "twins": final_twins,
             "sum": final_sum,
             "b2_star": b2_star,
@@ -976,10 +1033,9 @@ impl ExpLog {
 }
 
 fn shard_log_path(args: &Args) -> Option<String> {
-    match (args.k_start, args.k_end) {
-        (Some(k_start), Some(k_end)) => Some(format!("result_part[{k_start}-{k_end}].json")),
-        _ => None,
-    }
+    args.split
+        .filter(|_| args.splitmode)
+        .map(|split| format!("result_part{split}of10.json"))
 }
 
 fn format_with_commas(n: u64) -> String {
@@ -1066,6 +1122,7 @@ fn auto_tune_segment_k(
     for &k in &cands {
         let (_twins, _sum, elapsed, cand, _exp_log) = run_search(
             wheel_m,
+            0,
             limit,
             0,
             (limit / (wheel_m as u64)) + 2,
@@ -1116,6 +1173,8 @@ fn estimate_seconds_for_limit(
 fn gpu_worker(
     device_id: u32,
     wheel_m: u32,
+    lower_limit_exclusive: u64,
+    upper_limit_inclusive: u64,
     residues: Arc<Vec<u32>>,
     small_primes: Arc<Vec<u32>>,
     small_inv_m_mod_p: Arc<Vec<u32>>,
@@ -1123,7 +1182,6 @@ fn gpu_worker(
     large_inv_m_mod_p: Arc<Vec<u32>>,
     segment_k: u64,
     k_end_excl: u64,
-    limit: u64,
     next_k_low: Arc<AtomicU64>,
     pb: Arc<ProgressBar>,
     tx: mpsc::Sender<SegResult>,
@@ -1254,7 +1312,8 @@ fn gpu_worker(
                     wheel_m as u32,
                     d_residues.as_device_ptr(),
                     res_len as i32,
-                    limit as u64,
+                    lower_limit_exclusive as u64,
+                    upper_limit_inclusive as u64,
                     d_comp_p.as_device_ptr(),
                     d_comp_p2.as_device_ptr(),
                     d_block_sums.as_device_ptr(),
@@ -1316,17 +1375,13 @@ fn main() -> Result<()> {
     if args.benchmark && args.test_wheels {
         anyhow::bail!("--benchmark and --test-wheels cannot be used together");
     }
-    match (args.k_start, args.k_end) {
-        (Some(k_start), Some(k_end)) => {
-            if k_start >= k_end {
-                anyhow::bail!("--k-start must be smaller than --k-end");
-            }
-            if args.test_wheels {
-                anyhow::bail!("--test-wheels cannot be used with --k-start/--k-end");
-            }
+    if args.splitmode {
+        let _ = split_config(&args, limit)?;
+        if args.test_wheels {
+            anyhow::bail!("--test-wheels cannot be used with --splitmode");
         }
-        (None, None) => {}
-        _ => anyhow::bail!("--k-start and --k-end must be specified together"),
+    } else if args.split.is_some() {
+        anyhow::bail!("--split requires --splitmode");
     }
 
     let mp = MultiProgress::new();
@@ -1464,6 +1519,7 @@ fn main() -> Result<()> {
             let duration = Duration::from_secs(args.benchmark_seconds.max(1));
             let (_twins, _sum, elapsed, cand, _exp_log) = run_search(
                 w,
+                0,
                 limit,
                 0,
                 (limit / (w as u64)) + 2,
@@ -1523,8 +1579,9 @@ fn main() -> Result<()> {
             );
         }
 
-            let (_twins, _sum, elapsed, cand, _exp_log) = run_search(
+        let (_twins, _sum, elapsed, cand, _exp_log) = run_search(
             w,
+            0,
             limit,
             0,
             (limit / (w as u64)) + 2,
@@ -1646,25 +1703,28 @@ fn final_report(
     args: &Args,
     gpu_names: Vec<String>,
 ) -> Result<()> {
-    let k_start = args.k_start.unwrap_or(0);
-    let full_k_end_excl = (limit / (wheel_m as u64)) + 2;
-    let k_end_excl = args.k_end.unwrap_or(full_k_end_excl);
-    let part_mode = args.k_start.is_some() || args.k_end.is_some();
-    if k_end_excl > full_k_end_excl {
-        anyhow::bail!(
-            "--k-end={} exceeds max k_end={} for limit={} and wheel={}",
-            k_end_excl,
-            full_k_end_excl,
-            limit,
-            wheel_m
-        );
-    }
+    let split_cfg = split_config(args, limit)?;
+    let part_mode = split_cfg.is_some();
+    let lower_limit_exclusive = split_cfg
+        .as_ref()
+        .map(|cfg| cfg.lower_limit_exclusive)
+        .unwrap_or(0);
+    let upper_limit_inclusive = split_cfg
+        .as_ref()
+        .map(|cfg| cfg.upper_limit_inclusive)
+        .unwrap_or(limit);
+    let k_start = split_cfg.as_ref().map(|cfg| cfg.k_start).unwrap_or(0);
+    let k_end_excl = split_cfg
+        .as_ref()
+        .map(|cfg| cfg.k_end_excl)
+        .unwrap_or((limit / (wheel_m as u64)) + 2);
 
     let msg = if part_mode {
         format!(
-            "Running shard search with M={wheel_m}, k=[{}, {})...",
-            format_with_commas(k_start),
-            format_with_commas(k_end_excl)
+            "Running split {} of 10 with M={wheel_m}, p=({}, {}]...",
+            split_cfg.map(|cfg| cfg.index).unwrap_or(0),
+            format_with_commas(lower_limit_exclusive),
+            format_with_commas(upper_limit_inclusive)
         )
     } else {
         format!("Running final search with M={wheel_m}...")
@@ -1697,7 +1757,8 @@ fn final_report(
 
     let (total_twins, total_sum, elapsed, _cand, mut exp_log) = run_search(
         wheel_m,
-        limit,
+        lower_limit_exclusive,
+        upper_limit_inclusive,
         k_start,
         k_end_excl,
         segment_k,
@@ -1761,9 +1822,10 @@ fn final_report(
     }
     let msg = if part_mode {
         format!(
-            "Shard partial sum for k=[{}, {}): {:.17}",
-            format_with_commas(k_start),
-            format_with_commas(k_end_excl),
+            "Split {} partial sum for p=({}, {}]: {:.17}",
+            split_cfg.map(|cfg| cfg.index).unwrap_or(0),
+            format_with_commas(lower_limit_exclusive),
+            format_with_commas(upper_limit_inclusive),
             final_sum
         )
     } else {

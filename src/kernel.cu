@@ -395,7 +395,8 @@ extern "C" __global__ void twin_sum_wheel(
     unsigned int M,
     const unsigned int *__restrict__ residues,
     int R,
-    unsigned long long limit,
+    unsigned long long lower_limit_exclusive,
+    unsigned long long upper_limit_inclusive,
     const unsigned long long *__restrict__ comp_p_words,
     const unsigned long long *__restrict__ comp_p2_words,
     double *__restrict__ block_sums,
@@ -450,7 +451,9 @@ extern "C" __global__ void twin_sum_wheel(
 
             if (p < 3ULL)
                 continue;
-            if (p + 2ULL > limit)
+            if (p <= lower_limit_exclusive)
+                continue;
+            if (p + 2ULL > upper_limit_inclusive)
                 continue;
 
             double term = 1.0 / (double)p + 1.0 / (double)(p + 2ULL);

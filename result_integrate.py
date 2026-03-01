@@ -72,26 +72,31 @@ def load_part(path: Path) -> dict:
     }
 
 
-def summarize_coverage(parts: list[dict], full_k_end: int) -> dict:
-    ranges = sorted((p["final"]["k_start"], p["final"]["k_end"]) for p in parts)
+def summarize_coverage(parts: list[dict], limit: int) -> dict:
+    ranges = sorted(
+        (int(p["final"]["range_start_exclusive"]), int(p["final"]["range_end_inclusive"]))
+        for p in parts
+    )
     merged: list[list[int]] = []
     has_overlap = False
-    for start, end in ranges:
-        if not merged or start > merged[-1][1]:
+    for start_exclusive, end_inclusive in ranges:
+        start = start_exclusive + 1
+        end = end_inclusive
+        if not merged or start > merged[-1][1] + 1:
             merged.append([start, end])
             continue
-        if start < merged[-1][1]:
+        if start <= merged[-1][1]:
             has_overlap = True
         merged[-1][1] = max(merged[-1][1], end)
     gaps = []
-    cursor = 0
+    cursor = 1
     for start, end in merged:
         if start > cursor:
-            gaps.append([cursor, start])
-        cursor = max(cursor, end)
-    if cursor < full_k_end:
-        gaps.append([cursor, full_k_end])
-    complete_for_limit = len(merged) == 1 and merged[0] == [0, full_k_end] and not has_overlap
+            gaps.append([cursor, start - 1])
+        cursor = max(cursor, end + 1)
+    if cursor <= limit:
+        gaps.append([cursor, limit])
+    complete_for_limit = len(merged) == 1 and merged[0] == [1, limit] and not has_overlap
     return {
         "ranges": ranges,
         "merged_ranges": merged,
@@ -103,9 +108,9 @@ def summarize_coverage(parts: list[dict], full_k_end: int) -> dict:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Integrate result_part[start-end].json shard outputs into result.json."
+        description="Integrate result_partXof10.json split outputs into result.json."
     )
-    parser.add_argument("files", nargs="*", help="Part files to integrate. Default: result_part[*].json")
+    parser.add_argument("files", nargs="*", help="Part files to integrate. Default: result_part*of10.json")
     parser.add_argument(
         "--output",
         default="result.json",
@@ -113,7 +118,7 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    paths = [Path(p) for p in args.files] if args.files else [Path(p) for p in sorted(glob.glob("result_part[[]*-*[]].json"))]
+    paths = [Path(p) for p in args.files] if args.files else [Path(p) for p in sorted(glob.glob("result_part*of10.json"))]
     if not paths:
         raise SystemExit("No part files found.")
 
@@ -121,8 +126,6 @@ def main() -> int:
     first_meta = parts[0]["meta"]
     limit = int(first_meta["limit"])
     wheel_m = int(first_meta["wheel_m"])
-    full_k_end = limit // wheel_m + 2
-
     for part in parts[1:]:
         meta = part["meta"]
         if int(meta["limit"]) != limit:
@@ -130,7 +133,7 @@ def main() -> int:
         if int(meta["wheel_m"]) != wheel_m:
             raise SystemExit("All part files must share the same wheel_m.")
 
-    coverage = summarize_coverage(parts, full_k_end)
+    coverage = summarize_coverage(parts, limit)
 
     shard_twins = sum(int(p["final"]["twins"]) for p in parts)
     shard_sum = math.fsum(float(p["final"]["sum"]) for p in parts)
@@ -157,8 +160,9 @@ def main() -> int:
         "parts": [
             {
                 "path": part["path"],
-                "k_start": int(part["final"]["k_start"]),
-                "k_end": int(part["final"]["k_end"]),
+                "split": int(part["final"]["split"]) if part["final"].get("split") is not None else None,
+                "range_start_exclusive": int(part["final"]["range_start_exclusive"]),
+                "range_end_inclusive": int(part["final"]["range_end_inclusive"]),
                 "twins": int(part["final"]["twins"]),
                 "sum": float(part["final"]["sum"]),
                 "accum_err_bound": float(part["final"].get("accum_err_bound", 0.0)),
@@ -167,7 +171,7 @@ def main() -> int:
                 "elapsed_secs": float(part["final"].get("elapsed_secs", 0.0)),
                 "checkpoint_count": part["checkpoint_count"],
             }
-            for part in sorted(parts, key=lambda p: (int(p["final"]["k_start"]), int(p["final"]["k_end"])))
+            for part in sorted(parts, key=lambda p: int(p["final"].get("split") or 0))
         ],
         "totals": {
             "shard_twins": shard_twins,
@@ -189,8 +193,8 @@ def main() -> int:
     print(f"Parts: {len(parts)}")
     print(f"Coverage complete: {coverage['complete_for_limit']}")
     print(f"Coverage overlap: {coverage['has_overlap']}")
-    print(f"Shard twins: {shard_twins}")
-    print(f"Shard sum: {shard_sum:.17f}")
+    print(f"Split twins: {shard_twins}")
+    print(f"Split sum: {shard_sum:.17f}")
     print(f"Wheel-missed twins: {missed_count}")
     print(f"Wheel-missed sum: {missed_sum:.17f}")
     print(f"Final twins: {final_twins}")
