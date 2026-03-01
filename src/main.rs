@@ -896,6 +896,36 @@ impl ExpLog {
         }
         Ok(())
     }
+
+    fn write_final(
+        &mut self,
+        limit: u64,
+        final_twins: u64,
+        final_sum: f64,
+        b2_star: f64,
+        accum_err_bound: f64,
+        term_eval_err_bound: f64,
+        elapsed_secs: f64,
+        missed_count: u64,
+        missed_sum: f64,
+    ) -> Result<()> {
+        let rec = json!({
+            "type": "final",
+            "timestamp": timestamp(),
+            "limit": limit,
+            "twins": final_twins,
+            "sum": final_sum,
+            "b2_star": b2_star,
+            "accum_err_bound": accum_err_bound,
+            "term_eval_err_bound": term_eval_err_bound,
+            "elapsed_secs": elapsed_secs,
+            "missed_count": missed_count,
+            "missed_sum": missed_sum
+        });
+        writeln!(self.writer, "{}", rec)?;
+        self.writer.flush()?;
+        Ok(())
+    }
 }
 
 fn format_with_commas(n: u64) -> String {
@@ -1564,7 +1594,7 @@ fn final_report(
         &gpu_names,
     )?;
 
-    let (total_twins, total_sum, elapsed, _cand, exp_log) = run_search(
+    let (total_twins, total_sum, elapsed, _cand, mut exp_log) = run_search(
         wheel_m,
         limit,
         segment_k,
@@ -1588,6 +1618,19 @@ fn final_report(
     // Per-term evaluation: p->f64, division, p+2->f64, division, and term add.
     // Use a rigorous gamma_5 bound for IEEE-754 round-to-nearest.
     let term_eval_err_bound = gamma_n(5) * final_sum;
+    if let Some(ref mut log) = exp_log {
+        log.write_final(
+            limit,
+            final_twins,
+            final_sum,
+            b2_star,
+            accum_err_bound,
+            term_eval_err_bound,
+            elapsed,
+            missed_count,
+            missed_sum,
+        )?;
+    }
 
     let msg = format!(
         "Done. gpus={}, twins={}",
