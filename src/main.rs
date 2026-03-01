@@ -224,6 +224,14 @@ struct Args {
     #[arg(long)]
     exp: Option<u32>,
 
+    /// Inclusive start of the k-range shard (p = M*k + r).
+    #[arg(long)]
+    k_start: Option<u64>,
+
+    /// Exclusive end of the k-range shard (p = M*k + r).
+    #[arg(long)]
+    k_end: Option<u64>,
+
     /// Wheel modulus: 30 / 210 / 30030
     #[arg(long, default_value = "30030")]
     wheel: u32,
@@ -264,6 +272,8 @@ struct Args {
 fn run_search(
     wheel_m: u32,
     limit: u64,
+    k_start: u64,
+    k_end_excl: u64,
     segment_k: u64,
     residues: Arc<Vec<u32>>,
     small_primes: Arc<Vec<u32>>,
@@ -275,9 +285,8 @@ fn run_search(
     max_duration: Option<Duration>,
     mut exp_log: Option<ExpLog>,
 ) -> Result<(u64, f64, f64, u64, Option<ExpLog>)> {
-    let k_end_excl = (limit / (wheel_m as u64)) + 2;
-
-    let total_candidates = (k_end_excl as u128) * (residues.len() as u128);
+    let total_k = k_end_excl.saturating_sub(k_start);
+    let total_candidates = (total_k as u128) * (residues.len() as u128);
     let pb = mp.add(ProgressBar::new(
         total_candidates.min(u64::MAX as u128) as u64
     ));
@@ -291,18 +300,24 @@ fn run_search(
     } else {
         "searching"
     };
-    let num_segments = (k_end_excl + segment_k - 1) / segment_k;
+    let num_segments = if total_k == 0 {
+        0
+    } else {
+        (total_k + segment_k - 1) / segment_k
+    };
     pb.set_message(format!(
-        "{} M={} | seg_k={} | {} segments",
+        "{} M={} | k=[{}, {}) | seg_k={} | {} segments",
         msg_prefix,
         wheel_m,
+        format_with_commas(k_start),
+        format_with_commas(k_end_excl),
         format_with_commas(segment_k),
         format_with_commas(num_segments)
     ));
     pb.enable_steady_tick(Duration::from_millis(200));
 
     let pb = Arc::new(pb);
-    let next_k_low = Arc::new(AtomicU64::new(0));
+    let next_k_low = Arc::new(AtomicU64::new(k_start));
     let (tx, rx) = mpsc::channel::<SegResult>();
     let run0 = Instant::now();
 
@@ -381,7 +396,7 @@ fn run_search(
             };
 
             let msg = format!(
-                "seg {}/{} | twins={} | B2_partial≈{:.12} | {:.2e} cand/s | ETA {:.1} min",
+                "seg {}/{} | twins={} | shard_sum≈{:.12} | {:.2e} cand/s | ETA {:.1} min",
                 format_with_commas(segments_done),
                 format_with_commas(num_segments),
                 format_with_commas(total_twins),
@@ -748,6 +763,9 @@ fn is_prime_u64(n: u64) -> bool {
 struct ExpLog {
     writer: BufWriter<std::fs::File>,
     wheel_m: u32,
+    part_mode: bool,
+    k_start: u64,
+    k_end_excl: u64,
     limits: Vec<u64>,
     k_floors: Vec<u64>,
     remainders: Vec<u64>,
@@ -773,22 +791,31 @@ impl ExpLog {
     fn new(
         path: &str,
         args: &Args,
+        limit: u64,
         wheel_m: u32,
         segment_k: u64,
         residues: Arc<Vec<u32>>,
         gpu_names: &[String],
     ) -> Result<Option<Self>> {
-        let exp = match args.exp {
-            Some(e) => e,
-            None => return Ok(None),
-        };
         if args.benchmark {
             return Ok(None);
         }
-        let limits = exp_checkpoint_limits(exp);
-        if limits.is_empty() {
+        let k_start = args.k_start.unwrap_or(0);
+        let k_end_excl = args.k_end.unwrap_or((limit / (wheel_m as u64)) + 2);
+        let part_mode = args.k_start.is_some() || args.k_end.is_some();
+        if !part_mode && args.exp.is_none() {
             return Ok(None);
         }
+        let limits = match args.exp {
+            Some(exp) => exp_checkpoint_limits(exp)
+                .into_iter()
+                .filter(|&lim| {
+                    let k_floor = lim / (wheel_m as u64);
+                    k_floor >= k_start && k_floor < k_end_excl
+                })
+                .collect::<Vec<_>>(),
+            None => Vec::new(),
+        };
         let mut k_floors = Vec::with_capacity(limits.len());
         let mut remainders = Vec::with_capacity(limits.len());
         for &lim in &limits {
@@ -802,30 +829,41 @@ impl ExpLog {
         let git_sha = git_sha_short().unwrap_or_else(|| "unknown".to_string());
         let meta = json!({
             "type": "meta",
+            "format": "jsonl",
             "timestamp": timestamp(),
             "git_sha": git_sha,
             "cmdline": std::env::args().collect::<Vec<_>>().join(" "),
             "exp": args.exp,
-            "limit": pow10_u64(exp).ok(),
+            "limit": limit,
             "wheel_m": wheel_m,
+            "part_mode": part_mode,
+            "k_start": k_start,
+            "k_end": k_end_excl,
             "segment_k": segment_k,
             "segment_mem_frac": args.segment_mem_frac,
             "auto_tune_seg": args.auto_tune_seg,
             "residues_len": residues.len(),
             "gpu_names": gpu_names,
-            "note": "checkpoint sums are exact for limit_requested, computed as full k<k_floor plus partial k_floor by residue filter; error bounds are IEEE-754 gamma_n upper bounds."
+            "note": if part_mode {
+                "checkpoint sums are shard-local partial sums from k_start up to limit_requested within the shard; final excludes wheel-missed correction."
+            } else {
+                "checkpoint sums are exact for limit_requested, computed as full k<k_floor plus partial k_floor by residue filter; error bounds are IEEE-754 gamma_n upper bounds."
+            }
         });
         writeln!(writer, "{}", meta)?;
 
         Ok(Some(Self {
             writer,
             wheel_m,
+            part_mode,
+            k_start,
+            k_end_excl,
             limits,
             k_floors,
             remainders,
             next_idx: 0,
             pending: std::collections::BTreeMap::new(),
-            next_k_low: 0,
+            next_k_low: k_start,
             sum: Kahan::default(),
             count: 0,
             residues,
@@ -869,6 +907,7 @@ impl ExpLog {
                 let total_sum = self.sum.value() + partial_sum.value();
                 let accum_err = accum_error_bound(total_sum, total_count);
                 let term_eval_err = gamma_n(5) * total_sum;
+                let total_err = accum_err + term_eval_err;
                 self.checkpoints.insert(
                     self.limits[self.next_idx],
                     ExpCheckpoint {
@@ -881,6 +920,8 @@ impl ExpLog {
                 let rec = json!({
                     "type": "checkpoint",
                     "limit_requested": self.limits[self.next_idx],
+                    "k_start": self.k_start,
+                    "k_end": self.k_end_excl,
                     "k_floor": k_floor,
                     "limit_covered": self.limits[self.next_idx],
                     "twins": total_count,
@@ -888,7 +929,8 @@ impl ExpLog {
                     "sum_kahan_c": self.sum.c,
                     "partial_sum_kahan_c": partial_sum.c,
                     "accum_err_bound": accum_err,
-                    "term_eval_err_bound": term_eval_err
+                    "term_eval_err_bound": term_eval_err,
+                    "total_err_bound": total_err
                 });
                 writeln!(self.writer, "{}", rec)?;
                 self.next_idx += 1;
@@ -909,15 +951,20 @@ impl ExpLog {
         missed_count: u64,
         missed_sum: f64,
     ) -> Result<()> {
+        let total_err_bound = accum_err_bound + term_eval_err_bound;
         let rec = json!({
             "type": "final",
             "timestamp": timestamp(),
+            "part_mode": self.part_mode,
             "limit": limit,
+            "k_start": self.k_start,
+            "k_end": self.k_end_excl,
             "twins": final_twins,
             "sum": final_sum,
             "b2_star": b2_star,
             "accum_err_bound": accum_err_bound,
             "term_eval_err_bound": term_eval_err_bound,
+            "total_err_bound": total_err_bound,
             "elapsed_secs": elapsed_secs,
             "missed_count": missed_count,
             "missed_sum": missed_sum
@@ -925,6 +972,13 @@ impl ExpLog {
         writeln!(self.writer, "{}", rec)?;
         self.writer.flush()?;
         Ok(())
+    }
+}
+
+fn shard_log_path(args: &Args) -> Option<String> {
+    match (args.k_start, args.k_end) {
+        (Some(k_start), Some(k_end)) => Some(format!("result_part[{k_start}-{k_end}].json")),
+        _ => None,
     }
 }
 
@@ -1013,6 +1067,8 @@ fn auto_tune_segment_k(
         let (_twins, _sum, elapsed, cand, _exp_log) = run_search(
             wheel_m,
             limit,
+            0,
+            (limit / (wheel_m as u64)) + 2,
             k,
             Arc::clone(&residues),
             Arc::clone(&small_primes),
@@ -1260,6 +1316,18 @@ fn main() -> Result<()> {
     if args.benchmark && args.test_wheels {
         anyhow::bail!("--benchmark and --test-wheels cannot be used together");
     }
+    match (args.k_start, args.k_end) {
+        (Some(k_start), Some(k_end)) => {
+            if k_start >= k_end {
+                anyhow::bail!("--k-start must be smaller than --k-end");
+            }
+            if args.test_wheels {
+                anyhow::bail!("--test-wheels cannot be used with --k-start/--k-end");
+            }
+        }
+        (None, None) => {}
+        _ => anyhow::bail!("--k-start and --k-end must be specified together"),
+    }
 
     let mp = MultiProgress::new();
     let _ = LOG.set(Mutex::new(BufWriter::new(
@@ -1397,6 +1465,8 @@ fn main() -> Result<()> {
             let (_twins, _sum, elapsed, cand, _exp_log) = run_search(
                 w,
                 limit,
+                0,
+                (limit / (w as u64)) + 2,
                 segment_k,
                 residues,
                 small_primes,
@@ -1453,9 +1523,11 @@ fn main() -> Result<()> {
             );
         }
 
-        let (_twins, _sum, elapsed, cand, _exp_log) = run_search(
+            let (_twins, _sum, elapsed, cand, _exp_log) = run_search(
             w,
             limit,
+            0,
+            (limit / (w as u64)) + 2,
             segment_k,
             residues,
             small_primes,
@@ -1574,10 +1646,36 @@ fn final_report(
     args: &Args,
     gpu_names: Vec<String>,
 ) -> Result<()> {
-    let msg = format!("Running final search with M={wheel_m}...");
+    let k_start = args.k_start.unwrap_or(0);
+    let full_k_end_excl = (limit / (wheel_m as u64)) + 2;
+    let k_end_excl = args.k_end.unwrap_or(full_k_end_excl);
+    let part_mode = args.k_start.is_some() || args.k_end.is_some();
+    if k_end_excl > full_k_end_excl {
+        anyhow::bail!(
+            "--k-end={} exceeds max k_end={} for limit={} and wheel={}",
+            k_end_excl,
+            full_k_end_excl,
+            limit,
+            wheel_m
+        );
+    }
+
+    let msg = if part_mode {
+        format!(
+            "Running shard search with M={wheel_m}, k=[{}, {})...",
+            format_with_commas(k_start),
+            format_with_commas(k_end_excl)
+        )
+    } else {
+        format!("Running final search with M={wheel_m}...")
+    };
     print_mp_and_log(mp, &msg);
-    let (missed_count, missed_sum) = count_wheel_missed_twins(wheel_m, limit);
-    if missed_count > 0 {
+    let (missed_count, missed_sum) = if part_mode {
+        (0, 0.0)
+    } else {
+        count_wheel_missed_twins(wheel_m, limit)
+    };
+    if !part_mode && missed_count > 0 {
         let msg = format!(
             "Wheel-missed small twin pairs: {} (sum contribution: {:.17})",
             missed_count, missed_sum
@@ -1585,9 +1683,12 @@ fn final_report(
         print_mp_and_log(mp, &msg);
     }
 
+    let log_path = shard_log_path(args)
+        .unwrap_or_else(|| format!("exp_log_e{}.jsonl", args.exp.unwrap_or(0)));
     let exp_log = ExpLog::new(
-        &format!("exp_log_e{}.jsonl", args.exp.unwrap_or(0)),
+        &log_path,
         args,
+        limit,
         wheel_m,
         segment_k,
         Arc::clone(&residues),
@@ -1597,6 +1698,8 @@ fn final_report(
     let (total_twins, total_sum, elapsed, _cand, mut exp_log) = run_search(
         wheel_m,
         limit,
+        k_start,
+        k_end_excl,
         segment_k,
         residues,
         small_primes,
@@ -1638,7 +1741,7 @@ fn final_report(
         format_with_commas(final_twins)
     );
     print_and_log(&msg);
-    if let (Some(exp), Some(log)) = (args.exp, exp_log.as_ref()) {
+    if !part_mode && let (Some(exp), Some(log)) = (args.exp, exp_log.as_ref()) {
         if exp >= 4 {
             let checkpoints = [exp - 3, exp - 2, exp - 1];
             for ce in checkpoints {
@@ -1656,7 +1759,16 @@ fn final_report(
             }
         }
     }
-    let msg = format!("Brun partial sum up to {limit}: {:.17}", final_sum);
+    let msg = if part_mode {
+        format!(
+            "Shard partial sum for k=[{}, {}): {:.17}",
+            format_with_commas(k_start),
+            format_with_commas(k_end_excl),
+            final_sum
+        )
+    } else {
+        format!("Brun partial sum up to {limit}: {:.17}", final_sum)
+    };
     print_and_log(&msg);
     let msg = format!("Brun extrapolated  B2* (HL):    {:.17}", b2_star);
     print_and_log(&msg);

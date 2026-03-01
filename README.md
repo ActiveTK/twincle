@@ -38,6 +38,13 @@ cargo run --release -- --exp 14
 
 # ホイール最適化込み
 cargo run --release -- --exp 14 --test-wheels --auto-tune-seg
+
+# k 範囲を 2 分割して shard 実行
+cargo run --release -- --exp 14 --k-start 0 --k-end 1666666667
+cargo run --release -- --exp 14 --k-start 1666666667 --k-end 3333333335
+
+# shard の統合
+python result_integrate.py
 ```
 
 ### オプション
@@ -45,6 +52,8 @@ cargo run --release -- --exp 14 --test-wheels --auto-tune-seg
 - `--limit <u64>`: 探索上限（inclusive）
 - `--exp <u32>`: 上限を `10^exp` に設定
 - `--wheel <u32>`: ホイール法の法 `M`（`30` / `210` / `30030` など）
+- `--k-start <u64>`: shard の開始 `k`（inclusive）
+- `--k-end <u64>`: shard の終了 `k`（exclusive）
 - `--test-wheels`: 複数の `M` を 30 秒ずつ測り最速を採用
 - `--segment-k <u64>`: 1 セグメントの `k` 数（0 で自動）
 - `--segment-mem-frac <f64>`: VRAM 使用率（自動時、既定 0.25）
@@ -111,8 +120,38 @@ GPU 側で `1/p + 1/(p+2)` を Kahan 加算で積算し、ブロックごとに�
 
 - `run.log`: 実行ログ
 - `exp_log_e*.jsonl`: `--exp` 指定時のチェックポイント記録
+- `result_part[start-end].json`: `--k-start` / `--k-end` 指定時の shard ログ
+- `result.json`: `python result_integrate.py` で生成される統合結果
 - `10^(exp-3)` 刻みで `10^exp` まで（全 1000 点）を JSONL で保存
 - コンソール出力は `exp>=4` のとき `10^(exp-3)`, `10^(exp-2)`, `10^(exp-1)` のみを要約表示
+
+## shard 実行と統合
+
+`--k-start` と `--k-end` を両方指定すると、その区間だけを探索します。  
+このときログファイル名は `result_part[start-end].json` になり、記録される `sum` は「全体の途中和」ではなく「その shard 自体の部分和」です。
+
+`result_part[start-end].json` の最後の `final` レコードには以下が入ります。
+
+- その shard の `twins`
+- その shard の `sum`
+- `accum_err_bound`
+- `term_eval_err_bound`
+- `total_err_bound`
+- `elapsed_secs`
+
+複数 shard を結合するときは次を実行します。
+
+```bash
+python result_integrate.py
+```
+
+必要ならファイルを明示指定できます。
+
+```bash
+python result_integrate.py result_part[0-1666666667].json result_part[1666666667-3333333335].json
+```
+
+統合時には shard の `sum` / `twins` / 誤差上限を足し合わせ、ホイールの取りこぼし補正を 1 回だけ加えた `result.json` を出力します。
 
 ---
 
