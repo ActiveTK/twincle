@@ -108,9 +108,9 @@ def summarize_coverage(parts: list[dict], limit: int) -> dict:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Integrate result_partXof10.json split outputs into result.json."
+        description="Integrate result_e*_part_*.json split outputs into result.json."
     )
-    parser.add_argument("files", nargs="*", help="Part files to integrate. Default: result_part*of10.json")
+    parser.add_argument("files", nargs="*", help="Part files to integrate. Default: result_e*_part_*.json")
     parser.add_argument(
         "--output",
         default="result.json",
@@ -118,7 +118,7 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    paths = [Path(p) for p in args.files] if args.files else [Path(p) for p in sorted(glob.glob("result_part*of10.json"))]
+    paths = [Path(p) for p in args.files] if args.files else [Path(p) for p in sorted(glob.glob("result_e*_part_*.json"))]
     if not paths:
         raise SystemExit("No part files found.")
 

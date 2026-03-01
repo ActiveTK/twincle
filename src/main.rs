@@ -1033,9 +1033,10 @@ impl ExpLog {
 }
 
 fn shard_log_path(args: &Args) -> Option<String> {
-    args.split
-        .filter(|_| args.splitmode)
-        .map(|split| format!("result_part{split}of10.json"))
+    match (args.splitmode, args.exp, args.split) {
+        (true, Some(exp), Some(split)) => Some(format!("result_e{exp}_part_{split}.json")),
+        _ => None,
+    }
 }
 
 fn format_with_commas(n: u64) -> String {
