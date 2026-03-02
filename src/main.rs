@@ -881,9 +881,7 @@ impl ExpLog {
         let meta = json!({
             "type": "meta",
             "format": "jsonl",
-            "timestamp": timestamp(),
             "git_sha": git_sha,
-            "cmdline": std::env::args().collect::<Vec<_>>().join(" "),
             "exp": args.exp,
             "limit": limit,
             "wheel_m": wheel_m,
@@ -982,8 +980,6 @@ impl ExpLog {
                     "limit_covered": self.limits[self.next_idx],
                     "twins": total_count,
                     "sum": total_sum,
-                    "sum_kahan_c": self.sum.c,
-                    "partial_sum_kahan_c": partial_sum.c,
                     "accum_err_bound": accum_err,
                     "term_eval_err_bound": term_eval_err,
                     "total_err_bound": total_err
@@ -1010,7 +1006,6 @@ impl ExpLog {
         let total_err_bound = accum_err_bound + term_eval_err_bound;
         let rec = json!({
             "type": "final",
-            "timestamp": timestamp(),
             "part_mode": self.part_mode,
             "limit": limit,
             "split": self.split,
