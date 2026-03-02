@@ -24,12 +24,17 @@
 ## Dockerイメージの構築と保存先
 - Docker Hub リポジトリ: `fuckdocker42731/twincle`
 - 使うタグ（CUDA別）:
+  - `fuckdocker42731/twincle:cuda13.0`
   - `fuckdocker42731/twincle:cuda12.4`
   - `fuckdocker42731/twincle:cuda12.2`
   - `fuckdocker42731/twincle:cuda11.8`
 
 ### build / push コマンド（ローカル）
 ```powershell
+# CUDA 13.0
+ docker build -f Dockerfile.bench --build-arg CUDA_TAG=13.0.0 -t fuckdocker42731/twincle:cuda13.0 .
+ docker push fuckdocker42731/twincle:cuda13.0
+
 # CUDA 12.4
  docker build -f Dockerfile.bench --build-arg CUDA_TAG=12.4.1 -t fuckdocker42731/twincle:cuda12.4 .
  docker push fuckdocker42731/twincle:cuda12.4

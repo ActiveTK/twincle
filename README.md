@@ -27,6 +27,11 @@ cargo build --release
 - `CUDA_SM120=1|0`: SM120 (RTX 5090) の PTX/SASS 追加を強制/無効
 - `CUDA_SM100=1|0`: SM100 (B200) の PTX/SASS 追加を強制/無効
 
+Docker イメージ運用:
+- Vast.ai 向けの build/push は `dockerbuild.bat` を使用
+- 現在の対応タグは `cuda13.0`, `cuda12.4`, `cuda12.2`, `cuda11.8`
+- 新しめの consumer GPU では `cuda13.0` が必要になる場合がある
+
 ### 実行例
 
 ```bash

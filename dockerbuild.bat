@@ -6,6 +6,9 @@ set DOCKERFILE=benchmarks\Dockerfile.bench
 
 echo Building and pushing Docker images...
 
+call :build_and_push 13.0.0 %IMAGE_REPO%:cuda13.0
+if errorlevel 1 exit /b 1
+
 call :build_and_push 12.4.1 %IMAGE_REPO%:cuda12.4
 if errorlevel 1 exit /b 1
 
