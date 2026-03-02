@@ -1,0 +1,9 @@
+[2026-03-02 01:32:36] Done. gpus=1, twins=1,224
+[2026-03-02 01:32:36] Brun partial sum up to 100: 1.64627791199574669
+[2026-03-02 01:32:36] Brun partial sum up to 1000: 1.64627791199574669
+[2026-03-02 01:32:36] Brun partial sum up to 10000: 1.64627791199574669
+[2026-03-02 01:32:36] Brun partial sum up to 100000: 1.67279958482774171
+[2026-03-02 01:32:36] Brun extrapolated  B2* (HL):    1.90216329185616262
+[2026-03-02 01:32:36] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 1.226e-14
+[2026-03-02 01:32:36] Per-term eval error bound (IEEE-754, gamma_5): <= 9.286e-16
+[2026-03-02 01:32:36] Elapsed: 0.63s

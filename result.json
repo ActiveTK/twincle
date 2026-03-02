@@ -1,0 +1,206 @@
+{
+  "type": "integrated_result",
+  "timestamp": "2026-03-01T16:35:30.363079+00:00",
+  "limit": 100000,
+  "wheel_m": 30030,
+  "coverage": {
+    "ranges": [
+      [
+        0,
+        10000
+      ],
+      [
+        10000,
+        20000
+      ],
+      [
+        20000,
+        30000
+      ],
+      [
+        30000,
+        40000
+      ],
+      [
+        40000,
+        50000
+      ],
+      [
+        50000,
+        60000
+      ],
+      [
+        60000,
+        70000
+      ],
+      [
+        70000,
+        80000
+      ],
+      [
+        80000,
+        90000
+      ],
+      [
+        90000,
+        100000
+      ]
+    ],
+    "merged_ranges": [
+      [
+        1,
+        100000
+      ]
+    ],
+    "gaps": [],
+    "has_overlap": false,
+    "complete_for_limit": true
+  },
+  "wheel_missed": {
+    "count": 3,
+    "sum": 1.044022644022644
+  },
+  "parts": [
+    {
+      "path": "result_e5_part_1.json",
+      "split": 1,
+      "range_start_exclusive": 0,
+      "range_end_inclusive": 10000,
+      "twins": 202,
+      "sum": 0.5728709134095565,
+      "accum_err_bound": 4.1976955561552075e-15,
+      "term_eval_err_bound": 3.180072391026672e-16,
+      "total_err_bound": 4.5157027952578746e-15,
+      "elapsed_secs": 0.2470349,
+      "checkpoint_count": 100
+    },
+    {
+      "path": "result_e5_part_2.json",
+      "split": 2,
+      "range_start_exclusive": 10000,
+      "range_end_inclusive": 20000,
+      "twins": 137,
+      "sum": 0.019038769213707618,
+      "accum_err_bound": 1.3950604761444646e-16,
+      "term_eval_err_bound": 1.0568639970791399e-17,
+      "total_err_bound": 1.5007468758523786e-16,
+      "elapsed_secs": 0.2000966,
+      "checkpoint_count": 100
+    },
+    {
+      "path": "result_e5_part_3.json",
+      "split": 3,
+      "range_start_exclusive": 20000,
+      "range_end_inclusive": 30000,
+      "twins": 125,
+      "sum": 0.010278945339102036,
+      "accum_err_bound": 7.531868377660785e-17,
+      "term_eval_err_bound": 5.705960892167262e-18,
+      "total_err_bound": 8.102464466877511e-17,
+      "elapsed_secs": 0.1851631,
+      "checkpoint_count": 100
+    },
+    {
+      "path": "result_e5_part_4.json",
+      "split": 4,
+      "range_start_exclusive": 30000,
+      "range_end_inclusive": 40000,
+      "twins": 124,
+      "sum": 0.007203203107140933,
+      "accum_err_bound": 5.278126880795562e-17,
+      "term_eval_err_bound": 3.9985809702996686e-18,
+      "total_err_bound": 5.677984977825529e-17,
+      "elapsed_secs": 0.2048822,
+      "checkpoint_count": 100
+    },
+    {
+      "path": "result_e5_part_5.json",
+      "split": 5,
+      "range_start_exclusive": 40000,
+      "range_end_inclusive": 50000,
+      "twins": 114,
+      "sum": 0.005049764274267659,
+      "accum_err_bound": 3.700200613706191e-17,
+      "term_eval_err_bound": 2.803182283110751e-18,
+      "total_err_bound": 3.980518842017266e-17,
+      "elapsed_secs": 0.239068,
+      "checkpoint_count": 100
+    },
+    {
+      "path": "result_e5_part_6.json",
+      "split": 6,
+      "range_start_exclusive": 50000,
+      "range_end_inclusive": 60000,
+      "twins": 106,
+      "sum": 0.003863367394319975,
+      "accum_err_bound": 2.8308716262816883e-17,
+      "term_eval_err_bound": 2.1445997168800673e-18,
+      "total_err_bound": 3.045331597969695e-17,
+      "elapsed_secs": 0.2856117,
+      "checkpoint_count": 100
+    },
+    {
+      "path": "result_e5_part_7.json",
+      "split": 7,
+      "range_start_exclusive": 60000,
+      "range_end_inclusive": 70000,
+      "twins": 94,
+      "sum": 0.00288724107142191,
+      "accum_err_bound": 2.1156177999897676e-17,
+      "term_eval_err_bound": 1.6027407575680061e-18,
+      "total_err_bound": 2.2758918757465684e-17,
+      "elapsed_secs": 0.2164116,
+      "checkpoint_count": 100
+    },
+    {
+      "path": "result_e5_part_8.json",
+      "split": 8,
+      "range_start_exclusive": 70000,
+      "range_end_inclusive": 80000,
+      "twins": 102,
+      "sum": 0.00273342324215682,
+      "accum_err_bound": 2.002908216862111e-17,
+      "term_eval_err_bound": 1.5173547097440238e-18,
+      "total_err_bound": 2.1546436878365133e-17,
+      "elapsed_secs": 0.2585293,
+      "checkpoint_count": 100
+    },
+    {
+      "path": "result_e5_part_9.json",
+      "split": 9,
+      "range_start_exclusive": 80000,
+      "range_end_inclusive": 90000,
+      "twins": 109,
+      "sum": 0.0025754852602186823,
+      "accum_err_bound": 1.8871796034151465e-17,
+      "term_eval_err_bound": 1.4296815177387477e-18,
+      "total_err_bound": 2.0301477551890214e-17,
+      "elapsed_secs": 0.277581,
+      "checkpoint_count": 100
+    },
+    {
+      "path": "result_e5_part_10.json",
+      "split": 10,
+      "range_start_exclusive": 90000,
+      "range_end_inclusive": 100000,
+      "twins": 108,
+      "sum": 0.0022758284932052667,
+      "accum_err_bound": 1.6676069475479466e-17,
+      "term_eval_err_bound": 1.2633385966272325e-18,
+      "total_err_bound": 1.7939408072106698e-17,
+      "elapsed_secs": 0.2029155,
+      "checkpoint_count": 100
+    }
+  ],
+  "totals": {
+    "shard_twins": 1221,
+    "shard_sum": 0.6287769408050974,
+    "accum_err_bound": 4.607345404432246e-15,
+    "term_eval_err_bound": 3.4904131851759434e-16,
+    "total_err_bound": 4.95638672294984e-15,
+    "elapsed_secs_sum": 2.3172939,
+    "final_twins": 1224,
+    "final_sum": 1.6727995848277415,
+    "b2_star": 1.9021632918561624
+  }
+}

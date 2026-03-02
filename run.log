@@ -1628,3 +1628,1411 @@
 [2026-02-28 17:35:20] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 1.310e-14
 [2026-02-28 17:35:20] Per-term eval error bound (IEEE-754, gamma_5): <= 9.922e-16
 [2026-02-28 17:35:20] Elapsed: 11.83s
+[2026-03-02 01:14:56] **********************************************************************
+[2026-03-02 01:14:56] ** Started: target\release\twincle.exe --exp 10 --splitmode --split 1
+[2026-03-02 01:14:56] **********************************************************************
+[2026-03-02 01:14:58] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:14:58] RAM: 127.75 GB (107.24 GB available)
+[2026-03-02 01:14:58] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:14:58] Testing M=30030: 1485 residues, 9591 base primes
+[2026-03-02 01:14:58] Running split 1 of 10 with M=30030, p=(0, 1,000,000,000]...
+[2026-03-02 01:14:59] PROGRESS seg 1/1 | twins=58,977 | shard_sum≈0.694334399895 | 2.50e6 cand/s | ETA 0.3 min
+[2026-03-02 01:14:59] PROGRESS seg 14/1 | twins=593,170 | shard_sum≈0.717367057491 | 5.87e6 cand/s | ETA 0.1 min
+[2026-03-02 01:14:59] PROGRESS seg 27/1 | twins=1,061,740 | shard_sum≈0.722118437496 | 9.95e6 cand/s | ETA 0.1 min
+[2026-03-02 01:14:59] PROGRESS seg 40/1 | twins=1,507,727 | shard_sum≈0.724819144721 | 1.40e7 cand/s | ETA 0.0 min
+[2026-03-02 01:14:59] PROGRESS seg 53/1 | twins=1,938,554 | shard_sum≈0.726685716281 | 1.76e7 cand/s | ETA 0.0 min
+[2026-03-02 01:14:59] PROGRESS seg 66/1 | twins=2,359,260 | shard_sum≈0.728106140802 | 2.09e7 cand/s | ETA 0.0 min
+[2026-03-02 01:14:59] PROGRESS seg 79/1 | twins=2,771,403 | shard_sum≈0.729246523376 | 2.37e7 cand/s | ETA 0.0 min
+[2026-03-02 01:15:00] PROGRESS seg 92/1 | twins=3,177,497 | shard_sum≈0.730198388466 | 2.61e7 cand/s | ETA 0.0 min
+[2026-03-02 01:15:00] Done. gpus=1, twins=3,424,503
+[2026-03-02 01:15:00] Split 1 partial sum for p=(0, 1,000,000,000]: 0.73071331361589276
+[2026-03-02 01:15:00] Brun extrapolated  B2* (HL):    0.84539516713010321
+[2026-03-02 01:15:00] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 5.354e-15
+[2026-03-02 01:15:00] Per-term eval error bound (IEEE-754, gamma_5): <= 4.056e-16
+[2026-03-02 01:15:00] Elapsed: 1.41s
+[2026-03-02 01:15:13] **********************************************************************
+[2026-03-02 01:15:13] ** Started: target\release\twincle.exe --exp 10 --splitmode --split 1
+[2026-03-02 01:15:13] **********************************************************************
+[2026-03-02 01:15:15] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:15:15] RAM: 127.75 GB (107.36 GB available)
+[2026-03-02 01:15:15] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:15:15] Testing M=30030: 1485 residues, 9591 base primes
+[2026-03-02 01:15:15] Running split 1 of 10 with M=30030, p=(0, 1,000,000,000]...
+[2026-03-02 01:15:15] PROGRESS seg 1/1 | twins=58,977 | shard_sum≈0.694334399895 | 2.54e6 cand/s | ETA 0.3 min
+[2026-03-02 01:15:15] PROGRESS seg 14/1 | twins=593,170 | shard_sum≈0.717367057491 | 5.96e6 cand/s | ETA 0.1 min
+[2026-03-02 01:15:16] PROGRESS seg 27/1 | twins=1,061,740 | shard_sum≈0.722118437496 | 1.01e7 cand/s | ETA 0.1 min
+[2026-03-02 01:15:16] PROGRESS seg 40/1 | twins=1,507,727 | shard_sum≈0.724819144721 | 1.41e7 cand/s | ETA 0.0 min
+[2026-03-02 01:15:16] PROGRESS seg 53/1 | twins=1,938,554 | shard_sum≈0.726685716281 | 1.78e7 cand/s | ETA 0.0 min
+[2026-03-02 01:15:16] PROGRESS seg 66/1 | twins=2,359,260 | shard_sum≈0.728106140802 | 2.10e7 cand/s | ETA 0.0 min
+[2026-03-02 01:15:16] PROGRESS seg 79/1 | twins=2,771,403 | shard_sum≈0.729246523376 | 2.39e7 cand/s | ETA 0.0 min
+[2026-03-02 01:15:16] PROGRESS seg 92/1 | twins=3,177,497 | shard_sum≈0.730198388466 | 2.63e7 cand/s | ETA 0.0 min
+[2026-03-02 01:15:17] Done. gpus=1, twins=3,424,503
+[2026-03-02 01:15:17] Split 1 partial sum for p=(0, 1,000,000,000]: 0.73071331361589276
+[2026-03-02 01:15:17] Brun extrapolated  B2* (HL):    0.84539516713010321
+[2026-03-02 01:15:17] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 5.354e-15
+[2026-03-02 01:15:17] Per-term eval error bound (IEEE-754, gamma_5): <= 4.056e-16
+[2026-03-02 01:15:17] Elapsed: 1.40s
+[2026-03-02 01:15:17] **********************************************************************
+[2026-03-02 01:15:17] ** Started: target\release\twincle.exe --exp 10 --splitmode --split 2
+[2026-03-02 01:15:17] **********************************************************************
+[2026-03-02 01:15:18] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:15:18] RAM: 127.75 GB (107.36 GB available)
+[2026-03-02 01:15:18] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:15:18] Testing M=30030: 1485 residues, 9591 base primes
+[2026-03-02 01:15:18] Running split 2 of 10 with M=30030, p=(1,000,000,000, 2,000,000,000]...
+[2026-03-02 01:15:18] PROGRESS seg 1/1 | twins=30,700 | shard_sum≈0.000061094893 | 2.68e6 cand/s | ETA 0.3 min
+[2026-03-02 01:15:19] PROGRESS seg 13/1 | twins=397,017 | shard_sum≈0.000746606345 | 5.95e6 cand/s | ETA 0.1 min
+[2026-03-02 01:15:19] PROGRESS seg 26/1 | twins=790,094 | shard_sum≈0.001405212821 | 9.96e6 cand/s | ETA 0.1 min
+[2026-03-02 01:15:19] PROGRESS seg 39/1 | twins=1,178,262 | shard_sum≈0.001991655056 | 1.39e7 cand/s | ETA 0.0 min
+[2026-03-02 01:15:19] PROGRESS seg 52/1 | twins=1,563,988 | shard_sum≈0.002522279777 | 1.76e7 cand/s | ETA 0.0 min
+[2026-03-02 01:15:19] PROGRESS seg 65/1 | twins=1,945,761 | shard_sum≈0.003004305152 | 2.08e7 cand/s | ETA 0.0 min
+[2026-03-02 01:15:19] PROGRESS seg 78/1 | twins=2,325,748 | shard_sum≈0.003447662423 | 2.36e7 cand/s | ETA 0.0 min
+[2026-03-02 01:15:20] PROGRESS seg 91/1 | twins=2,704,126 | shard_sum≈0.003858016663 | 2.60e7 cand/s | ETA 0.0 min
+[2026-03-02 01:15:20] Done. gpus=1, twins=2,963,535
+[2026-03-02 01:15:20] Split 2 partial sum for p=(1,000,000,000, 2,000,000,000]: 0.00412344690813175
+[2026-03-02 01:15:20] Brun extrapolated  B2* (HL):    0.11880530042234222
+[2026-03-02 01:15:20] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 3.021e-17
+[2026-03-02 01:15:20] Per-term eval error bound (IEEE-754, gamma_5): <= 2.289e-18
+[2026-03-02 01:15:20] Elapsed: 1.41s
+[2026-03-02 01:15:54] **********************************************************************
+[2026-03-02 01:15:54] ** Started: target\release\twincle.exe --exp 10 --splitmode --split 1
+[2026-03-02 01:15:54] **********************************************************************
+[2026-03-02 01:15:55] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:15:55] RAM: 127.75 GB (107.35 GB available)
+[2026-03-02 01:15:55] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:15:55] Testing M=30030: 1485 residues, 9591 base primes
+[2026-03-02 01:15:55] Running split 1 of 10 with M=30030, p=(0, 1,000,000,000]...
+[2026-03-02 01:15:55] PROGRESS seg 1/1 | twins=58,977 | shard_sum≈0.694334399895 | 2.45e6 cand/s | ETA 0.3 min
+[2026-03-02 01:15:56] PROGRESS seg 14/1 | twins=593,170 | shard_sum≈0.717367057491 | 5.84e6 cand/s | ETA 0.1 min
+[2026-03-02 01:15:56] PROGRESS seg 27/1 | twins=1,061,740 | shard_sum≈0.722118437496 | 9.94e6 cand/s | ETA 0.1 min
+[2026-03-02 01:15:56] PROGRESS seg 40/1 | twins=1,507,727 | shard_sum≈0.724819144721 | 1.40e7 cand/s | ETA 0.0 min
+[2026-03-02 01:15:56] PROGRESS seg 53/1 | twins=1,938,554 | shard_sum≈0.726685716281 | 1.77e7 cand/s | ETA 0.0 min
+[2026-03-02 01:15:56] PROGRESS seg 66/1 | twins=2,359,260 | shard_sum≈0.728106140802 | 2.09e7 cand/s | ETA 0.0 min
+[2026-03-02 01:15:56] PROGRESS seg 79/1 | twins=2,771,403 | shard_sum≈0.729246523376 | 2.37e7 cand/s | ETA 0.0 min
+[2026-03-02 01:15:56] PROGRESS seg 92/1 | twins=3,177,497 | shard_sum≈0.730198388466 | 2.62e7 cand/s | ETA 0.0 min
+[2026-03-02 01:15:57] Done. gpus=1, twins=3,424,503
+[2026-03-02 01:15:57] Split 1 partial sum for p=(0, 1,000,000,000]: 0.73071331361589276
+[2026-03-02 01:15:57] Brun extrapolated  B2* (HL):    0.84539516713010321
+[2026-03-02 01:15:57] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 5.354e-15
+[2026-03-02 01:15:57] Per-term eval error bound (IEEE-754, gamma_5): <= 4.056e-16
+[2026-03-02 01:15:57] Elapsed: 1.40s
+[2026-03-02 01:15:57] **********************************************************************
+[2026-03-02 01:15:57] ** Started: target\release\twincle.exe --exp 10 --splitmode --split 2
+[2026-03-02 01:15:57] **********************************************************************
+[2026-03-02 01:15:58] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:15:58] RAM: 127.75 GB (107.37 GB available)
+[2026-03-02 01:15:58] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:15:58] Testing M=30030: 1485 residues, 9591 base primes
+[2026-03-02 01:15:58] Running split 2 of 10 with M=30030, p=(1,000,000,000, 2,000,000,000]...
+[2026-03-02 01:15:59] PROGRESS seg 1/1 | twins=30,700 | shard_sum≈0.000061094893 | 2.79e6 cand/s | ETA 0.3 min
+[2026-03-02 01:15:59] PROGRESS seg 13/1 | twins=397,017 | shard_sum≈0.000746606345 | 6.15e6 cand/s | ETA 0.1 min
+[2026-03-02 01:15:59] PROGRESS seg 26/1 | twins=790,094 | shard_sum≈0.001405212821 | 1.03e7 cand/s | ETA 0.1 min
+[2026-03-02 01:15:59] PROGRESS seg 39/1 | twins=1,178,262 | shard_sum≈0.001991655056 | 1.43e7 cand/s | ETA 0.0 min
+[2026-03-02 01:15:59] PROGRESS seg 52/1 | twins=1,563,988 | shard_sum≈0.002522279777 | 1.80e7 cand/s | ETA 0.0 min
+[2026-03-02 01:15:59] PROGRESS seg 65/1 | twins=1,945,761 | shard_sum≈0.003004305152 | 2.12e7 cand/s | ETA 0.0 min
+[2026-03-02 01:15:59] PROGRESS seg 78/1 | twins=2,325,748 | shard_sum≈0.003447662423 | 2.40e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:00] PROGRESS seg 91/1 | twins=2,704,126 | shard_sum≈0.003858016663 | 2.64e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:00] Done. gpus=1, twins=2,963,535
+[2026-03-02 01:16:00] Split 2 partial sum for p=(1,000,000,000, 2,000,000,000]: 0.00412344690813175
+[2026-03-02 01:16:00] Brun extrapolated  B2* (HL):    0.11880530042234222
+[2026-03-02 01:16:00] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 3.021e-17
+[2026-03-02 01:16:00] Per-term eval error bound (IEEE-754, gamma_5): <= 2.289e-18
+[2026-03-02 01:16:00] Elapsed: 1.40s
+[2026-03-02 01:16:00] **********************************************************************
+[2026-03-02 01:16:00] ** Started: target\release\twincle.exe --exp 10 --splitmode --split 3
+[2026-03-02 01:16:00] **********************************************************************
+[2026-03-02 01:16:01] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:16:01] RAM: 127.75 GB (107.39 GB available)
+[2026-03-02 01:16:01] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:16:01] Testing M=30030: 1485 residues, 9591 base primes
+[2026-03-02 01:16:01] Running split 3 of 10 with M=30030, p=(2,000,000,000, 3,000,000,000]...
+[2026-03-02 01:16:02] PROGRESS seg 1/1 | twins=29,087 | shard_sum≈0.000029014566 | 2.64e6 cand/s | ETA 0.3 min
+[2026-03-02 01:16:02] PROGRESS seg 13/1 | twins=372,760 | shard_sum≈0.000361158489 | 5.90e6 cand/s | ETA 0.1 min
+[2026-03-02 01:16:02] PROGRESS seg 26/1 | twins=743,714 | shard_sum≈0.000699261148 | 9.94e6 cand/s | ETA 0.1 min
+[2026-03-02 01:16:02] PROGRESS seg 39/1 | twins=1,112,324 | shard_sum≈0.001016435687 | 1.39e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:02] PROGRESS seg 52/1 | twins=1,479,310 | shard_sum≈0.001315481318 | 1.76e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:02] PROGRESS seg 65/1 | twins=1,845,228 | shard_sum≈0.001598659333 | 2.08e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:03] PROGRESS seg 78/1 | twins=2,208,762 | shard_sum≈0.001866509638 | 2.36e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:03] PROGRESS seg 91/1 | twins=2,571,980 | shard_sum≈0.002121898154 | 2.60e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:03] Done. gpus=1, twins=2,822,103
+[2026-03-02 01:16:03] Split 3 partial sum for p=(2,000,000,000, 3,000,000,000]: 0.00229120029532668
+[2026-03-02 01:16:03] Brun extrapolated  B2* (HL):    0.11697305380953715
+[2026-03-02 01:16:03] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 1.679e-17
+[2026-03-02 01:16:03] Per-term eval error bound (IEEE-754, gamma_5): <= 1.272e-18
+[2026-03-02 01:16:03] Elapsed: 1.41s
+[2026-03-02 01:16:03] **********************************************************************
+[2026-03-02 01:16:03] ** Started: target\release\twincle.exe --exp 10 --splitmode --split 4
+[2026-03-02 01:16:03] **********************************************************************
+[2026-03-02 01:16:04] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:16:05] RAM: 127.75 GB (107.39 GB available)
+[2026-03-02 01:16:05] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:16:05] Testing M=30030: 1485 residues, 9591 base primes
+[2026-03-02 01:16:05] Running split 4 of 10 with M=30030, p=(3,000,000,000, 4,000,000,000]...
+[2026-03-02 01:16:05] PROGRESS seg 1/1 | twins=27,625 | shard_sum≈0.000018386117 | 2.75e6 cand/s | ETA 0.3 min
+[2026-03-02 01:16:05] PROGRESS seg 13/1 | twins=360,060 | shard_sum≈0.000234989662 | 6.09e6 cand/s | ETA 0.1 min
+[2026-03-02 01:16:05] PROGRESS seg 26/1 | twins=718,398 | shard_sum≈0.000459329977 | 1.02e7 cand/s | ETA 0.1 min
+[2026-03-02 01:16:05] PROGRESS seg 39/1 | twins=1,075,580 | shard_sum≈0.000674202967 | 1.42e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:06] PROGRESS seg 52/1 | twins=1,431,332 | shard_sum≈0.000880161537 | 1.79e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:06] PROGRESS seg 65/1 | twins=1,785,881 | shard_sum≈0.001077980084 | 2.11e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:06] PROGRESS seg 78/1 | twins=2,139,007 | shard_sum≈0.001268108889 | 2.39e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:06] PROGRESS seg 91/1 | twins=2,491,156 | shard_sum≈0.001451297784 | 2.63e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:06] Done. gpus=1, twins=2,734,294
+[2026-03-02 01:16:06] Split 4 partial sum for p=(3,000,000,000, 4,000,000,000]: 0.00157425676493945
+[2026-03-02 01:16:06] Brun extrapolated  B2* (HL):    0.11625611027914991
+[2026-03-02 01:16:06] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 1.154e-17
+[2026-03-02 01:16:06] Per-term eval error bound (IEEE-754, gamma_5): <= 8.739e-19
+[2026-03-02 01:16:06] Elapsed: 1.40s
+[2026-03-02 01:16:06] **********************************************************************
+[2026-03-02 01:16:06] ** Started: target\release\twincle.exe --exp 10 --splitmode --split 5
+[2026-03-02 01:16:06] **********************************************************************
+[2026-03-02 01:16:08] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:16:08] RAM: 127.75 GB (107.39 GB available)
+[2026-03-02 01:16:08] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:16:08] Testing M=30030: 1485 residues, 9591 base primes
+[2026-03-02 01:16:08] Running split 5 of 10 with M=30030, p=(4,000,000,000, 5,000,000,000]...
+[2026-03-02 01:16:08] PROGRESS seg 1/1 | twins=26,767 | shard_sum≈0.000013366828 | 2.79e6 cand/s | ETA 0.3 min
+[2026-03-02 01:16:08] PROGRESS seg 13/1 | twins=351,232 | shard_sum≈0.000172819164 | 6.13e6 cand/s | ETA 0.1 min
+[2026-03-02 01:16:08] PROGRESS seg 26/1 | twins=701,102 | shard_sum≈0.000339636308 | 1.02e7 cand/s | ETA 0.1 min
+[2026-03-02 01:16:09] PROGRESS seg 39/1 | twins=1,049,824 | shard_sum≈0.000500910241 | 1.42e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:09] PROGRESS seg 52/1 | twins=1,397,108 | shard_sum≈0.000656827736 | 1.79e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:09] PROGRESS seg 65/1 | twins=1,743,191 | shard_sum≈0.000807804766 | 2.11e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:09] PROGRESS seg 78/1 | twins=2,089,272 | shard_sum≈0.000954618636 | 2.39e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:09] PROGRESS seg 91/1 | twins=2,435,190 | shard_sum≈0.001097423122 | 2.63e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:09] Done. gpus=1, twins=2,673,728
+[2026-03-02 01:16:09] Split 5 partial sum for p=(4,000,000,000, 5,000,000,000]: 0.00119370866010989
+[2026-03-02 01:16:09] Brun extrapolated  B2* (HL):    0.11587556217432035
+[2026-03-02 01:16:09] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 8.747e-18
+[2026-03-02 01:16:09] Per-term eval error bound (IEEE-754, gamma_5): <= 6.626e-19
+[2026-03-02 01:16:09] Elapsed: 1.40s
+[2026-03-02 01:16:10] **********************************************************************
+[2026-03-02 01:16:10] ** Started: target\release\twincle.exe --exp 10 --splitmode --split 6
+[2026-03-02 01:16:10] **********************************************************************
+[2026-03-02 01:16:11] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:16:11] RAM: 127.75 GB (107.40 GB available)
+[2026-03-02 01:16:11] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:16:11] Testing M=30030: 1485 residues, 9591 base primes
+[2026-03-02 01:16:11] Running split 6 of 10 with M=30030, p=(5,000,000,000, 6,000,000,000]...
+[2026-03-02 01:16:11] PROGRESS seg 1/1 | twins=26,658 | shard_sum≈0.000010652536 | 2.79e6 cand/s | ETA 0.3 min
+[2026-03-02 01:16:11] PROGRESS seg 13/1 | twins=344,951 | shard_sum≈0.000136218440 | 6.14e6 cand/s | ETA 0.1 min
+[2026-03-02 01:16:12] PROGRESS seg 26/1 | twins=688,080 | shard_sum≈0.000268325034 | 1.02e7 cand/s | ETA 0.1 min
+[2026-03-02 01:16:12] PROGRESS seg 39/1 | twins=1,029,924 | shard_sum≈0.000396724910 | 1.42e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:12] PROGRESS seg 52/1 | twins=1,371,538 | shard_sum≈0.000521979238 | 1.79e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:12] PROGRESS seg 65/1 | twins=1,712,594 | shard_sum≈0.000644116849 | 2.11e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:12] PROGRESS seg 78/1 | twins=2,052,684 | shard_sum≈0.000763141039 | 2.39e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:12] PROGRESS seg 91/1 | twins=2,391,897 | shard_sum≈0.000879214417 | 2.63e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:12] Done. gpus=1, twins=2,626,243
+[2026-03-02 01:16:12] Split 6 partial sum for p=(5,000,000,000, 6,000,000,000]: 0.00095792045350423
+[2026-03-02 01:16:12] Brun extrapolated  B2* (HL):    0.11563977396771469
+[2026-03-02 01:16:12] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 7.019e-18
+[2026-03-02 01:16:12] Per-term eval error bound (IEEE-754, gamma_5): <= 5.318e-19
+[2026-03-02 01:16:12] Elapsed: 1.40s
+[2026-03-02 01:16:13] **********************************************************************
+[2026-03-02 01:16:13] ** Started: target\release\twincle.exe --exp 10 --splitmode --split 7
+[2026-03-02 01:16:13] **********************************************************************
+[2026-03-02 01:16:14] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:16:14] RAM: 127.75 GB (107.39 GB available)
+[2026-03-02 01:16:14] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:16:14] Testing M=30030: 1485 residues, 9591 base primes
+[2026-03-02 01:16:14] Running split 7 of 10 with M=30030, p=(6,000,000,000, 7,000,000,000]...
+[2026-03-02 01:16:14] PROGRESS seg 1/1 | twins=26,141 | shard_sum≈0.000008706369 | 2.87e6 cand/s | ETA 0.3 min
+[2026-03-02 01:16:15] PROGRESS seg 14/1 | twins=364,186 | shard_sum≈0.000119999799 | 6.51e6 cand/s | ETA 0.1 min
+[2026-03-02 01:16:15] PROGRESS seg 27/1 | twins=701,808 | shard_sum≈0.000228826672 | 1.07e7 cand/s | ETA 0.1 min
+[2026-03-02 01:16:15] PROGRESS seg 40/1 | twins=1,039,004 | shard_sum≈0.000335286922 | 1.48e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:15] PROGRESS seg 53/1 | twins=1,375,090 | shard_sum≈0.000439261986 | 1.85e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:15] PROGRESS seg 66/1 | twins=1,710,355 | shard_sum≈0.000540936575 | 2.17e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:15] PROGRESS seg 79/1 | twins=2,045,539 | shard_sum≈0.000640624146 | 2.45e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:15] PROGRESS seg 92/1 | twins=2,380,088 | shard_sum≈0.000738233799 | 2.69e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:16] Done. gpus=1, twins=2,585,752
+[2026-03-02 01:16:16] Split 7 partial sum for p=(6,000,000,000, 7,000,000,000]: 0.00079733299670570
+[2026-03-02 01:16:16] Brun extrapolated  B2* (HL):    0.11547918651091617
+[2026-03-02 01:16:16] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 5.842e-18
+[2026-03-02 01:16:16] Per-term eval error bound (IEEE-754, gamma_5): <= 4.426e-19
+[2026-03-02 01:16:16] Elapsed: 1.39s
+[2026-03-02 01:16:16] **********************************************************************
+[2026-03-02 01:16:16] ** Started: target\release\twincle.exe --exp 10 --splitmode --split 8
+[2026-03-02 01:16:16] **********************************************************************
+[2026-03-02 01:16:17] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:16:17] RAM: 127.75 GB (107.38 GB available)
+[2026-03-02 01:16:17] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:16:17] Testing M=30030: 1485 residues, 9591 base primes
+[2026-03-02 01:16:17] Running split 8 of 10 with M=30030, p=(7,000,000,000, 8,000,000,000]...
+[2026-03-02 01:16:18] PROGRESS seg 1/1 | twins=25,680 | shard_sum≈0.000007331894 | 2.84e6 cand/s | ETA 0.3 min
+[2026-03-02 01:16:18] PROGRESS seg 14/1 | twins=359,674 | shard_sum≈0.000101751522 | 6.44e6 cand/s | ETA 0.1 min
+[2026-03-02 01:16:18] PROGRESS seg 27/1 | twins=693,276 | shard_sum≈0.000194357556 | 1.06e7 cand/s | ETA 0.1 min
+[2026-03-02 01:16:18] PROGRESS seg 40/1 | twins=1,025,121 | shard_sum≈0.000284842892 | 1.47e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:18] PROGRESS seg 53/1 | twins=1,357,028 | shard_sum≈0.000373769224 | 1.84e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:18] PROGRESS seg 66/1 | twins=1,688,177 | shard_sum≈0.000460973230 | 2.16e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:19] PROGRESS seg 79/1 | twins=2,019,647 | shard_sum≈0.000546794122 | 2.44e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:19] PROGRESS seg 92/1 | twins=2,350,534 | shard_sum≈0.000631045220 | 2.67e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:19] Done. gpus=1, twins=2,554,015
+[2026-03-02 01:16:19] Split 8 partial sum for p=(7,000,000,000, 8,000,000,000]: 0.00068217156217633
+[2026-03-02 01:16:19] Brun extrapolated  B2* (HL):    0.11536402507638679
+[2026-03-02 01:16:19] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 4.999e-18
+[2026-03-02 01:16:19] Per-term eval error bound (IEEE-754, gamma_5): <= 3.787e-19
+[2026-03-02 01:16:19] Elapsed: 1.39s
+[2026-03-02 01:16:19] **********************************************************************
+[2026-03-02 01:16:19] ** Started: target\release\twincle.exe --exp 10 --splitmode --split 9
+[2026-03-02 01:16:19] **********************************************************************
+[2026-03-02 01:16:20] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:16:21] RAM: 127.75 GB (107.40 GB available)
+[2026-03-02 01:16:21] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:16:21] Testing M=30030: 1485 residues, 9591 base primes
+[2026-03-02 01:16:21] Running split 9 of 10 with M=30030, p=(8,000,000,000, 9,000,000,000]...
+[2026-03-02 01:16:21] PROGRESS seg 1/1 | twins=25,318 | shard_sum≈0.000006325539 | 2.62e6 cand/s | ETA 0.3 min
+[2026-03-02 01:16:21] PROGRESS seg 14/1 | twins=355,077 | shard_sum≈0.000088002028 | 6.12e6 cand/s | ETA 0.1 min
+[2026-03-02 01:16:21] PROGRESS seg 27/1 | twins=685,214 | shard_sum≈0.000168476386 | 1.03e7 cand/s | ETA 0.1 min
+[2026-03-02 01:16:21] PROGRESS seg 40/1 | twins=1,014,413 | shard_sum≈0.000247470722 | 1.43e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:21] PROGRESS seg 53/1 | twins=1,343,102 | shard_sum≈0.000325130976 | 1.79e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:22] PROGRESS seg 66/1 | twins=1,671,029 | shard_sum≈0.000401439609 | 2.12e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:22] PROGRESS seg 79/1 | twins=1,998,269 | shard_sum≈0.000476453201 | 2.40e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:22] PROGRESS seg 92/1 | twins=2,326,075 | shard_sum≈0.000550493675 | 2.64e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:22] Done. gpus=1, twins=2,527,034
+[2026-03-02 01:16:22] Split 9 partial sum for p=(8,000,000,000, 9,000,000,000]: 0.00059535093320250
+[2026-03-02 01:16:22] Brun extrapolated  B2* (HL):    0.11527720444741296
+[2026-03-02 01:16:22] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 4.362e-18
+[2026-03-02 01:16:22] Per-term eval error bound (IEEE-754, gamma_5): <= 3.305e-19
+[2026-03-02 01:16:22] Elapsed: 1.40s
+[2026-03-02 01:16:22] **********************************************************************
+[2026-03-02 01:16:22] ** Started: target\release\twincle.exe --exp 10 --splitmode --split 10
+[2026-03-02 01:16:22] **********************************************************************
+[2026-03-02 01:16:23] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:16:24] RAM: 127.75 GB (107.40 GB available)
+[2026-03-02 01:16:24] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:16:24] Testing M=30030: 1485 residues, 9591 base primes
+[2026-03-02 01:16:24] Running split 10 of 10 with M=30030, p=(9,000,000,000, 10,000,000,000]...
+[2026-03-02 01:16:24] PROGRESS seg 1/1 | twins=25,129 | shard_sum≈0.000005581106 | 2.70e6 cand/s | ETA 0.3 min
+[2026-03-02 01:16:24] PROGRESS seg 14/1 | twins=351,617 | shard_sum≈0.000077535894 | 6.23e6 cand/s | ETA 0.1 min
+[2026-03-02 01:16:24] PROGRESS seg 27/1 | twins=677,460 | shard_sum≈0.000148333931 | 1.04e7 cand/s | ETA 0.1 min
+[2026-03-02 01:16:24] PROGRESS seg 40/1 | twins=1,003,479 | shard_sum≈0.000218184141 | 1.44e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:25] PROGRESS seg 53/1 | twins=1,329,128 | shard_sum≈0.000286996542 | 1.81e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:25] PROGRESS seg 66/1 | twins=1,653,662 | shard_sum≈0.000354643855 | 2.13e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:25] PROGRESS seg 79/1 | twins=1,977,778 | shard_sum≈0.000421301694 | 2.41e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:25] PROGRESS seg 92/1 | twins=2,302,329 | shard_sum≈0.000487168139 | 2.65e7 cand/s | ETA 0.0 min
+[2026-03-02 01:16:25] Done. gpus=1, twins=2,501,469
+[2026-03-02 01:16:25] Split 10 partial sum for p=(9,000,000,000, 10,000,000,000]: 0.00052715650660822
+[2026-03-02 01:16:25] Brun extrapolated  B2* (HL):    0.11520901002081868
+[2026-03-02 01:16:25] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 3.863e-18
+[2026-03-02 01:16:25] Per-term eval error bound (IEEE-754, gamma_5): <= 2.926e-19
+[2026-03-02 01:16:25] Elapsed: 1.40s
+[2026-03-02 01:32:34] **********************************************************************
+[2026-03-02 01:32:34] ** Started: K:\dev\2026\twincle\target\release\twincle.exe --exp 6
+[2026-03-02 01:32:34] **********************************************************************
+[2026-03-02 01:32:34] **********************************************************************
+[2026-03-02 01:32:34] ** Started: K:\dev\2026\twincle\target\release\twincle.exe --exp 5
+[2026-03-02 01:32:34] **********************************************************************
+[2026-03-02 01:32:35] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:32:35] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:32:36] RAM: 127.75 GB (106.78 GB available)
+[2026-03-02 01:32:36] RAM: 127.75 GB (106.78 GB available)
+[2026-03-02 01:32:36] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:32:36] Testing M=30030: 1485 residues, 65 base primes
+[2026-03-02 01:32:36] Running final search with M=30030...
+[2026-03-02 01:32:36] Wheel-missed small twin pairs: 3 (sum contribution: 1.04402264402264411)
+[2026-03-02 01:32:36] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:32:36] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:32:36] Running final search with M=30030...
+[2026-03-02 01:32:36] Wheel-missed small twin pairs: 3 (sum contribution: 1.04402264402264411)
+[2026-03-02 01:32:36] PROGRESS seg 1/1 | twins=465 | shard_sum≈0.602255267973 | 1.65e4 cand/s | ETA 0.0 min
+[2026-03-02 01:32:36] PROGRESS seg 1/1 | twins=465 | shard_sum≈0.602255267973 | 1.81e4 cand/s | ETA 0.0 min
+[2026-03-02 01:32:36] PROGRESS seg 9/1 | twins=2,755 | shard_sum≈0.646945604353 | 2.68e4 cand/s | ETA 0.0 min
+[2026-03-02 01:32:36] PROGRESS seg 2/1 | twins=808 | shard_sum≈0.618304962738 | 1.69e4 cand/s | ETA 0.0 min
+[2026-03-02 01:32:36] Done. gpus=1, twins=1,224
+[2026-03-02 01:32:36] Brun partial sum up to 100: 1.64627791199574669
+[2026-03-02 01:32:36] Brun partial sum up to 1000: 1.64627791199574669
+[2026-03-02 01:32:36] Brun partial sum up to 10000: 1.64627791199574669
+[2026-03-02 01:32:36] Brun partial sum up to 100000: 1.67279958482774171
+[2026-03-02 01:32:36] Brun extrapolated  B2* (HL):    1.90216329185616262
+[2026-03-02 01:32:36] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 1.226e-14
+[2026-03-02 01:32:36] Per-term eval error bound (IEEE-754, gamma_5): <= 9.286e-16
+[2026-03-02 01:32:36] Elapsed: 0.63s
+[2026-03-02 01:32:37] PROGRESS seg 17/1 | twins=4,633 | shard_sum≈0.656975460457 | 3.89e4 cand/s | ETA 0.0 min
+[2026-03-02 01:32:37] PROGRESS seg 25/1 | twins=6,416 | shard_sum≈0.662728548502 | 4.48e4 cand/s | ETA 0.0 min
+[2026-03-02 01:32:37] Done. gpus=1, twins=8,169
+[2026-03-02 01:32:37] Brun partial sum up to 1000: 1.64627791199574669
+[2026-03-02 01:32:37] Brun partial sum up to 10000: 1.64627791199574669
+[2026-03-02 01:32:37] Brun partial sum up to 100000: 1.67279958482774171
+[2026-03-02 01:32:37] Brun partial sum up to 1000000: 1.71077693080422111
+[2026-03-02 01:32:37] Brun extrapolated  B2* (HL):    1.90191335332790512
+[2026-03-02 01:32:37] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 1.254e-14
+[2026-03-02 01:32:37] Per-term eval error bound (IEEE-754, gamma_5): <= 9.497e-16
+[2026-03-02 01:32:37] Elapsed: 0.90s
+[2026-03-02 01:32:46] **********************************************************************
+[2026-03-02 01:32:46] ** Started: target\release\twincle.exe --exp 5 --splitmode --split 1
+[2026-03-02 01:32:46] **********************************************************************
+[2026-03-02 01:32:47] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:32:47] RAM: 127.75 GB (106.91 GB available)
+[2026-03-02 01:32:47] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:32:47] Testing M=30030: 1485 residues, 65 base primes
+[2026-03-02 01:32:47] Running split 1 of 10 with M=30030, p=(0, 10,000]...
+[2026-03-02 01:32:48] PROGRESS seg 1/1 | twins=202 | shard_sum≈0.572870913410 | 1.43e4 cand/s | ETA 0.0 min
+[2026-03-02 01:32:48] Done. gpus=1, twins=202
+[2026-03-02 01:32:48] Split 1 partial sum for p=(0, 10,000]: 0.57287091340955654
+[2026-03-02 01:32:48] Brun extrapolated  B2* (HL):    0.80223462043797744
+[2026-03-02 01:32:48] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 4.198e-15
+[2026-03-02 01:32:48] Per-term eval error bound (IEEE-754, gamma_5): <= 3.180e-16
+[2026-03-02 01:32:48] Elapsed: 0.25s
+[2026-03-02 01:32:48] **********************************************************************
+[2026-03-02 01:32:48] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 1
+[2026-03-02 01:32:48] **********************************************************************
+[2026-03-02 01:32:49] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:32:49] RAM: 127.75 GB (106.93 GB available)
+[2026-03-02 01:32:49] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:32:49] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:32:49] Running split 1 of 10 with M=30030, p=(0, 100,000]...
+[2026-03-02 01:32:49] PROGRESS seg 1/1 | twins=465 | shard_sum≈0.602255267973 | 2.35e4 cand/s | ETA 0.0 min
+[2026-03-02 01:32:49] Done. gpus=1, twins=1,221
+[2026-03-02 01:32:49] Split 1 partial sum for p=(0, 100,000]: 0.62877694080509750
+[2026-03-02 01:32:49] Brun extrapolated  B2* (HL):    0.81991336332878162
+[2026-03-02 01:32:49] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 4.607e-15
+[2026-03-02 01:32:49] Per-term eval error bound (IEEE-754, gamma_5): <= 3.490e-16
+[2026-03-02 01:32:49] Elapsed: 0.23s
+[2026-03-02 01:32:49] **********************************************************************
+[2026-03-02 01:32:49] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 2
+[2026-03-02 01:32:49] **********************************************************************
+[2026-03-02 01:32:51] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:32:51] RAM: 127.75 GB (106.89 GB available)
+[2026-03-02 01:32:51] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:32:51] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:32:51] Running split 2 of 10 with M=30030, p=(100,000, 200,000]...
+[2026-03-02 01:32:51] PROGRESS seg 1/1 | twins=202 | shard_sum≈0.003666039753 | 3.19e4 cand/s | ETA 0.0 min
+[2026-03-02 01:32:51] Done. gpus=1, twins=936
+[2026-03-02 01:32:51] Split 2 partial sum for p=(100,000, 200,000]: 0.01304257654978475
+[2026-03-02 01:32:51] Brun extrapolated  B2* (HL):    0.20417899907346887
+[2026-03-02 01:32:51] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 9.557e-17
+[2026-03-02 01:32:51] Per-term eval error bound (IEEE-754, gamma_5): <= 7.240e-18
+[2026-03-02 01:32:51] Elapsed: 0.27s
+[2026-03-02 01:32:51] **********************************************************************
+[2026-03-02 01:32:51] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 3
+[2026-03-02 01:32:51] **********************************************************************
+[2026-03-02 01:32:53] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:32:53] RAM: 127.75 GB (106.89 GB available)
+[2026-03-02 01:32:53] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:32:53] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:32:53] Running split 3 of 10 with M=30030, p=(200,000, 300,000]...
+[2026-03-02 01:32:53] PROGRESS seg 1/1 | twins=94 | shard_sum≈0.000915031978 | 3.61e4 cand/s | ETA 0.0 min
+[2026-03-02 01:32:53] Done. gpus=1, twins=834
+[2026-03-02 01:32:53] Split 3 partial sum for p=(200,000, 300,000]: 0.00678464473047751
+[2026-03-02 01:32:53] Brun extrapolated  B2* (HL):    0.19792106725416164
+[2026-03-02 01:32:53] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 4.971e-17
+[2026-03-02 01:32:53] Per-term eval error bound (IEEE-754, gamma_5): <= 3.766e-18
+[2026-03-02 01:32:53] Elapsed: 0.25s
+[2026-03-02 01:32:53] **********************************************************************
+[2026-03-02 01:32:53] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 4
+[2026-03-02 01:32:53] **********************************************************************
+[2026-03-02 01:32:54] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:32:55] RAM: 127.75 GB (106.88 GB available)
+[2026-03-02 01:32:55] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:32:55] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:32:55] Running split 4 of 10 with M=30030, p=(300,000, 400,000]...
+[2026-03-02 01:32:55] PROGRESS seg 1/1 | twins=3 | shard_sum≈0.000019985744 | 2.39e4 cand/s | ETA 0.0 min
+[2026-03-02 01:32:55] Done. gpus=1, twins=810
+[2026-03-02 01:32:55] Split 4 partial sum for p=(300,000, 400,000]: 0.00468646341924529
+[2026-03-02 01:32:55] Brun extrapolated  B2* (HL):    0.19582288594292940
+[2026-03-02 01:32:55] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 3.434e-17
+[2026-03-02 01:32:55] Per-term eval error bound (IEEE-754, gamma_5): <= 2.602e-18
+[2026-03-02 01:32:55] Elapsed: 0.24s
+[2026-03-02 01:32:55] **********************************************************************
+[2026-03-02 01:32:55] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 5
+[2026-03-02 01:32:55] **********************************************************************
+[2026-03-02 01:32:56] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:32:57] RAM: 127.75 GB (106.88 GB available)
+[2026-03-02 01:32:57] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:32:57] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:32:57] Running split 5 of 10 with M=30030, p=(400,000, 500,000]...
+[2026-03-02 01:32:57] PROGRESS seg 1/1 | twins=161 | shard_sum≈0.000785139958 | 3.56e4 cand/s | ETA 0.0 min
+[2026-03-02 01:32:57] Done. gpus=1, twins=761
+[2026-03-02 01:32:57] Split 5 partial sum for p=(400,000, 500,000]: 0.00340365908800108
+[2026-03-02 01:32:57] Brun extrapolated  B2* (HL):    0.19454008161168521
+[2026-03-02 01:32:57] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 2.494e-17
+[2026-03-02 01:32:57] Per-term eval error bound (IEEE-754, gamma_5): <= 1.889e-18
+[2026-03-02 01:32:57] Elapsed: 0.24s
+[2026-03-02 01:32:57] **********************************************************************
+[2026-03-02 01:32:57] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 6
+[2026-03-02 01:32:57] **********************************************************************
+[2026-03-02 01:32:58] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:32:58] RAM: 127.75 GB (106.89 GB available)
+[2026-03-02 01:32:58] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:32:58] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:32:58] Running split 6 of 10 with M=30030, p=(500,000, 600,000]...
+[2026-03-02 01:32:59] PROGRESS seg 1/1 | twins=71 | shard_sum≈0.000281175865 | 3.87e4 cand/s | ETA 0.0 min
+[2026-03-02 01:32:59] Done. gpus=1, twins=766
+[2026-03-02 01:32:59] Split 6 partial sum for p=(500,000, 600,000]: 0.00279205142305050
+[2026-03-02 01:32:59] Brun extrapolated  B2* (HL):    0.19392847394673463
+[2026-03-02 01:32:59] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 2.046e-17
+[2026-03-02 01:32:59] Per-term eval error bound (IEEE-754, gamma_5): <= 1.550e-18
+[2026-03-02 01:32:59] Elapsed: 0.23s
+[2026-03-02 01:32:59] **********************************************************************
+[2026-03-02 01:32:59] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 7
+[2026-03-02 01:32:59] **********************************************************************
+[2026-03-02 01:33:00] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:33:00] RAM: 127.75 GB (106.90 GB available)
+[2026-03-02 01:33:00] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:33:00] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:33:00] Running split 7 of 10 with M=30030, p=(600,000, 700,000]...
+[2026-03-02 01:33:01] PROGRESS seg 1/1 | twins=7 | shard_sum≈0.000023322173 | 2.49e4 cand/s | ETA 0.0 min
+[2026-03-02 01:33:01] Done. gpus=1, twins=730
+[2026-03-02 01:33:01] Split 7 partial sum for p=(600,000, 700,000]: 0.00225459398162698
+[2026-03-02 01:33:01] Brun extrapolated  B2* (HL):    0.19339101650531110
+[2026-03-02 01:33:01] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 1.652e-17
+[2026-03-02 01:33:01] Per-term eval error bound (IEEE-754, gamma_5): <= 1.252e-18
+[2026-03-02 01:33:01] Elapsed: 0.23s
+[2026-03-02 01:33:01] **********************************************************************
+[2026-03-02 01:33:01] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 8
+[2026-03-02 01:33:01] **********************************************************************
+[2026-03-02 01:33:02] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:33:02] RAM: 127.75 GB (106.91 GB available)
+[2026-03-02 01:33:02] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:33:02] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:33:02] Running split 8 of 10 with M=30030, p=(700,000, 800,000]...
+[2026-03-02 01:33:02] PROGRESS seg 1/1 | twins=146 | shard_sum≈0.000411379576 | 3.79e4 cand/s | ETA 0.0 min
+[2026-03-02 01:33:02] Done. gpus=1, twins=705
+[2026-03-02 01:33:02] Split 8 partial sum for p=(700,000, 800,000]: 0.00188195947777110
+[2026-03-02 01:33:02] Brun extrapolated  B2* (HL):    0.19301838200145524
+[2026-03-02 01:33:02] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 1.379e-17
+[2026-03-02 01:33:02] Per-term eval error bound (IEEE-754, gamma_5): <= 1.045e-18
+[2026-03-02 01:33:02] Elapsed: 0.23s
+[2026-03-02 01:33:02] **********************************************************************
+[2026-03-02 01:33:02] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 9
+[2026-03-02 01:33:02] **********************************************************************
+[2026-03-02 01:33:04] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:33:04] RAM: 127.75 GB (106.89 GB available)
+[2026-03-02 01:33:04] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:33:04] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:33:04] Running split 9 of 10 with M=30030, p=(800,000, 900,000]...
+[2026-03-02 01:33:04] PROGRESS seg 1/1 | twins=68 | shard_sum≈0.000168822320 | 3.84e4 cand/s | ETA 0.0 min
+[2026-03-02 01:33:04] Done. gpus=1, twins=706
+[2026-03-02 01:33:04] Split 9 partial sum for p=(800,000, 900,000]: 0.00166184033671283
+[2026-03-02 01:33:04] Brun extrapolated  B2* (HL):    0.19279826286039695
+[2026-03-02 01:33:04] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 1.218e-17
+[2026-03-02 01:33:04] Per-term eval error bound (IEEE-754, gamma_5): <= 9.225e-19
+[2026-03-02 01:33:04] Elapsed: 0.23s
+[2026-03-02 01:33:04] **********************************************************************
+[2026-03-02 01:33:04] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 10
+[2026-03-02 01:33:04] **********************************************************************
+[2026-03-02 01:33:05] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:33:06] RAM: 127.75 GB (106.90 GB available)
+[2026-03-02 01:33:06] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:33:06] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:33:06] Running split 10 of 10 with M=30030, p=(900,000, 1,000,000]...
+[2026-03-02 01:33:06] PROGRESS seg 1/1 | twins=6 | shard_sum≈0.000013325946 | 1.55e4 cand/s | ETA 0.0 min
+[2026-03-02 01:33:06] Done. gpus=1, twins=697
+[2026-03-02 01:33:06] Split 10 partial sum for p=(900,000, 1,000,000]: 0.00146955696980950
+[2026-03-02 01:33:06] Brun extrapolated  B2* (HL):    0.19260597949349362
+[2026-03-02 01:33:06] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 1.077e-17
+[2026-03-02 01:33:06] Per-term eval error bound (IEEE-754, gamma_5): <= 8.158e-19
+[2026-03-02 01:33:06] Elapsed: 0.25s
+[2026-03-02 01:33:06] **********************************************************************
+[2026-03-02 01:33:06] ** Started: target\release\twincle.exe --exp 5 --splitmode --split 2
+[2026-03-02 01:33:06] **********************************************************************
+[2026-03-02 01:33:07] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:33:08] RAM: 127.75 GB (106.92 GB available)
+[2026-03-02 01:33:08] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:33:08] Testing M=30030: 1485 residues, 65 base primes
+[2026-03-02 01:33:08] Running split 2 of 10 with M=30030, p=(10,000, 20,000]...
+[2026-03-02 01:33:08] PROGRESS seg 1/1 | twins=137 | shard_sum≈0.019038769214 | 1.75e4 cand/s | ETA 0.0 min
+[2026-03-02 01:33:08] Done. gpus=1, twins=137
+[2026-03-02 01:33:08] Split 2 partial sum for p=(10,000, 20,000]: 0.01903876921370762
+[2026-03-02 01:33:08] Brun extrapolated  B2* (HL):    0.24840247624212855
+[2026-03-02 01:33:08] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 1.395e-16
+[2026-03-02 01:33:08] Per-term eval error bound (IEEE-754, gamma_5): <= 1.057e-17
+[2026-03-02 01:33:08] Elapsed: 0.20s
+[2026-03-02 01:33:08] **********************************************************************
+[2026-03-02 01:33:08] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 1
+[2026-03-02 01:33:08] **********************************************************************
+[2026-03-02 01:33:09] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:33:09] RAM: 127.75 GB (106.93 GB available)
+[2026-03-02 01:33:09] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:33:09] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:33:09] Running split 1 of 10 with M=30030, p=(0, 100,000]...
+[2026-03-02 01:33:10] PROGRESS seg 1/1 | twins=465 | shard_sum≈0.602255267973 | 2.34e4 cand/s | ETA 0.0 min
+[2026-03-02 01:33:10] Done. gpus=1, twins=1,221
+[2026-03-02 01:33:10] Split 1 partial sum for p=(0, 100,000]: 0.62877694080509750
+[2026-03-02 01:33:10] Brun extrapolated  B2* (HL):    0.81991336332878162
+[2026-03-02 01:33:10] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 4.607e-15
+[2026-03-02 01:33:10] Per-term eval error bound (IEEE-754, gamma_5): <= 3.490e-16
+[2026-03-02 01:33:10] Elapsed: 0.23s
+[2026-03-02 01:33:10] **********************************************************************
+[2026-03-02 01:33:10] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 2
+[2026-03-02 01:33:10] **********************************************************************
+[2026-03-02 01:33:11] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:33:11] RAM: 127.75 GB (106.91 GB available)
+[2026-03-02 01:33:11] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:33:11] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:33:11] Running split 2 of 10 with M=30030, p=(100,000, 200,000]...
+[2026-03-02 01:33:11] PROGRESS seg 1/1 | twins=202 | shard_sum≈0.003666039753 | 3.64e4 cand/s | ETA 0.0 min
+[2026-03-02 01:33:11] Done. gpus=1, twins=936
+[2026-03-02 01:33:11] Split 2 partial sum for p=(100,000, 200,000]: 0.01304257654978475
+[2026-03-02 01:33:11] Brun extrapolated  B2* (HL):    0.20417899907346887
+[2026-03-02 01:33:11] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 9.557e-17
+[2026-03-02 01:33:11] Per-term eval error bound (IEEE-754, gamma_5): <= 7.240e-18
+[2026-03-02 01:33:11] Elapsed: 0.23s
+[2026-03-02 01:33:12] **********************************************************************
+[2026-03-02 01:33:12] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 3
+[2026-03-02 01:33:12] **********************************************************************
+[2026-03-02 01:33:13] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:33:13] RAM: 127.75 GB (106.91 GB available)
+[2026-03-02 01:33:13] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:33:13] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:33:13] Running split 3 of 10 with M=30030, p=(200,000, 300,000]...
+[2026-03-02 01:33:13] PROGRESS seg 1/1 | twins=94 | shard_sum≈0.000915031978 | 3.69e4 cand/s | ETA 0.0 min
+[2026-03-02 01:33:13] Done. gpus=1, twins=834
+[2026-03-02 01:33:13] Split 3 partial sum for p=(200,000, 300,000]: 0.00678464473047751
+[2026-03-02 01:33:13] Brun extrapolated  B2* (HL):    0.19792106725416164
+[2026-03-02 01:33:13] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 4.971e-17
+[2026-03-02 01:33:13] Per-term eval error bound (IEEE-754, gamma_5): <= 3.766e-18
+[2026-03-02 01:33:13] Elapsed: 0.24s
+[2026-03-02 01:33:13] **********************************************************************
+[2026-03-02 01:33:13] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 4
+[2026-03-02 01:33:13] **********************************************************************
+[2026-03-02 01:33:15] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:33:15] RAM: 127.75 GB (106.92 GB available)
+[2026-03-02 01:33:15] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:33:15] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:33:15] Running split 4 of 10 with M=30030, p=(300,000, 400,000]...
+[2026-03-02 01:33:15] PROGRESS seg 1/1 | twins=3 | shard_sum≈0.000019985744 | 2.32e4 cand/s | ETA 0.0 min
+[2026-03-02 01:33:15] Done. gpus=1, twins=810
+[2026-03-02 01:33:15] Split 4 partial sum for p=(300,000, 400,000]: 0.00468646341924529
+[2026-03-02 01:33:15] Brun extrapolated  B2* (HL):    0.19582288594292940
+[2026-03-02 01:33:15] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 3.434e-17
+[2026-03-02 01:33:15] Per-term eval error bound (IEEE-754, gamma_5): <= 2.602e-18
+[2026-03-02 01:33:15] Elapsed: 0.24s
+[2026-03-02 01:33:15] **********************************************************************
+[2026-03-02 01:33:15] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 5
+[2026-03-02 01:33:15] **********************************************************************
+[2026-03-02 01:33:16] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:33:17] RAM: 127.75 GB (106.91 GB available)
+[2026-03-02 01:33:17] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:33:17] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:33:17] Running split 5 of 10 with M=30030, p=(400,000, 500,000]...
+[2026-03-02 01:33:17] PROGRESS seg 1/1 | twins=161 | shard_sum≈0.000785139958 | 3.80e4 cand/s | ETA 0.0 min
+[2026-03-02 01:33:17] Done. gpus=1, twins=761
+[2026-03-02 01:33:17] Split 5 partial sum for p=(400,000, 500,000]: 0.00340365908800108
+[2026-03-02 01:33:17] Brun extrapolated  B2* (HL):    0.19454008161168521
+[2026-03-02 01:33:17] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 2.494e-17
+[2026-03-02 01:33:17] Per-term eval error bound (IEEE-754, gamma_5): <= 1.889e-18
+[2026-03-02 01:33:17] Elapsed: 0.22s
+[2026-03-02 01:33:17] **********************************************************************
+[2026-03-02 01:33:17] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 6
+[2026-03-02 01:33:17] **********************************************************************
+[2026-03-02 01:33:18] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:33:19] RAM: 127.75 GB (106.91 GB available)
+[2026-03-02 01:33:19] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:33:19] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:33:19] Running split 6 of 10 with M=30030, p=(500,000, 600,000]...
+[2026-03-02 01:33:19] PROGRESS seg 1/1 | twins=71 | shard_sum≈0.000281175865 | 3.53e4 cand/s | ETA 0.0 min
+[2026-03-02 01:33:19] Done. gpus=1, twins=766
+[2026-03-02 01:33:19] Split 6 partial sum for p=(500,000, 600,000]: 0.00279205142305050
+[2026-03-02 01:33:19] Brun extrapolated  B2* (HL):    0.19392847394673463
+[2026-03-02 01:33:19] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 2.046e-17
+[2026-03-02 01:33:19] Per-term eval error bound (IEEE-754, gamma_5): <= 1.550e-18
+[2026-03-02 01:33:19] Elapsed: 0.25s
+[2026-03-02 01:33:19] **********************************************************************
+[2026-03-02 01:33:19] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 7
+[2026-03-02 01:33:19] **********************************************************************
+[2026-03-02 01:33:20] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:33:20] RAM: 127.75 GB (106.90 GB available)
+[2026-03-02 01:33:20] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:33:20] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:33:20] Running split 7 of 10 with M=30030, p=(600,000, 700,000]...
+[2026-03-02 01:33:21] PROGRESS seg 1/1 | twins=7 | shard_sum≈0.000023322173 | 2.29e4 cand/s | ETA 0.0 min
+[2026-03-02 01:33:21] Done. gpus=1, twins=730
+[2026-03-02 01:33:21] Split 7 partial sum for p=(600,000, 700,000]: 0.00225459398162698
+[2026-03-02 01:33:21] Brun extrapolated  B2* (HL):    0.19339101650531110
+[2026-03-02 01:33:21] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 1.652e-17
+[2026-03-02 01:33:21] Per-term eval error bound (IEEE-754, gamma_5): <= 1.252e-18
+[2026-03-02 01:33:21] Elapsed: 0.25s
+[2026-03-02 01:33:21] **********************************************************************
+[2026-03-02 01:33:21] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 8
+[2026-03-02 01:33:21] **********************************************************************
+[2026-03-02 01:33:22] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:33:22] RAM: 127.75 GB (106.99 GB available)
+[2026-03-02 01:33:22] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:33:22] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:33:22] Running split 8 of 10 with M=30030, p=(700,000, 800,000]...
+[2026-03-02 01:33:22] PROGRESS seg 1/1 | twins=146 | shard_sum≈0.000411379576 | 3.67e4 cand/s | ETA 0.0 min
+[2026-03-02 01:33:22] Done. gpus=1, twins=705
+[2026-03-02 01:33:22] Split 8 partial sum for p=(700,000, 800,000]: 0.00188195947777110
+[2026-03-02 01:33:22] Brun extrapolated  B2* (HL):    0.19301838200145524
+[2026-03-02 01:33:22] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 1.379e-17
+[2026-03-02 01:33:22] Per-term eval error bound (IEEE-754, gamma_5): <= 1.045e-18
+[2026-03-02 01:33:22] Elapsed: 0.23s
+[2026-03-02 01:33:23] **********************************************************************
+[2026-03-02 01:33:23] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 9
+[2026-03-02 01:33:23] **********************************************************************
+[2026-03-02 01:33:24] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:33:24] RAM: 127.75 GB (106.98 GB available)
+[2026-03-02 01:33:24] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:33:24] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:33:24] Running split 9 of 10 with M=30030, p=(800,000, 900,000]...
+[2026-03-02 01:33:24] PROGRESS seg 1/1 | twins=68 | shard_sum≈0.000168822320 | 3.83e4 cand/s | ETA 0.0 min
+[2026-03-02 01:33:24] Done. gpus=1, twins=706
+[2026-03-02 01:33:24] Split 9 partial sum for p=(800,000, 900,000]: 0.00166184033671283
+[2026-03-02 01:33:24] Brun extrapolated  B2* (HL):    0.19279826286039695
+[2026-03-02 01:33:24] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 1.218e-17
+[2026-03-02 01:33:24] Per-term eval error bound (IEEE-754, gamma_5): <= 9.225e-19
+[2026-03-02 01:33:24] Elapsed: 0.23s
+[2026-03-02 01:33:24] **********************************************************************
+[2026-03-02 01:33:24] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 10
+[2026-03-02 01:33:24] **********************************************************************
+[2026-03-02 01:33:26] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:33:26] RAM: 127.75 GB (106.97 GB available)
+[2026-03-02 01:33:26] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:33:26] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:33:26] Running split 10 of 10 with M=30030, p=(900,000, 1,000,000]...
+[2026-03-02 01:33:26] PROGRESS seg 1/1 | twins=6 | shard_sum≈0.000013325946 | 1.94e4 cand/s | ETA 0.0 min
+[2026-03-02 01:33:26] Done. gpus=1, twins=697
+[2026-03-02 01:33:26] Split 10 partial sum for p=(900,000, 1,000,000]: 0.00146955696980950
+[2026-03-02 01:33:26] Brun extrapolated  B2* (HL):    0.19260597949349362
+[2026-03-02 01:33:26] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 1.077e-17
+[2026-03-02 01:33:26] Per-term eval error bound (IEEE-754, gamma_5): <= 8.158e-19
+[2026-03-02 01:33:26] Elapsed: 0.28s
+[2026-03-02 01:33:26] **********************************************************************
+[2026-03-02 01:33:26] ** Started: target\release\twincle.exe --exp 5 --splitmode --split 3
+[2026-03-02 01:33:26] **********************************************************************
+[2026-03-02 01:33:28] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:33:28] RAM: 127.75 GB (106.85 GB available)
+[2026-03-02 01:33:28] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:33:28] Testing M=30030: 1485 residues, 65 base primes
+[2026-03-02 01:33:28] Running split 3 of 10 with M=30030, p=(20,000, 30,000]...
+[2026-03-02 01:33:28] PROGRESS seg 1/1 | twins=125 | shard_sum≈0.010278945339 | 1.93e4 cand/s | ETA 0.0 min
+[2026-03-02 01:33:28] Done. gpus=1, twins=125
+[2026-03-02 01:33:28] Split 3 partial sum for p=(20,000, 30,000]: 0.01027894533910204
+[2026-03-02 01:33:28] Brun extrapolated  B2* (HL):    0.23964265236752297
+[2026-03-02 01:33:28] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 7.532e-17
+[2026-03-02 01:33:28] Per-term eval error bound (IEEE-754, gamma_5): <= 5.706e-18
+[2026-03-02 01:33:28] Elapsed: 0.19s
+[2026-03-02 01:33:28] **********************************************************************
+[2026-03-02 01:33:28] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 1
+[2026-03-02 01:33:28] **********************************************************************
+[2026-03-02 01:33:29] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:33:30] RAM: 127.75 GB (106.86 GB available)
+[2026-03-02 01:33:30] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:33:30] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:33:30] Running split 1 of 10 with M=30030, p=(0, 100,000]...
+[2026-03-02 01:33:30] PROGRESS seg 1/1 | twins=465 | shard_sum≈0.602255267973 | 2.23e4 cand/s | ETA 0.0 min
+[2026-03-02 01:33:30] Done. gpus=1, twins=1,221
+[2026-03-02 01:33:30] Split 1 partial sum for p=(0, 100,000]: 0.62877694080509750
+[2026-03-02 01:33:30] Brun extrapolated  B2* (HL):    0.81991336332878162
+[2026-03-02 01:33:30] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 4.607e-15
+[2026-03-02 01:33:30] Per-term eval error bound (IEEE-754, gamma_5): <= 3.490e-16
+[2026-03-02 01:33:30] Elapsed: 0.24s
+[2026-03-02 01:33:30] **********************************************************************
+[2026-03-02 01:33:30] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 2
+[2026-03-02 01:33:30] **********************************************************************
+[2026-03-02 01:33:31] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:33:32] RAM: 127.75 GB (106.84 GB available)
+[2026-03-02 01:33:32] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:33:32] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:33:32] Running split 2 of 10 with M=30030, p=(100,000, 200,000]...
+[2026-03-02 01:33:32] PROGRESS seg 1/1 | twins=202 | shard_sum≈0.003666039753 | 3.54e4 cand/s | ETA 0.0 min
+[2026-03-02 01:33:32] Done. gpus=1, twins=936
+[2026-03-02 01:33:32] Split 2 partial sum for p=(100,000, 200,000]: 0.01304257654978475
+[2026-03-02 01:33:32] Brun extrapolated  B2* (HL):    0.20417899907346887
+[2026-03-02 01:33:32] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 9.557e-17
+[2026-03-02 01:33:32] Per-term eval error bound (IEEE-754, gamma_5): <= 7.240e-18
+[2026-03-02 01:33:32] Elapsed: 0.24s
+[2026-03-02 01:33:32] **********************************************************************
+[2026-03-02 01:33:32] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 3
+[2026-03-02 01:33:32] **********************************************************************
+[2026-03-02 01:33:33] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:33:33] RAM: 127.75 GB (106.85 GB available)
+[2026-03-02 01:33:33] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:33:33] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:33:33] Running split 3 of 10 with M=30030, p=(200,000, 300,000]...
+[2026-03-02 01:33:34] PROGRESS seg 1/1 | twins=94 | shard_sum≈0.000915031978 | 3.63e4 cand/s | ETA 0.0 min
+[2026-03-02 01:33:34] Done. gpus=1, twins=834
+[2026-03-02 01:33:34] Split 3 partial sum for p=(200,000, 300,000]: 0.00678464473047751
+[2026-03-02 01:33:34] Brun extrapolated  B2* (HL):    0.19792106725416164
+[2026-03-02 01:33:34] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 4.971e-17
+[2026-03-02 01:33:34] Per-term eval error bound (IEEE-754, gamma_5): <= 3.766e-18
+[2026-03-02 01:33:34] Elapsed: 0.25s
+[2026-03-02 01:33:34] **********************************************************************
+[2026-03-02 01:33:34] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 4
+[2026-03-02 01:33:34] **********************************************************************
+[2026-03-02 01:33:35] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:33:35] RAM: 127.75 GB (106.84 GB available)
+[2026-03-02 01:33:35] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:33:35] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:33:35] Running split 4 of 10 with M=30030, p=(300,000, 400,000]...
+[2026-03-02 01:33:36] PROGRESS seg 1/1 | twins=3 | shard_sum≈0.000019985744 | 2.41e4 cand/s | ETA 0.0 min
+[2026-03-02 01:33:36] Done. gpus=1, twins=810
+[2026-03-02 01:33:36] Split 4 partial sum for p=(300,000, 400,000]: 0.00468646341924529
+[2026-03-02 01:33:36] Brun extrapolated  B2* (HL):    0.19582288594292940
+[2026-03-02 01:33:36] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 3.434e-17
+[2026-03-02 01:33:36] Per-term eval error bound (IEEE-754, gamma_5): <= 2.602e-18
+[2026-03-02 01:33:36] Elapsed: 0.24s
+[2026-03-02 01:33:36] **********************************************************************
+[2026-03-02 01:33:36] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 5
+[2026-03-02 01:33:36] **********************************************************************
+[2026-03-02 01:33:37] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:33:37] RAM: 127.75 GB (106.84 GB available)
+[2026-03-02 01:33:37] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:33:37] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:33:37] Running split 5 of 10 with M=30030, p=(400,000, 500,000]...
+[2026-03-02 01:33:37] PROGRESS seg 1/1 | twins=161 | shard_sum≈0.000785139958 | 3.63e4 cand/s | ETA 0.0 min
+[2026-03-02 01:33:37] Done. gpus=1, twins=761
+[2026-03-02 01:33:37] Split 5 partial sum for p=(400,000, 500,000]: 0.00340365908800108
+[2026-03-02 01:33:37] Brun extrapolated  B2* (HL):    0.19454008161168521
+[2026-03-02 01:33:37] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 2.494e-17
+[2026-03-02 01:33:37] Per-term eval error bound (IEEE-754, gamma_5): <= 1.889e-18
+[2026-03-02 01:33:37] Elapsed: 0.23s
+[2026-03-02 01:33:37] **********************************************************************
+[2026-03-02 01:33:37] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 6
+[2026-03-02 01:33:37] **********************************************************************
+[2026-03-02 01:33:39] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:33:39] RAM: 127.75 GB (106.83 GB available)
+[2026-03-02 01:33:39] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:33:39] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:33:39] Running split 6 of 10 with M=30030, p=(500,000, 600,000]...
+[2026-03-02 01:33:39] PROGRESS seg 1/1 | twins=71 | shard_sum≈0.000281175865 | 3.64e4 cand/s | ETA 0.0 min
+[2026-03-02 01:33:39] Done. gpus=1, twins=766
+[2026-03-02 01:33:39] Split 6 partial sum for p=(500,000, 600,000]: 0.00279205142305050
+[2026-03-02 01:33:39] Brun extrapolated  B2* (HL):    0.19392847394673463
+[2026-03-02 01:33:39] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 2.046e-17
+[2026-03-02 01:33:39] Per-term eval error bound (IEEE-754, gamma_5): <= 1.550e-18
+[2026-03-02 01:33:39] Elapsed: 0.25s
+[2026-03-02 01:33:39] **********************************************************************
+[2026-03-02 01:33:39] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 7
+[2026-03-02 01:33:39] **********************************************************************
+[2026-03-02 01:33:41] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:33:41] RAM: 127.75 GB (106.83 GB available)
+[2026-03-02 01:33:41] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:33:41] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:33:41] Running split 7 of 10 with M=30030, p=(600,000, 700,000]...
+[2026-03-02 01:33:41] PROGRESS seg 1/1 | twins=7 | shard_sum≈0.000023322173 | 2.45e4 cand/s | ETA 0.0 min
+[2026-03-02 01:33:41] Done. gpus=1, twins=730
+[2026-03-02 01:33:41] Split 7 partial sum for p=(600,000, 700,000]: 0.00225459398162698
+[2026-03-02 01:33:41] Brun extrapolated  B2* (HL):    0.19339101650531110
+[2026-03-02 01:33:41] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 1.652e-17
+[2026-03-02 01:33:41] Per-term eval error bound (IEEE-754, gamma_5): <= 1.252e-18
+[2026-03-02 01:33:41] Elapsed: 0.23s
+[2026-03-02 01:33:41] **********************************************************************
+[2026-03-02 01:33:41] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 8
+[2026-03-02 01:33:41] **********************************************************************
+[2026-03-02 01:33:42] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:33:43] RAM: 127.75 GB (106.83 GB available)
+[2026-03-02 01:33:43] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:33:43] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:33:43] Running split 8 of 10 with M=30030, p=(700,000, 800,000]...
+[2026-03-02 01:33:43] PROGRESS seg 1/1 | twins=146 | shard_sum≈0.000411379576 | 3.37e4 cand/s | ETA 0.0 min
+[2026-03-02 01:33:43] Done. gpus=1, twins=705
+[2026-03-02 01:33:43] Split 8 partial sum for p=(700,000, 800,000]: 0.00188195947777110
+[2026-03-02 01:33:43] Brun extrapolated  B2* (HL):    0.19301838200145524
+[2026-03-02 01:33:43] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 1.379e-17
+[2026-03-02 01:33:43] Per-term eval error bound (IEEE-754, gamma_5): <= 1.045e-18
+[2026-03-02 01:33:43] Elapsed: 0.25s
+[2026-03-02 01:33:43] **********************************************************************
+[2026-03-02 01:33:43] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 9
+[2026-03-02 01:33:43] **********************************************************************
+[2026-03-02 01:33:44] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:33:45] RAM: 127.75 GB (106.85 GB available)
+[2026-03-02 01:33:45] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:33:45] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:33:45] Running split 9 of 10 with M=30030, p=(800,000, 900,000]...
+[2026-03-02 01:33:45] PROGRESS seg 1/1 | twins=68 | shard_sum≈0.000168822320 | 3.93e4 cand/s | ETA 0.0 min
+[2026-03-02 01:33:45] Done. gpus=1, twins=706
+[2026-03-02 01:33:45] Split 9 partial sum for p=(800,000, 900,000]: 0.00166184033671283
+[2026-03-02 01:33:45] Brun extrapolated  B2* (HL):    0.19279826286039695
+[2026-03-02 01:33:45] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 1.218e-17
+[2026-03-02 01:33:45] Per-term eval error bound (IEEE-754, gamma_5): <= 9.225e-19
+[2026-03-02 01:33:45] Elapsed: 0.23s
+[2026-03-02 01:33:45] **********************************************************************
+[2026-03-02 01:33:45] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 10
+[2026-03-02 01:33:45] **********************************************************************
+[2026-03-02 01:33:46] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:33:46] RAM: 127.75 GB (106.84 GB available)
+[2026-03-02 01:33:46] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:33:46] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:33:46] Running split 10 of 10 with M=30030, p=(900,000, 1,000,000]...
+[2026-03-02 01:33:47] PROGRESS seg 1/1 | twins=6 | shard_sum≈0.000013325946 | 2.21e4 cand/s | ETA 0.0 min
+[2026-03-02 01:33:47] Done. gpus=1, twins=697
+[2026-03-02 01:33:47] Split 10 partial sum for p=(900,000, 1,000,000]: 0.00146955696980950
+[2026-03-02 01:33:47] Brun extrapolated  B2* (HL):    0.19260597949349362
+[2026-03-02 01:33:47] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 1.077e-17
+[2026-03-02 01:33:47] Per-term eval error bound (IEEE-754, gamma_5): <= 8.158e-19
+[2026-03-02 01:33:47] Elapsed: 0.25s
+[2026-03-02 01:33:47] **********************************************************************
+[2026-03-02 01:33:47] ** Started: target\release\twincle.exe --exp 5 --splitmode --split 4
+[2026-03-02 01:33:47] **********************************************************************
+[2026-03-02 01:33:48] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:33:48] RAM: 127.75 GB (106.91 GB available)
+[2026-03-02 01:33:48] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:33:48] Testing M=30030: 1485 residues, 65 base primes
+[2026-03-02 01:33:48] Running split 4 of 10 with M=30030, p=(30,000, 40,000]...
+[2026-03-02 01:33:49] PROGRESS seg 1/1 | twins=1 | shard_sum≈0.000066640011 | 2.38e4 cand/s | ETA 0.0 min
+[2026-03-02 01:33:49] Done. gpus=1, twins=124
+[2026-03-02 01:33:49] Split 4 partial sum for p=(30,000, 40,000]: 0.00720320310714093
+[2026-03-02 01:33:49] Brun extrapolated  B2* (HL):    0.23656691013556186
+[2026-03-02 01:33:49] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 5.278e-17
+[2026-03-02 01:33:49] Per-term eval error bound (IEEE-754, gamma_5): <= 3.999e-18
+[2026-03-02 01:33:49] Elapsed: 0.20s
+[2026-03-02 01:33:49] **********************************************************************
+[2026-03-02 01:33:49] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 1
+[2026-03-02 01:33:49] **********************************************************************
+[2026-03-02 01:33:50] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:33:50] RAM: 127.75 GB (106.66 GB available)
+[2026-03-02 01:33:50] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:33:50] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:33:50] Running split 1 of 10 with M=30030, p=(0, 100,000]...
+[2026-03-02 01:33:50] PROGRESS seg 1/1 | twins=465 | shard_sum≈0.602255267973 | 2.16e4 cand/s | ETA 0.0 min
+[2026-03-02 01:33:51] Done. gpus=1, twins=1,221
+[2026-03-02 01:33:51] Split 1 partial sum for p=(0, 100,000]: 0.62877694080509750
+[2026-03-02 01:33:51] Brun extrapolated  B2* (HL):    0.81991336332878162
+[2026-03-02 01:33:51] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 4.607e-15
+[2026-03-02 01:33:51] Per-term eval error bound (IEEE-754, gamma_5): <= 3.490e-16
+[2026-03-02 01:33:51] Elapsed: 0.25s
+[2026-03-02 01:33:51] **********************************************************************
+[2026-03-02 01:33:51] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 2
+[2026-03-02 01:33:51] **********************************************************************
+[2026-03-02 01:33:52] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:33:52] RAM: 127.75 GB (106.79 GB available)
+[2026-03-02 01:33:52] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:33:52] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:33:52] Running split 2 of 10 with M=30030, p=(100,000, 200,000]...
+[2026-03-02 01:33:52] PROGRESS seg 1/1 | twins=202 | shard_sum≈0.003666039753 | 3.86e4 cand/s | ETA 0.0 min
+[2026-03-02 01:33:52] Done. gpus=1, twins=936
+[2026-03-02 01:33:52] Split 2 partial sum for p=(100,000, 200,000]: 0.01304257654978475
+[2026-03-02 01:33:52] Brun extrapolated  B2* (HL):    0.20417899907346887
+[2026-03-02 01:33:52] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 9.557e-17
+[2026-03-02 01:33:52] Per-term eval error bound (IEEE-754, gamma_5): <= 7.240e-18
+[2026-03-02 01:33:52] Elapsed: 0.22s
+[2026-03-02 01:33:52] **********************************************************************
+[2026-03-02 01:33:52] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 3
+[2026-03-02 01:33:52] **********************************************************************
+[2026-03-02 01:33:54] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:33:54] RAM: 127.75 GB (106.57 GB available)
+[2026-03-02 01:33:54] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:33:54] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:33:54] Running split 3 of 10 with M=30030, p=(200,000, 300,000]...
+[2026-03-02 01:33:54] PROGRESS seg 1/1 | twins=94 | shard_sum≈0.000915031978 | 2.27e4 cand/s | ETA 0.0 min
+[2026-03-02 01:33:54] Done. gpus=1, twins=834
+[2026-03-02 01:33:54] Split 3 partial sum for p=(200,000, 300,000]: 0.00678464473047751
+[2026-03-02 01:33:54] Brun extrapolated  B2* (HL):    0.19792106725416164
+[2026-03-02 01:33:54] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 4.971e-17
+[2026-03-02 01:33:54] Per-term eval error bound (IEEE-754, gamma_5): <= 3.766e-18
+[2026-03-02 01:33:54] Elapsed: 0.24s
+[2026-03-02 01:33:54] **********************************************************************
+[2026-03-02 01:33:54] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 4
+[2026-03-02 01:33:54] **********************************************************************
+[2026-03-02 01:33:55] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:33:56] RAM: 127.75 GB (106.79 GB available)
+[2026-03-02 01:33:56] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:33:56] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:33:56] Running split 4 of 10 with M=30030, p=(300,000, 400,000]...
+[2026-03-02 01:33:56] PROGRESS seg 1/1 | twins=3 | shard_sum≈0.000019985744 | 2.06e4 cand/s | ETA 0.0 min
+[2026-03-02 01:33:56] Done. gpus=1, twins=810
+[2026-03-02 01:33:56] Split 4 partial sum for p=(300,000, 400,000]: 0.00468646341924529
+[2026-03-02 01:33:56] Brun extrapolated  B2* (HL):    0.19582288594292940
+[2026-03-02 01:33:56] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 3.434e-17
+[2026-03-02 01:33:56] Per-term eval error bound (IEEE-754, gamma_5): <= 2.602e-18
+[2026-03-02 01:33:56] Elapsed: 0.27s
+[2026-03-02 01:33:56] **********************************************************************
+[2026-03-02 01:33:56] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 5
+[2026-03-02 01:33:56] **********************************************************************
+[2026-03-02 01:33:57] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:33:58] RAM: 127.75 GB (106.78 GB available)
+[2026-03-02 01:33:58] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:33:58] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:33:58] Running split 5 of 10 with M=30030, p=(400,000, 500,000]...
+[2026-03-02 01:33:58] PROGRESS seg 1/1 | twins=161 | shard_sum≈0.000785139958 | 3.88e4 cand/s | ETA 0.0 min
+[2026-03-02 01:33:58] Done. gpus=1, twins=761
+[2026-03-02 01:33:58] Split 5 partial sum for p=(400,000, 500,000]: 0.00340365908800108
+[2026-03-02 01:33:58] Brun extrapolated  B2* (HL):    0.19454008161168521
+[2026-03-02 01:33:58] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 2.494e-17
+[2026-03-02 01:33:58] Per-term eval error bound (IEEE-754, gamma_5): <= 1.889e-18
+[2026-03-02 01:33:58] Elapsed: 0.22s
+[2026-03-02 01:33:58] **********************************************************************
+[2026-03-02 01:33:58] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 6
+[2026-03-02 01:33:58] **********************************************************************
+[2026-03-02 01:33:59] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:33:59] RAM: 127.75 GB (106.76 GB available)
+[2026-03-02 01:33:59] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:33:59] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:33:59] Running split 6 of 10 with M=30030, p=(500,000, 600,000]...
+[2026-03-02 01:34:00] PROGRESS seg 1/1 | twins=71 | shard_sum≈0.000281175865 | 3.71e4 cand/s | ETA 0.0 min
+[2026-03-02 01:34:00] Done. gpus=1, twins=766
+[2026-03-02 01:34:00] Split 6 partial sum for p=(500,000, 600,000]: 0.00279205142305050
+[2026-03-02 01:34:00] Brun extrapolated  B2* (HL):    0.19392847394673463
+[2026-03-02 01:34:00] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 2.046e-17
+[2026-03-02 01:34:00] Per-term eval error bound (IEEE-754, gamma_5): <= 1.550e-18
+[2026-03-02 01:34:00] Elapsed: 0.24s
+[2026-03-02 01:34:00] **********************************************************************
+[2026-03-02 01:34:00] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 7
+[2026-03-02 01:34:00] **********************************************************************
+[2026-03-02 01:34:01] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:34:01] RAM: 127.75 GB (106.73 GB available)
+[2026-03-02 01:34:01] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:34:01] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:34:01] Running split 7 of 10 with M=30030, p=(600,000, 700,000]...
+[2026-03-02 01:34:02] PROGRESS seg 1/1 | twins=7 | shard_sum≈0.000023322173 | 2.41e4 cand/s | ETA 0.0 min
+[2026-03-02 01:34:02] Done. gpus=1, twins=730
+[2026-03-02 01:34:02] Split 7 partial sum for p=(600,000, 700,000]: 0.00225459398162698
+[2026-03-02 01:34:02] Brun extrapolated  B2* (HL):    0.19339101650531110
+[2026-03-02 01:34:02] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 1.652e-17
+[2026-03-02 01:34:02] Per-term eval error bound (IEEE-754, gamma_5): <= 1.252e-18
+[2026-03-02 01:34:02] Elapsed: 0.23s
+[2026-03-02 01:34:02] **********************************************************************
+[2026-03-02 01:34:02] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 8
+[2026-03-02 01:34:02] **********************************************************************
+[2026-03-02 01:34:03] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:34:03] RAM: 127.75 GB (106.74 GB available)
+[2026-03-02 01:34:03] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:34:03] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:34:03] Running split 8 of 10 with M=30030, p=(700,000, 800,000]...
+[2026-03-02 01:34:03] PROGRESS seg 1/1 | twins=146 | shard_sum≈0.000411379576 | 3.59e4 cand/s | ETA 0.0 min
+[2026-03-02 01:34:03] Done. gpus=1, twins=705
+[2026-03-02 01:34:03] Split 8 partial sum for p=(700,000, 800,000]: 0.00188195947777110
+[2026-03-02 01:34:03] Brun extrapolated  B2* (HL):    0.19301838200145524
+[2026-03-02 01:34:03] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 1.379e-17
+[2026-03-02 01:34:03] Per-term eval error bound (IEEE-754, gamma_5): <= 1.045e-18
+[2026-03-02 01:34:03] Elapsed: 0.24s
+[2026-03-02 01:34:03] **********************************************************************
+[2026-03-02 01:34:03] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 9
+[2026-03-02 01:34:03] **********************************************************************
+[2026-03-02 01:34:05] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:34:05] RAM: 127.75 GB (106.75 GB available)
+[2026-03-02 01:34:05] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:34:05] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:34:05] Running split 9 of 10 with M=30030, p=(800,000, 900,000]...
+[2026-03-02 01:34:05] PROGRESS seg 1/1 | twins=68 | shard_sum≈0.000168822320 | 3.72e4 cand/s | ETA 0.0 min
+[2026-03-02 01:34:05] Done. gpus=1, twins=706
+[2026-03-02 01:34:05] Split 9 partial sum for p=(800,000, 900,000]: 0.00166184033671283
+[2026-03-02 01:34:05] Brun extrapolated  B2* (HL):    0.19279826286039695
+[2026-03-02 01:34:05] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 1.218e-17
+[2026-03-02 01:34:05] Per-term eval error bound (IEEE-754, gamma_5): <= 9.225e-19
+[2026-03-02 01:34:05] Elapsed: 0.24s
+[2026-03-02 01:34:05] **********************************************************************
+[2026-03-02 01:34:05] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 10
+[2026-03-02 01:34:05] **********************************************************************
+[2026-03-02 01:34:06] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:34:07] RAM: 127.75 GB (106.74 GB available)
+[2026-03-02 01:34:07] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:34:07] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:34:07] Running split 10 of 10 with M=30030, p=(900,000, 1,000,000]...
+[2026-03-02 01:34:07] PROGRESS seg 1/1 | twins=6 | shard_sum≈0.000013325946 | 2.30e4 cand/s | ETA 0.0 min
+[2026-03-02 01:34:07] Done. gpus=1, twins=697
+[2026-03-02 01:34:07] Split 10 partial sum for p=(900,000, 1,000,000]: 0.00146955696980950
+[2026-03-02 01:34:07] Brun extrapolated  B2* (HL):    0.19260597949349362
+[2026-03-02 01:34:07] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 1.077e-17
+[2026-03-02 01:34:07] Per-term eval error bound (IEEE-754, gamma_5): <= 8.158e-19
+[2026-03-02 01:34:07] Elapsed: 0.24s
+[2026-03-02 01:34:07] **********************************************************************
+[2026-03-02 01:34:07] ** Started: target\release\twincle.exe --exp 5 --splitmode --split 5
+[2026-03-02 01:34:07] **********************************************************************
+[2026-03-02 01:34:08] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:34:09] RAM: 127.75 GB (106.74 GB available)
+[2026-03-02 01:34:09] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:34:09] Testing M=30030: 1485 residues, 65 base primes
+[2026-03-02 01:34:09] Running split 5 of 10 with M=30030, p=(40,000, 50,000]...
+[2026-03-02 01:34:09] PROGRESS seg 1/1 | twins=114 | shard_sum≈0.005049764274 | 1.24e4 cand/s | ETA 0.0 min
+[2026-03-02 01:34:09] Done. gpus=1, twins=114
+[2026-03-02 01:34:09] Split 5 partial sum for p=(40,000, 50,000]: 0.00504976427426766
+[2026-03-02 01:34:09] Brun extrapolated  B2* (HL):    0.23441347130268858
+[2026-03-02 01:34:09] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 3.700e-17
+[2026-03-02 01:34:09] Per-term eval error bound (IEEE-754, gamma_5): <= 2.803e-18
+[2026-03-02 01:34:09] Elapsed: 0.24s
+[2026-03-02 01:34:09] **********************************************************************
+[2026-03-02 01:34:09] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 1
+[2026-03-02 01:34:09] **********************************************************************
+[2026-03-02 01:34:10] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:34:10] RAM: 127.75 GB (106.75 GB available)
+[2026-03-02 01:34:10] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:34:10] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:34:10] Running split 1 of 10 with M=30030, p=(0, 100,000]...
+[2026-03-02 01:34:11] PROGRESS seg 1/1 | twins=465 | shard_sum≈0.602255267973 | 2.24e4 cand/s | ETA 0.0 min
+[2026-03-02 01:34:11] Done. gpus=1, twins=1,221
+[2026-03-02 01:34:11] Split 1 partial sum for p=(0, 100,000]: 0.62877694080509750
+[2026-03-02 01:34:11] Brun extrapolated  B2* (HL):    0.81991336332878162
+[2026-03-02 01:34:11] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 4.607e-15
+[2026-03-02 01:34:11] Per-term eval error bound (IEEE-754, gamma_5): <= 3.490e-16
+[2026-03-02 01:34:11] Elapsed: 0.24s
+[2026-03-02 01:34:11] **********************************************************************
+[2026-03-02 01:34:11] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 2
+[2026-03-02 01:34:11] **********************************************************************
+[2026-03-02 01:34:12] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:34:12] RAM: 127.75 GB (106.75 GB available)
+[2026-03-02 01:34:12] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:34:12] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:34:12] Running split 2 of 10 with M=30030, p=(100,000, 200,000]...
+[2026-03-02 01:34:12] PROGRESS seg 1/1 | twins=202 | shard_sum≈0.003666039753 | 3.62e4 cand/s | ETA 0.0 min
+[2026-03-02 01:34:12] Done. gpus=1, twins=936
+[2026-03-02 01:34:12] Split 2 partial sum for p=(100,000, 200,000]: 0.01304257654978475
+[2026-03-02 01:34:12] Brun extrapolated  B2* (HL):    0.20417899907346887
+[2026-03-02 01:34:12] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 9.557e-17
+[2026-03-02 01:34:12] Per-term eval error bound (IEEE-754, gamma_5): <= 7.240e-18
+[2026-03-02 01:34:12] Elapsed: 0.24s
+[2026-03-02 01:34:13] **********************************************************************
+[2026-03-02 01:34:13] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 3
+[2026-03-02 01:34:13] **********************************************************************
+[2026-03-02 01:34:14] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:34:14] RAM: 127.75 GB (106.91 GB available)
+[2026-03-02 01:34:14] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:34:14] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:34:14] Running split 3 of 10 with M=30030, p=(200,000, 300,000]...
+[2026-03-02 01:34:14] PROGRESS seg 1/1 | twins=94 | shard_sum≈0.000915031978 | 3.96e4 cand/s | ETA 0.0 min
+[2026-03-02 01:34:14] Done. gpus=1, twins=834
+[2026-03-02 01:34:14] Split 3 partial sum for p=(200,000, 300,000]: 0.00678464473047751
+[2026-03-02 01:34:14] Brun extrapolated  B2* (HL):    0.19792106725416164
+[2026-03-02 01:34:14] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 4.971e-17
+[2026-03-02 01:34:14] Per-term eval error bound (IEEE-754, gamma_5): <= 3.766e-18
+[2026-03-02 01:34:14] Elapsed: 0.23s
+[2026-03-02 01:34:14] **********************************************************************
+[2026-03-02 01:34:14] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 4
+[2026-03-02 01:34:14] **********************************************************************
+[2026-03-02 01:34:16] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:34:16] RAM: 127.75 GB (106.91 GB available)
+[2026-03-02 01:34:16] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:34:16] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:34:16] Running split 4 of 10 with M=30030, p=(300,000, 400,000]...
+[2026-03-02 01:34:16] PROGRESS seg 1/1 | twins=3 | shard_sum≈0.000019985744 | 2.58e4 cand/s | ETA 0.0 min
+[2026-03-02 01:34:16] Done. gpus=1, twins=810
+[2026-03-02 01:34:16] Split 4 partial sum for p=(300,000, 400,000]: 0.00468646341924529
+[2026-03-02 01:34:16] Brun extrapolated  B2* (HL):    0.19582288594292940
+[2026-03-02 01:34:16] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 3.434e-17
+[2026-03-02 01:34:16] Per-term eval error bound (IEEE-754, gamma_5): <= 2.602e-18
+[2026-03-02 01:34:16] Elapsed: 0.22s
+[2026-03-02 01:34:16] **********************************************************************
+[2026-03-02 01:34:16] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 5
+[2026-03-02 01:34:16] **********************************************************************
+[2026-03-02 01:34:17] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:34:18] RAM: 127.75 GB (106.91 GB available)
+[2026-03-02 01:34:18] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:34:18] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:34:18] Running split 5 of 10 with M=30030, p=(400,000, 500,000]...
+[2026-03-02 01:34:18] PROGRESS seg 1/1 | twins=161 | shard_sum≈0.000785139958 | 3.84e4 cand/s | ETA 0.0 min
+[2026-03-02 01:34:18] Done. gpus=1, twins=761
+[2026-03-02 01:34:18] Split 5 partial sum for p=(400,000, 500,000]: 0.00340365908800108
+[2026-03-02 01:34:18] Brun extrapolated  B2* (HL):    0.19454008161168521
+[2026-03-02 01:34:18] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 2.494e-17
+[2026-03-02 01:34:18] Per-term eval error bound (IEEE-754, gamma_5): <= 1.889e-18
+[2026-03-02 01:34:18] Elapsed: 0.22s
+[2026-03-02 01:34:18] **********************************************************************
+[2026-03-02 01:34:18] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 6
+[2026-03-02 01:34:18] **********************************************************************
+[2026-03-02 01:34:19] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:34:19] RAM: 127.75 GB (106.91 GB available)
+[2026-03-02 01:34:19] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:34:19] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:34:19] Running split 6 of 10 with M=30030, p=(500,000, 600,000]...
+[2026-03-02 01:34:20] PROGRESS seg 1/1 | twins=71 | shard_sum≈0.000281175865 | 3.97e4 cand/s | ETA 0.0 min
+[2026-03-02 01:34:20] Done. gpus=1, twins=766
+[2026-03-02 01:34:20] Split 6 partial sum for p=(500,000, 600,000]: 0.00279205142305050
+[2026-03-02 01:34:20] Brun extrapolated  B2* (HL):    0.19392847394673463
+[2026-03-02 01:34:20] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 2.046e-17
+[2026-03-02 01:34:20] Per-term eval error bound (IEEE-754, gamma_5): <= 1.550e-18
+[2026-03-02 01:34:20] Elapsed: 0.23s
+[2026-03-02 01:34:20] **********************************************************************
+[2026-03-02 01:34:20] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 7
+[2026-03-02 01:34:20] **********************************************************************
+[2026-03-02 01:34:21] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:34:21] RAM: 127.75 GB (106.92 GB available)
+[2026-03-02 01:34:21] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:34:21] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:34:21] Running split 7 of 10 with M=30030, p=(600,000, 700,000]...
+[2026-03-02 01:34:21] PROGRESS seg 1/1 | twins=7 | shard_sum≈0.000023322173 | 1.54e4 cand/s | ETA 0.0 min
+[2026-03-02 01:34:21] Done. gpus=1, twins=730
+[2026-03-02 01:34:21] Split 7 partial sum for p=(600,000, 700,000]: 0.00225459398162698
+[2026-03-02 01:34:21] Brun extrapolated  B2* (HL):    0.19339101650531110
+[2026-03-02 01:34:21] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 1.652e-17
+[2026-03-02 01:34:21] Per-term eval error bound (IEEE-754, gamma_5): <= 1.252e-18
+[2026-03-02 01:34:21] Elapsed: 0.26s
+[2026-03-02 01:34:21] **********************************************************************
+[2026-03-02 01:34:21] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 8
+[2026-03-02 01:34:21] **********************************************************************
+[2026-03-02 01:34:23] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:34:23] RAM: 127.75 GB (106.89 GB available)
+[2026-03-02 01:34:23] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:34:23] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:34:23] Running split 8 of 10 with M=30030, p=(700,000, 800,000]...
+[2026-03-02 01:34:23] PROGRESS seg 1/1 | twins=146 | shard_sum≈0.000411379576 | 3.78e4 cand/s | ETA 0.0 min
+[2026-03-02 01:34:23] Done. gpus=1, twins=705
+[2026-03-02 01:34:23] Split 8 partial sum for p=(700,000, 800,000]: 0.00188195947777110
+[2026-03-02 01:34:23] Brun extrapolated  B2* (HL):    0.19301838200145524
+[2026-03-02 01:34:23] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 1.379e-17
+[2026-03-02 01:34:23] Per-term eval error bound (IEEE-754, gamma_5): <= 1.045e-18
+[2026-03-02 01:34:23] Elapsed: 0.23s
+[2026-03-02 01:34:23] **********************************************************************
+[2026-03-02 01:34:23] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 9
+[2026-03-02 01:34:23] **********************************************************************
+[2026-03-02 01:34:24] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:34:25] RAM: 127.75 GB (106.94 GB available)
+[2026-03-02 01:34:25] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:34:25] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:34:25] Running split 9 of 10 with M=30030, p=(800,000, 900,000]...
+[2026-03-02 01:34:25] PROGRESS seg 1/1 | twins=68 | shard_sum≈0.000168822320 | 3.94e4 cand/s | ETA 0.0 min
+[2026-03-02 01:34:25] Done. gpus=1, twins=706
+[2026-03-02 01:34:25] Split 9 partial sum for p=(800,000, 900,000]: 0.00166184033671283
+[2026-03-02 01:34:25] Brun extrapolated  B2* (HL):    0.19279826286039695
+[2026-03-02 01:34:25] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 1.218e-17
+[2026-03-02 01:34:25] Per-term eval error bound (IEEE-754, gamma_5): <= 9.225e-19
+[2026-03-02 01:34:25] Elapsed: 0.23s
+[2026-03-02 01:34:25] **********************************************************************
+[2026-03-02 01:34:25] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 10
+[2026-03-02 01:34:25] **********************************************************************
+[2026-03-02 01:34:26] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:34:27] RAM: 127.75 GB (106.92 GB available)
+[2026-03-02 01:34:27] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:34:27] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:34:27] Running split 10 of 10 with M=30030, p=(900,000, 1,000,000]...
+[2026-03-02 01:34:27] PROGRESS seg 1/1 | twins=6 | shard_sum≈0.000013325946 | 1.21e4 cand/s | ETA 0.0 min
+[2026-03-02 01:34:27] Done. gpus=1, twins=697
+[2026-03-02 01:34:27] Split 10 partial sum for p=(900,000, 1,000,000]: 0.00146955696980950
+[2026-03-02 01:34:27] Brun extrapolated  B2* (HL):    0.19260597949349362
+[2026-03-02 01:34:27] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 1.077e-17
+[2026-03-02 01:34:27] Per-term eval error bound (IEEE-754, gamma_5): <= 8.158e-19
+[2026-03-02 01:34:27] Elapsed: 0.30s
+[2026-03-02 01:34:27] **********************************************************************
+[2026-03-02 01:34:27] ** Started: target\release\twincle.exe --exp 5 --splitmode --split 6
+[2026-03-02 01:34:27] **********************************************************************
+[2026-03-02 01:34:28] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:34:29] RAM: 127.75 GB (106.93 GB available)
+[2026-03-02 01:34:29] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:34:29] Testing M=30030: 1485 residues, 65 base primes
+[2026-03-02 01:34:29] Running split 6 of 10 with M=30030, p=(50,000, 60,000]...
+[2026-03-02 01:34:29] PROGRESS seg 1/1 | twins=106 | shard_sum≈0.003863367394 | 1.04e4 cand/s | ETA 0.0 min
+[2026-03-02 01:34:29] Done. gpus=1, twins=106
+[2026-03-02 01:34:29] Split 6 partial sum for p=(50,000, 60,000]: 0.00386336739431998
+[2026-03-02 01:34:29] Brun extrapolated  B2* (HL):    0.23322707442274090
+[2026-03-02 01:34:29] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 2.831e-17
+[2026-03-02 01:34:29] Per-term eval error bound (IEEE-754, gamma_5): <= 2.145e-18
+[2026-03-02 01:34:29] Elapsed: 0.29s
+[2026-03-02 01:34:29] **********************************************************************
+[2026-03-02 01:34:29] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 1
+[2026-03-02 01:34:29] **********************************************************************
+[2026-03-02 01:34:30] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:34:31] RAM: 127.75 GB (106.93 GB available)
+[2026-03-02 01:34:31] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:34:31] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:34:31] Running split 1 of 10 with M=30030, p=(0, 100,000]...
+[2026-03-02 01:34:31] PROGRESS seg 1/1 | twins=465 | shard_sum≈0.602255267973 | 2.35e4 cand/s | ETA 0.0 min
+[2026-03-02 01:34:31] Done. gpus=1, twins=1,221
+[2026-03-02 01:34:31] Split 1 partial sum for p=(0, 100,000]: 0.62877694080509750
+[2026-03-02 01:34:31] Brun extrapolated  B2* (HL):    0.81991336332878162
+[2026-03-02 01:34:31] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 4.607e-15
+[2026-03-02 01:34:31] Per-term eval error bound (IEEE-754, gamma_5): <= 3.490e-16
+[2026-03-02 01:34:31] Elapsed: 0.24s
+[2026-03-02 01:34:31] **********************************************************************
+[2026-03-02 01:34:31] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 2
+[2026-03-02 01:34:31] **********************************************************************
+[2026-03-02 01:34:32] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:34:32] RAM: 127.75 GB (106.94 GB available)
+[2026-03-02 01:34:32] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:34:32] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:34:32] Running split 2 of 10 with M=30030, p=(100,000, 200,000]...
+[2026-03-02 01:34:33] PROGRESS seg 1/1 | twins=202 | shard_sum≈0.003666039753 | 3.39e4 cand/s | ETA 0.0 min
+[2026-03-02 01:34:33] Done. gpus=1, twins=936
+[2026-03-02 01:34:33] Split 2 partial sum for p=(100,000, 200,000]: 0.01304257654978475
+[2026-03-02 01:34:33] Brun extrapolated  B2* (HL):    0.20417899907346887
+[2026-03-02 01:34:33] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 9.557e-17
+[2026-03-02 01:34:33] Per-term eval error bound (IEEE-754, gamma_5): <= 7.240e-18
+[2026-03-02 01:34:33] Elapsed: 0.25s
+[2026-03-02 01:34:33] **********************************************************************
+[2026-03-02 01:34:33] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 3
+[2026-03-02 01:34:33] **********************************************************************
+[2026-03-02 01:34:34] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:34:34] RAM: 127.75 GB (106.96 GB available)
+[2026-03-02 01:34:34] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:34:34] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:34:34] Running split 3 of 10 with M=30030, p=(200,000, 300,000]...
+[2026-03-02 01:34:35] PROGRESS seg 1/1 | twins=94 | shard_sum≈0.000915031978 | 3.93e4 cand/s | ETA 0.0 min
+[2026-03-02 01:34:35] Done. gpus=1, twins=834
+[2026-03-02 01:34:35] Split 3 partial sum for p=(200,000, 300,000]: 0.00678464473047751
+[2026-03-02 01:34:35] Brun extrapolated  B2* (HL):    0.19792106725416164
+[2026-03-02 01:34:35] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 4.971e-17
+[2026-03-02 01:34:35] Per-term eval error bound (IEEE-754, gamma_5): <= 3.766e-18
+[2026-03-02 01:34:35] Elapsed: 0.23s
+[2026-03-02 01:34:35] **********************************************************************
+[2026-03-02 01:34:35] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 4
+[2026-03-02 01:34:35] **********************************************************************
+[2026-03-02 01:34:36] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:34:36] RAM: 127.75 GB (106.95 GB available)
+[2026-03-02 01:34:36] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:34:36] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:34:36] Running split 4 of 10 with M=30030, p=(300,000, 400,000]...
+[2026-03-02 01:34:37] PROGRESS seg 1/1 | twins=3 | shard_sum≈0.000019985744 | 1.61e4 cand/s | ETA 0.0 min
+[2026-03-02 01:34:37] Done. gpus=1, twins=810
+[2026-03-02 01:34:37] Split 4 partial sum for p=(300,000, 400,000]: 0.00468646341924529
+[2026-03-02 01:34:37] Brun extrapolated  B2* (HL):    0.19582288594292940
+[2026-03-02 01:34:37] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 3.434e-17
+[2026-03-02 01:34:37] Per-term eval error bound (IEEE-754, gamma_5): <= 2.602e-18
+[2026-03-02 01:34:37] Elapsed: 0.33s
+[2026-03-02 01:34:37] **********************************************************************
+[2026-03-02 01:34:37] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 5
+[2026-03-02 01:34:37] **********************************************************************
+[2026-03-02 01:34:38] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:34:38] RAM: 127.75 GB (106.86 GB available)
+[2026-03-02 01:34:38] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:34:38] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:34:38] Running split 5 of 10 with M=30030, p=(400,000, 500,000]...
+[2026-03-02 01:34:38] PROGRESS seg 1/1 | twins=161 | shard_sum≈0.000785139958 | 3.56e4 cand/s | ETA 0.0 min
+[2026-03-02 01:34:39] Done. gpus=1, twins=761
+[2026-03-02 01:34:39] Split 5 partial sum for p=(400,000, 500,000]: 0.00340365908800108
+[2026-03-02 01:34:39] Brun extrapolated  B2* (HL):    0.19454008161168521
+[2026-03-02 01:34:39] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 2.494e-17
+[2026-03-02 01:34:39] Per-term eval error bound (IEEE-754, gamma_5): <= 1.889e-18
+[2026-03-02 01:34:39] Elapsed: 0.25s
+[2026-03-02 01:34:39] **********************************************************************
+[2026-03-02 01:34:39] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 6
+[2026-03-02 01:34:39] **********************************************************************
+[2026-03-02 01:34:40] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:34:40] RAM: 127.75 GB (106.97 GB available)
+[2026-03-02 01:34:40] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:34:40] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:34:40] Running split 6 of 10 with M=30030, p=(500,000, 600,000]...
+[2026-03-02 01:34:40] PROGRESS seg 1/1 | twins=71 | shard_sum≈0.000281175865 | 3.89e4 cand/s | ETA 0.0 min
+[2026-03-02 01:34:40] Done. gpus=1, twins=766
+[2026-03-02 01:34:40] Split 6 partial sum for p=(500,000, 600,000]: 0.00279205142305050
+[2026-03-02 01:34:40] Brun extrapolated  B2* (HL):    0.19392847394673463
+[2026-03-02 01:34:40] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 2.046e-17
+[2026-03-02 01:34:40] Per-term eval error bound (IEEE-754, gamma_5): <= 1.550e-18
+[2026-03-02 01:34:40] Elapsed: 0.23s
+[2026-03-02 01:34:40] **********************************************************************
+[2026-03-02 01:34:40] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 7
+[2026-03-02 01:34:40] **********************************************************************
+[2026-03-02 01:34:42] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:34:42] RAM: 127.75 GB (106.99 GB available)
+[2026-03-02 01:34:42] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:34:42] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:34:42] Running split 7 of 10 with M=30030, p=(600,000, 700,000]...
+[2026-03-02 01:34:42] PROGRESS seg 1/1 | twins=7 | shard_sum≈0.000023322173 | 2.58e4 cand/s | ETA 0.0 min
+[2026-03-02 01:34:42] Done. gpus=1, twins=730
+[2026-03-02 01:34:42] Split 7 partial sum for p=(600,000, 700,000]: 0.00225459398162698
+[2026-03-02 01:34:42] Brun extrapolated  B2* (HL):    0.19339101650531110
+[2026-03-02 01:34:42] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 1.652e-17
+[2026-03-02 01:34:42] Per-term eval error bound (IEEE-754, gamma_5): <= 1.252e-18
+[2026-03-02 01:34:42] Elapsed: 0.22s
+[2026-03-02 01:34:42] **********************************************************************
+[2026-03-02 01:34:42] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 8
+[2026-03-02 01:34:42] **********************************************************************
+[2026-03-02 01:34:43] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:34:44] RAM: 127.75 GB (106.98 GB available)
+[2026-03-02 01:34:44] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:34:44] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:34:44] Running split 8 of 10 with M=30030, p=(700,000, 800,000]...
+[2026-03-02 01:34:44] PROGRESS seg 1/1 | twins=146 | shard_sum≈0.000411379576 | 3.93e4 cand/s | ETA 0.0 min
+[2026-03-02 01:34:44] Done. gpus=1, twins=705
+[2026-03-02 01:34:44] Split 8 partial sum for p=(700,000, 800,000]: 0.00188195947777110
+[2026-03-02 01:34:44] Brun extrapolated  B2* (HL):    0.19301838200145524
+[2026-03-02 01:34:44] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 1.379e-17
+[2026-03-02 01:34:44] Per-term eval error bound (IEEE-754, gamma_5): <= 1.045e-18
+[2026-03-02 01:34:44] Elapsed: 0.22s
+[2026-03-02 01:34:44] **********************************************************************
+[2026-03-02 01:34:44] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 9
+[2026-03-02 01:34:44] **********************************************************************
+[2026-03-02 01:34:45] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:34:46] RAM: 127.75 GB (107.05 GB available)
+[2026-03-02 01:34:46] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:34:46] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:34:46] Running split 9 of 10 with M=30030, p=(800,000, 900,000]...
+[2026-03-02 01:34:46] PROGRESS seg 1/1 | twins=68 | shard_sum≈0.000168822320 | 3.86e4 cand/s | ETA 0.0 min
+[2026-03-02 01:34:46] Done. gpus=1, twins=706
+[2026-03-02 01:34:46] Split 9 partial sum for p=(800,000, 900,000]: 0.00166184033671283
+[2026-03-02 01:34:46] Brun extrapolated  B2* (HL):    0.19279826286039695
+[2026-03-02 01:34:46] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 1.218e-17
+[2026-03-02 01:34:46] Per-term eval error bound (IEEE-754, gamma_5): <= 9.225e-19
+[2026-03-02 01:34:46] Elapsed: 0.23s
+[2026-03-02 01:34:46] **********************************************************************
+[2026-03-02 01:34:46] ** Started: target\release\twincle.exe --exp 6 --splitmode --split 10
+[2026-03-02 01:34:46] **********************************************************************
+[2026-03-02 01:34:47] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:34:47] RAM: 127.75 GB (107.05 GB available)
+[2026-03-02 01:34:47] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:34:47] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:34:47] Running split 10 of 10 with M=30030, p=(900,000, 1,000,000]...
+[2026-03-02 01:34:48] PROGRESS seg 1/1 | twins=6 | shard_sum≈0.000013325946 | 2.52e4 cand/s | ETA 0.0 min
+[2026-03-02 01:34:48] Done. gpus=1, twins=697
+[2026-03-02 01:34:48] Split 10 partial sum for p=(900,000, 1,000,000]: 0.00146955696980950
+[2026-03-02 01:34:48] Brun extrapolated  B2* (HL):    0.19260597949349362
+[2026-03-02 01:34:48] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 1.077e-17
+[2026-03-02 01:34:48] Per-term eval error bound (IEEE-754, gamma_5): <= 8.158e-19
+[2026-03-02 01:34:48] Elapsed: 0.23s
+[2026-03-02 01:34:48] **********************************************************************
+[2026-03-02 01:34:48] ** Started: target\release\twincle.exe --exp 5 --splitmode --split 7
+[2026-03-02 01:34:48] **********************************************************************
+[2026-03-02 01:34:49] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:34:49] RAM: 127.75 GB (107.11 GB available)
+[2026-03-02 01:34:49] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:34:49] Testing M=30030: 1485 residues, 65 base primes
+[2026-03-02 01:34:49] Running split 7 of 10 with M=30030, p=(60,000, 70,000]...
+[2026-03-02 01:34:49] PROGRESS seg 1/1 | twins=0 | shard_sum≈0.000000000000 | 2.33e4 cand/s | ETA 0.0 min
+[2026-03-02 01:34:49] Done. gpus=1, twins=94
+[2026-03-02 01:34:49] Split 7 partial sum for p=(60,000, 70,000]: 0.00288724107142191
+[2026-03-02 01:34:49] Brun extrapolated  B2* (HL):    0.23225094809984284
+[2026-03-02 01:34:49] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 2.116e-17
+[2026-03-02 01:34:49] Per-term eval error bound (IEEE-754, gamma_5): <= 1.603e-18
+[2026-03-02 01:34:49] Elapsed: 0.22s
+[2026-03-02 01:35:11] **********************************************************************
+[2026-03-02 01:35:11] ** Started: target\release\twincle.exe --exp 5 --splitmode --split 8
+[2026-03-02 01:35:11] **********************************************************************
+[2026-03-02 01:35:12] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:35:12] RAM: 127.75 GB (107.04 GB available)
+[2026-03-02 01:35:12] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:35:12] Testing M=30030: 1485 residues, 65 base primes
+[2026-03-02 01:35:12] Running split 8 of 10 with M=30030, p=(70,000, 80,000]...
+[2026-03-02 01:35:13] PROGRESS seg 1/1 | twins=102 | shard_sum≈0.002733423242 | 1.15e4 cand/s | ETA 0.0 min
+[2026-03-02 01:35:13] Done. gpus=1, twins=102
+[2026-03-02 01:35:13] Split 8 partial sum for p=(70,000, 80,000]: 0.00273342324215682
+[2026-03-02 01:35:13] Brun extrapolated  B2* (HL):    0.23209713027057774
+[2026-03-02 01:35:13] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 2.003e-17
+[2026-03-02 01:35:13] Per-term eval error bound (IEEE-754, gamma_5): <= 1.517e-18
+[2026-03-02 01:35:13] Elapsed: 0.26s
+[2026-03-02 01:35:13] **********************************************************************
+[2026-03-02 01:35:13] ** Started: target\release\twincle.exe --exp 5 --splitmode --split 9
+[2026-03-02 01:35:13] **********************************************************************
+[2026-03-02 01:35:14] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:35:14] RAM: 127.75 GB (107.08 GB available)
+[2026-03-02 01:35:14] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:35:14] Testing M=30030: 1485 residues, 65 base primes
+[2026-03-02 01:35:14] Running split 9 of 10 with M=30030, p=(80,000, 90,000]...
+[2026-03-02 01:35:14] PROGRESS seg 1/1 | twins=109 | shard_sum≈0.002575485260 | 1.07e4 cand/s | ETA 0.0 min
+[2026-03-02 01:35:14] Done. gpus=1, twins=109
+[2026-03-02 01:35:14] Split 9 partial sum for p=(80,000, 90,000]: 0.00257548526021868
+[2026-03-02 01:35:14] Brun extrapolated  B2* (HL):    0.23193919228863963
+[2026-03-02 01:35:14] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 1.887e-17
+[2026-03-02 01:35:14] Per-term eval error bound (IEEE-754, gamma_5): <= 1.430e-18
+[2026-03-02 01:35:14] Elapsed: 0.28s
+[2026-03-02 01:35:14] **********************************************************************
+[2026-03-02 01:35:14] ** Started: target\release\twincle.exe --exp 5 --splitmode --split 10
+[2026-03-02 01:35:14] **********************************************************************
+[2026-03-02 01:35:16] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:35:16] RAM: 127.75 GB (107.08 GB available)
+[2026-03-02 01:35:16] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:35:16] Testing M=30030: 1485 residues, 65 base primes
+[2026-03-02 01:35:16] Running split 10 of 10 with M=30030, p=(90,000, 100,000]...
+[2026-03-02 01:35:16] PROGRESS seg 1/1 | twins=2 | shard_sum≈0.000044422237 | 2.44e4 cand/s | ETA 0.0 min
+[2026-03-02 01:35:16] Done. gpus=1, twins=108
+[2026-03-02 01:35:16] Split 10 partial sum for p=(90,000, 100,000]: 0.00227582849320527
+[2026-03-02 01:35:16] Brun extrapolated  B2* (HL):    0.23163953552162619
+[2026-03-02 01:35:16] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 1.668e-17
+[2026-03-02 01:35:16] Per-term eval error bound (IEEE-754, gamma_5): <= 1.263e-18
+[2026-03-02 01:35:16] Elapsed: 0.20s
+[2026-03-02 01:35:41] **********************************************************************
+[2026-03-02 01:35:41] ** Started: K:\dev\2026\twincle\target\release\twincle.exe --exp 6 --splitmode --split 2
+[2026-03-02 01:35:41] **********************************************************************
+[2026-03-02 01:35:42] **********************************************************************
+[2026-03-02 01:35:42] ** Started: K:\dev\2026\twincle\target\release\twincle.exe --exp 6 --splitmode --split 2
+[2026-03-02 01:35:42] **********************************************************************
+[2026-03-02 01:35:43] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:35:43] CPU: 12th Gen Intel(R) Core(TM) i9-12900K [16c24t]
+[2026-03-02 01:35:43] RAM: 127.75 GB (107.15 GB available)
+[2026-03-02 01:35:43] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:35:43] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:35:43] Running split 2 of 10 with M=30030, p=(100,000, 200,000]...
+[2026-03-02 01:35:43] RAM: 127.75 GB (107.13 GB available)
+[2026-03-02 01:35:43] GPU 0: NVIDIA GeForce RTX 4070 (12.0 GB VRAM)
+[2026-03-02 01:35:43] Testing M=30030: 1485 residues, 167 base primes
+[2026-03-02 01:35:43] Running split 2 of 10 with M=30030, p=(100,000, 200,000]...
+[2026-03-02 01:35:43] PROGRESS seg 1/1 | twins=202 | shard_sum≈0.003666039753 | 3.27e4 cand/s | ETA 0.0 min
+[2026-03-02 01:35:43] Done. gpus=1, twins=936
+[2026-03-02 01:35:43] Split 2 partial sum for p=(100,000, 200,000]: 0.01304257654978475
+[2026-03-02 01:35:43] Brun extrapolated  B2* (HL):    0.20417899907346887
+[2026-03-02 01:35:43] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 9.557e-17
+[2026-03-02 01:35:43] Per-term eval error bound (IEEE-754, gamma_5): <= 7.240e-18
+[2026-03-02 01:35:43] Elapsed: 0.31s
+[2026-03-02 01:35:43] PROGRESS seg 1/1 | twins=202 | shard_sum≈0.003666039753 | 3.35e4 cand/s | ETA 0.0 min
+[2026-03-02 01:35:43] Done. gpus=1, twins=936
+[2026-03-02 01:35:43] Split 2 partial sum for p=(100,000, 200,000]: 0.01304257654978475
+[2026-03-02 01:35:43] Brun extrapolated  B2* (HL):    0.20417899907346887
+[2026-03-02 01:35:43] Accumulation error bound (Kahan + reductions, excludes per-term rounding): <= 9.557e-17
+[2026-03-02 01:35:43] Per-term eval error bound (IEEE-754, gamma_5): <= 7.240e-18
+[2026-03-02 01:35:43] Elapsed: 0.25s
